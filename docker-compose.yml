@@ -1,0 +1,13 @@
+version: "3"
+services:
+  app:
+    container_name: is5Legacy
+    build: .
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/var/www/html/
+      - nodemodules:/var/www/html/node_modules/
+
+volumes:
+  nodemodules: {}
