@@ -87,7 +87,7 @@ export class TtsService {
   async getTtsSolve(periodStart: string, periodEnd: string) {
     const tts = await Ttschange.getAllTtsSolve(periodStart, periodEnd);
     // console.log(this.empMap['0200306']);
-    let expArray = [];
+    const expArray = [];
 
     for (let i = 0; i < tts.length; i++) {
       const ttsId = tts[i]['TtsId'];
@@ -251,11 +251,11 @@ export class TtsService {
     }
 
     for (const [empId, performance] of Object.entries(this.report)) {
-      var employee = this.getEmployee(empId);
+      const employee = this.getEmployee(empId);
 
-      var devided =
+      const devided =
         performance['open'] + performance['assigned'] + performance['takeover'];
-      var final: any;
+      let final: any;
       if (devided === 0) {
         final = '';
       } else {
