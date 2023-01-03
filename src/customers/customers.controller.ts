@@ -29,6 +29,17 @@ export class CustomersController {
     private readonly customersService: CustomersService,
   ) {}
 
+  @Get('operator-subscriptions')
+  @UseInterceptors(OperatorSubscriptionInterceptor)
+  async getOperatorSubscription(
+    @Query(new ValidationPipe({ transform: true }))
+    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
+  ): Promise<any> {
+    return this.customersService.getOperatorSubscriptions(
+      getOperatorSubscriptionDto,
+    );
+  }
+
   @Get(':customer_id')
   @HttpCode(200)
   async getCustomerDetail(@Param('customer_id') customerId) {
@@ -119,16 +130,5 @@ export class CustomersController {
         message: 'Failed to save resource. please try again later',
       });
     }
-  }
-
-  @Get('operator-subscriptions')
-  @UseInterceptors(OperatorSubscriptionInterceptor)
-  async getOperatorSubscription(
-    @Query(new ValidationPipe({ transform: true }))
-    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
-  ): Promise<any> {
-    return this.customersService.getOperatorSubscriptions(
-      getOperatorSubscriptionDto,
-    );
   }
 }
