@@ -69,6 +69,13 @@ export class CustomersController {
         await this.customersService.saveNewCustomerServices(
           createNewCustomerDto,
         );
+
+      const dataPelangganSaveObj = saveNewCustomers.data_pelanggan;
+      const dataPelangganSaveArr = Object.keys(dataPelangganSaveObj).map(
+        (key) => dataPelangganSaveObj[key],
+      );
+      const saveDataPelangganTextSearch = dataPelangganSaveArr.join(' ');
+
       await queryRunner.manager.save(saveNewCustomers.data_pelanggan);
       await queryRunner.manager.save(saveNewCustomers.data_phonebook_1);
       if (
@@ -81,6 +88,9 @@ export class CustomersController {
       await queryRunner.manager.save(saveNewCustomers.data_npwp);
       await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
       WHERE CustId = '${saveNewCustomers.data_layanan.CustId}'`);
+      await queryRunner.manager
+        .query(`INSERT INTO CustomerGlobalSearch (custId, textSearch, flag)
+      VALUES ('${saveNewCustomers.data_layanan.CustId}', '${saveDataPelangganTextSearch}', '0')`);
 
       await queryRunner.commitTransaction();
       return {
