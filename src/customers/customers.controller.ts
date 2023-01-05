@@ -79,6 +79,9 @@ export class CustomersController {
       }
       await queryRunner.manager.save(saveNewCustomers.data_layanan);
       await queryRunner.manager.save(saveNewCustomers.data_npwp);
+      await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
+      WHERE CustId = '${saveNewCustomers.data_layanan.CustId}'`);
+
       await queryRunner.commitTransaction();
       return {
         title: 'Success',
