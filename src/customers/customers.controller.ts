@@ -62,16 +62,13 @@ export class CustomersController {
   @UsePipes(ValidationPipe)
   async saveNewCustomer(@Body() createNewCustomerDto: CreateNewCustomerDto) {
     const queryRunner = this.dataSource.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
     try {
       const saveNewCustomers =
         await this.customersService.saveNewCustomerServices(
           createNewCustomerDto,
         );
-
       await queryRunner.manager.save(saveNewCustomers.data_pelanggan);
       await queryRunner.manager.save(saveNewCustomers.data_phonebook_1);
       if (
@@ -83,7 +80,6 @@ export class CustomersController {
       await queryRunner.manager.save(saveNewCustomers.data_layanan);
       await queryRunner.manager.save(saveNewCustomers.data_npwp);
       await queryRunner.commitTransaction();
-
       return {
         title: 'Success',
         message: 'Success to save resource',
