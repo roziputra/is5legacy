@@ -62,15 +62,19 @@ export class CustomersController {
   @UsePipes(ValidationPipe)
   async saveNewCustomer(@Body() createNewCustomerDto: CreateNewCustomerDto) {
     const queryRunner = this.dataSource.createQueryRunner();
-
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
     try {
       const saveNewCustomers =
         await this.customersService.saveNewCustomerServices(
           createNewCustomerDto,
         );
+
+      const dataPelangganSaveObj = saveNewCustomers.data_pelanggan;
+      const dataPelangganSaveArr = Object.keys(dataPelangganSaveObj).map(
+        (key) => dataPelangganSaveObj[key],
+      );
+      const saveDataPelangganTextSearch = dataPelangganSaveArr.join(' ');
 
       await queryRunner.manager.save(saveNewCustomers.data_pelanggan);
       await queryRunner.manager.save(saveNewCustomers.data_phonebook_1);
@@ -82,8 +86,13 @@ export class CustomersController {
       }
       await queryRunner.manager.save(saveNewCustomers.data_layanan);
       await queryRunner.manager.save(saveNewCustomers.data_npwp);
-      await queryRunner.commitTransaction();
+      await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
+      WHERE CustId = '${saveNewCustomers.data_layanan.CustId}'`);
+      await queryRunner.manager
+        .query(`INSERT INTO CustomerGlobalSearch (custId, textSearch, flag)
+      VALUES ('${saveNewCustomers.data_layanan.CustId}', '${saveDataPelangganTextSearch}', '0')`);
 
+      await queryRunner.commitTransaction();
       return {
         title: 'Success',
         message: 'Success to save resource',
