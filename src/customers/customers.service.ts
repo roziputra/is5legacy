@@ -14,26 +14,6 @@ export class CustomersService {
     private nocFiberRepository: NOCFiberRepository,
   ) {}
 
-  async getCustomerServices(customerId) {
-    return await this.customerRepository.getCustomerRepository(customerId);
-  }
-
-  async saveNewCustomerServices(createNewCustomerDto: CreateNewCustomerDto) {
-    return await this.customerRepository.saveCustomerRepository(
-      createNewCustomerDto,
-    );
-  }
-
-  async saveDataCustomerServLogic(
-    createNewServiceCustomersDto: CreateNewServiceCustomersDto,
-    customer_id,
-  ) {
-    return await this.customerRepository.saveCustomerServiceRepository(
-      createNewServiceCustomersDto,
-      customer_id,
-    );
-  }
-
   async getOperatorSubscriptions(
     getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
   ): Promise<any> {
@@ -46,6 +26,28 @@ export class CustomersService {
     return this.operatorSubscription.getOperatorSubscription(
       ArrayNocFiberIds,
       status,
+    );
+  }
+
+  async getCustomerServices(customerId) {
+    return await this.customerRepository.getCustomerRepository(customerId);
+  }
+
+  async saveNewCustomerServices(
+    createNewCustomerDto: CreateNewCustomerDto,
+  ): Promise<any> {
+    return await this.customerRepository.saveNewCustomerRepositories(
+      createNewCustomerDto,
+    );
+  }
+
+  async saveNewCustomerServiceServices(
+    createNewServiceCustDto: CreateNewServiceCustomersDto,
+    cust_id: string,
+  ): Promise<any> {
+    return await this.customerRepository.saveCustomerServiceRepository(
+      createNewServiceCustDto,
+      cust_id,
     );
   }
 }
