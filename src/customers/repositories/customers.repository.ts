@@ -15,7 +15,7 @@ export class CustomerRepository extends Repository<Customer> {
     super(Customer, dataSource.createEntityManager());
   }
 
-  async getCustomerRepository(cid) {
+  async getCustomerRepository(cid): Promise<any> {
     let resultObject = {};
 
     // Step 1 : Ambil Data Customer
@@ -109,7 +109,11 @@ export class CustomerRepository extends Repository<Customer> {
     return resultObject;
   }
 
-  async saveCustomerRepository(createCustomerDto: CreateNewCustomerDto) {
+  async saveNewCustomerRepositories(
+    createCustomerDto: CreateNewCustomerDto,
+  ): Promise<any> {
+    let resultSaveDataCustomer = null;
+
     // Step 1 : Init CustID
     let CustID = null;
     CustID = await this.checkCustomerID();
@@ -118,9 +122,13 @@ export class CustomerRepository extends Repository<Customer> {
     let FormID = null;
     FormID = await this.checkFormID();
 
+    // Step 3 : Check Account ID
+    let accName = null;
+    accName = await this.checkAccountName(createCustomerDto.full_name, CustID);
+
+    // Step 4 : Assign Data Pelanggan ke Tabel Customer
+    const pelanggan = new Customer();
     if (CustID && FormID) {
-      // Step 3 : Assign Data Pelanggan ke Tabel Customer
-      const pelanggan = new Customer();
       pelanggan.CustId = CustID;
       pelanggan.BranchId = createCustomerDto.branch_id;
       pelanggan.DisplayBranchId = createCustomerDto.display_branch_id;
@@ -134,7 +142,7 @@ export class CustomerRepository extends Repository<Customer> {
       pelanggan.CustCompany = createCustomerDto.company_name;
       pelanggan.CustBusName = createCustomerDto.company_name;
       pelanggan.BusId = '090';
-      pelanggan.CustResAdd1 = createCustomerDto.address;
+      pelanggan.CustResAdd1 = createCustomerDto.identity_address;
       pelanggan.CustResPhone = createCustomerDto.phone_number;
       pelanggan.CustOfficeAdd1 = createCustomerDto.company_address;
       pelanggan.CustOfficePhone = createCustomerDto.company_phone_number;
@@ -173,7 +181,7 @@ export class CustomerRepository extends Repository<Customer> {
       Services.CustUpdateDate = new Date(this.getDateNow());
       Services.CustBlockDate = new Date(this.getDateNow());
       Services.CustBlockFrom = true;
-      Services.CustAccName = '';
+      Services.CustAccName = accName;
       Services.Opsi = true;
       Services.StartTrial = new Date(this.getDateNow());
       Services.EndTrial = new Date(this.getDateNow());
@@ -183,19 +191,19 @@ export class CustomerRepository extends Repository<Customer> {
       Services.TglHarga = new Date(this.getDateNow());
       Services.Subscription = createCustomerDto.package_price;
       const InvoiceType = await this.dataSource.query(`
-      SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
-      WHERE itm.Month = '${createCustomerDto.package_top}'
-    `);
+        SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
+        WHERE itm.Month = '${createCustomerDto.package_top}'
+      `);
       Services.InvoiceType = InvoiceType[0].InvoiceType;
       Services.InvoicePeriod = `${
-        new Date(this.getDateNow()).getMonth().toString() +
+        ('0' + (new Date(this.getDateNow()).getMonth() + 1)).slice(-2) +
         new Date(this.getDateNow()).getFullYear().toString().slice(-2)
       }`;
       Services.InvoiceDate1 = true;
       Services.AddEmailCharge = false;
       Services.AccessLog = true;
       Services.Description = createCustomerDto.extend_note;
-      Services.installation_address = createCustomerDto.address;
+      Services.installation_address = createCustomerDto.installation_address;
       Services.ContractUntil = new Date(this.getDateNow());
       Services.Type = 'Rumah';
       Services.promo_id = createCustomerDto.promo_id;
@@ -206,7 +214,7 @@ export class CustomerRepository extends Repository<Customer> {
       // Step 5 : Assign Data NPWP ke Tabel NPWP
       const npwpCust = new NPWPCustomer();
       npwpCust.Name = createCustomerDto.full_name;
-      npwpCust.Address = createCustomerDto.address;
+      npwpCust.Address = createCustomerDto.identity_address;
       npwpCust.NPWP = createCustomerDto.npwp_number;
       npwpCust.CustId = CustID;
       npwpCust.Selected = true;
@@ -220,7 +228,6 @@ export class CustomerRepository extends Repository<Customer> {
       smsPhoneBook1.technical = false;
       smsPhoneBook1.insertTime = new Date(this.getDateNow());
       smsPhoneBook1.insertBy = createCustomerDto.approval_emp_id;
-
       const smsPhoneBook2 = new SMSPhonebook();
       smsPhoneBook2.phone = createCustomerDto.technical_phone;
       smsPhoneBook2.name = createCustomerDto.technical_name;
@@ -230,28 +237,44 @@ export class CustomerRepository extends Repository<Customer> {
       smsPhoneBook2.insertTime = new Date(this.getDateNow());
       smsPhoneBook2.insertBy = createCustomerDto.approval_emp_id;
 
-      return {
-        data_pelanggan: pelanggan,
-        data_layanan: Services,
-        data_npwp: npwpCust,
-        data_phonebook_1: smsPhoneBook1,
-        data_phonebook_2: smsPhoneBook2,
-      };
-    } else {
-      return {
-        data_pelanggan: null,
-        data_layanan: null,
-        data_npwp: null,
-        data_phonebook_1: null,
-        data_phonebook_2: null,
-      };
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        const dataPelangganSaveObj = pelanggan;
+        const dataPelangganSaveArr = Object.keys(dataPelangganSaveObj).map(
+          (key) => dataPelangganSaveObj[key],
+        );
+        const saveDataPelangganTextSearch = dataPelangganSaveArr.join(' ');
+        await queryRunner.manager.save(pelanggan);
+        await queryRunner.manager.save(smsPhoneBook1);
+        if (smsPhoneBook1.phone != smsPhoneBook2.phone) {
+          await queryRunner.manager.save(smsPhoneBook2);
+        }
+        await queryRunner.manager.save(Services);
+        await queryRunner.manager.save(npwpCust);
+        await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
+        WHERE CustId = '${Services.CustId}'`);
+        await queryRunner.manager
+          .query(`INSERT INTO CustomerGlobalSearch (custId, textSearch, flag)
+        VALUES ('${Services.CustId}', '${saveDataPelangganTextSearch}', '0')`);
+        await queryRunner.commitTransaction();
+
+        resultSaveDataCustomer = CustID;
+      } catch (error) {
+        resultSaveDataCustomer = null;
+      }
     }
+
+    return resultSaveDataCustomer;
   }
 
   async saveCustomerServiceRepository(
     createNewServiceCustomersDto: CreateNewServiceCustomersDto,
     cid,
   ) {
+    let resultUpdateCustService = null;
+
     // Step 1 : Cek Data Pelanggan
     let dataPelanggan = [];
     dataPelanggan = await this.createQueryBuilder('c')
@@ -259,7 +282,6 @@ export class CustomerRepository extends Repository<Customer> {
         id: cid,
       })
       .getMany();
-
     if (dataPelanggan.length > 0) {
       const Services = new Subscription();
       Services.CustId = cid;
@@ -304,14 +326,21 @@ export class CustomerRepository extends Repository<Customer> {
       Services.BlockTypeDate = '25';
       Services.CustBlockFromMenu = 'edit_subs';
 
-      return {
-        data_layanan: Services,
-      };
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        await queryRunner.manager.save(Services);
+        await queryRunner.commitTransaction();
+        resultUpdateCustService = 'Success';
+      } catch (error) {
+        resultUpdateCustService = null;
+      }
     } else {
-      return {
-        data_layanan: null,
-      };
+      resultUpdateCustService = null;
     }
+
+    return resultUpdateCustService;
   }
 
   async checkCustomerID() {
@@ -355,6 +384,24 @@ export class CustomerRepository extends Repository<Customer> {
     FormIDResult = formIDIdentifier['char'].concat(formIDIdentifier['num']);
 
     return FormIDResult;
+  }
+
+  async checkAccountName(acc_name: string, customer_id: string) {
+    const splitStrName = acc_name.split(' ')[0].toLowerCase();
+    const timeStamp = new Date().getTime();
+    const newAccName = splitStrName + timeStamp;
+
+    // Check in database
+    const queryBuilder = await this.dataSource.query(`
+      SELECT * FROM CustomerServices cs
+      WHERE cs.CustAccName LIKE '%${newAccName}%'
+    `);
+
+    if (queryBuilder.length != 0) {
+      await this.checkAccountName(acc_name, customer_id);
+    } else {
+      return newAccName;
+    }
   }
 
   padTo2Digits(num) {

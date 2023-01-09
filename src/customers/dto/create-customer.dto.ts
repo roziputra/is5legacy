@@ -35,7 +35,7 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
-  address: string;
+  installation_address: string;
 
   @IsNotEmpty()
   @IsString()
@@ -44,6 +44,10 @@ export class CreateNewCustomerDto {
   @IsNotEmpty()
   @IsString()
   identity_number: string;
+
+  @IsNotEmpty()
+  @IsString()
+  identity_address: string;
 
   @IsNotEmpty()
   @IsString()
