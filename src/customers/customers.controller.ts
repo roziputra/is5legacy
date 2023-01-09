@@ -1,10 +1,10 @@
 import {
+  BadRequestException,
   Body,
-  ConflictException,
   Controller,
   Get,
   HttpCode,
-  InternalServerErrorException,
+  NotFoundException,
   Param,
   Post,
   UseGuards,
@@ -18,16 +18,12 @@ import { Query } from '@nestjs/common';
 import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscription.interceptor';
 import { GetOperatorSubscriptionDto } from './dto/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dto/create-customer.dto';
-import { DataSource } from 'typeorm';
 import { CreateNewServiceCustomersDto } from './dto/create-service-customer.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
 export class CustomersController {
-  constructor(
-    private dataSource: DataSource,
-    private readonly customersService: CustomersService,
-  ) {}
+  constructor(private readonly customersService: CustomersService) {}
 
   @Get('operator-subscriptions')
   @UseInterceptors(OperatorSubscriptionInterceptor)
@@ -42,68 +38,40 @@ export class CustomersController {
 
   @Get(':customer_id')
   @HttpCode(200)
-  async getCustomerDetail(@Param('customer_id') customerId) {
-    try {
-      const resultAllCustomers =
-        await this.customersService.getCustomerServices(customerId);
+  async getCustomerDetail(@Param('customer_id') customerId): Promise<any> {
+    const resultAllCustomers = await this.customersService.getCustomerServices(
+      customerId,
+    );
+    if (Object.keys(resultAllCustomers).length !== 0)
       return {
         data: resultAllCustomers,
       };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        title: 'Internal Server Error',
-        message: 'Failed to load resource. please try again later',
-      });
+    else {
+      throw new NotFoundException('Data pelanggan tidak ditemukan');
     }
   }
 
   @Post()
   @HttpCode(201)
   @UsePipes(ValidationPipe)
-  async saveNewCustomer(@Body() createNewCustomerDto: CreateNewCustomerDto) {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-    try {
-      const saveNewCustomers =
-        await this.customersService.saveNewCustomerServices(
-          createNewCustomerDto,
-        );
-
-      const dataPelangganSaveObj = saveNewCustomers.data_pelanggan;
-      const dataPelangganSaveArr = Object.keys(dataPelangganSaveObj).map(
-        (key) => dataPelangganSaveObj[key],
-      );
-      const saveDataPelangganTextSearch = dataPelangganSaveArr.join(' ');
-
-      await queryRunner.manager.save(saveNewCustomers.data_pelanggan);
-      await queryRunner.manager.save(saveNewCustomers.data_phonebook_1);
-      if (
-        saveNewCustomers.data_phonebook_1.phone !=
-        saveNewCustomers.data_phonebook_2.phone
-      ) {
-        await queryRunner.manager.save(saveNewCustomers.data_phonebook_2);
-      }
-      await queryRunner.manager.save(saveNewCustomers.data_layanan);
-      await queryRunner.manager.save(saveNewCustomers.data_npwp);
-      await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
-      WHERE CustId = '${saveNewCustomers.data_layanan.CustId}'`);
-      await queryRunner.manager
-        .query(`INSERT INTO CustomerGlobalSearch (custId, textSearch, flag)
-      VALUES ('${saveNewCustomers.data_layanan.CustId}', '${saveDataPelangganTextSearch}', '0')`);
-
-      await queryRunner.commitTransaction();
+  async saveNewCustomer(
+    @Body() createNewCustomerDto: CreateNewCustomerDto,
+  ): Promise<any> {
+    const saveNewCustomer = await this.customersService.saveNewCustomerServices(
+      createNewCustomerDto,
+    );
+    if (saveNewCustomer)
       return {
-        title: 'Success',
-        message: 'Success to save resource',
-        data: saveNewCustomers.data_layanan.CustId,
+        title: 'Berhasil',
+        message: 'Berhasil menyimpan data pelanggan',
+        data: {
+          id: saveNewCustomer,
+        },
       };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new ConflictException({
-        title: 'Conflict',
-        message: 'Failed to save resource. please try again later',
-      });
+    else {
+      throw new BadRequestException(
+        'Pendaftaran pelanggan tidak dapat diproses',
+      );
     }
   }
 
@@ -113,31 +81,19 @@ export class CustomersController {
   async saveDataCustServices(
     @Param('customer_id') customer_id,
     @Body() createNewServiceCustomersDto: CreateNewServiceCustomersDto,
-  ) {
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const saveNewCustomerServices =
-        await this.customersService.saveDataCustomerServLogic(
-          createNewServiceCustomersDto,
-          customer_id,
-        );
-      await queryRunner.manager.save(saveNewCustomerServices.data_layanan);
-      await queryRunner.commitTransaction();
-
+  ): Promise<any> {
+    const saveNewServiceCustomer =
+      await this.customersService.saveNewCustomerServiceServices(
+        createNewServiceCustomersDto,
+        customer_id,
+      );
+    if (saveNewServiceCustomer)
       return {
-        title: 'Success',
-        message: 'Success to save resource',
+        title: 'Berhasil',
+        message: 'Berhasil menambahkan data layanan pelanggan',
       };
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-      throw new ConflictException({
-        title: 'Conflict',
-        message: 'Failed to save resource. please try again later',
-      });
+    else {
+      throw new NotFoundException('Data pelanggan tidak ditemukan');
     }
   }
 }
