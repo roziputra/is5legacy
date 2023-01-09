@@ -3,6 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Tts, TtsPIC, TtsChange, Ttschange } from './tickets.entity';
 import { EmployeesService } from '../employees/employees.service';
+import { IsoDocumentRepository } from './repositories/iso-document-repository';
+import { GeneralTicketRepository } from './repositories/general-ticket-repository';
+import { GeneralTicket } from './entities/general-ticket.entity';
+import { TicketPic } from './entities/ticket-pic.entity';
+import { TicketPicRepository } from './repositories/ticket-pic-repository';
 
 @Injectable()
 export class TtsService {
@@ -31,6 +36,9 @@ export class TtsService {
     @InjectRepository(Tts)
     private readonly ttsRepository: Repository<Tts>,
     private readonly employeeServices: EmployeesService,
+    private isoDocumentRepository: IsoDocumentRepository,
+    private generalTicketRepository: GeneralTicketRepository,
+    private ticketPicRepository: TicketPicRepository,
   ) {
     this.setEmpMap();
   }
@@ -296,5 +304,28 @@ export class TtsService {
     await this.getTtsSolve(periodStart, periodEnd);
     this.getAllReport();
     return this.data;
+  }
+
+  getIsoDocWhenEffectiveUntil(effectiveUntilDate: string) {
+    return this.isoDocumentRepository.getWhenEffectiveUntil(effectiveUntilDate);
+  }
+
+  getIsoDocWhenEffectiveUntilBetween(dateFrom: string, dateTo: string) {
+    return this.isoDocumentRepository.getWhenEffectiveUntilBetween(
+      dateFrom,
+      dateTo,
+    );
+  }
+
+  checkFirstReminderExpiredDocumentTicket() {
+    return this.generalTicketRepository.checkFirstReminderExpiredDocumentTicket();
+  }
+
+  createGeneralTicket(data: GeneralTicket) {
+    return this.generalTicketRepository.create(data).save();
+  }
+
+  addTicketPic(data: TicketPic) {
+    return this.ticketPicRepository.create(data).save();
   }
 }
