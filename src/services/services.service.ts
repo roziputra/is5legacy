@@ -110,11 +110,6 @@ export class ServicesService {
         's.ServiceId service_id',
         's.ServiceType service_type',
         's.ServiceLevel service_level',
-        'ss.NormalDownCeil normal_down_ceil',
-        'ss.NormalDownRate normal_down_rate',
-        'ss.NormalUpCeil normal_up_ceil',
-        'ss.NormalUpRate normal_up_rate',
-        '(s.MaxDownTime / 3600) down_time',
         's.ServiceCharge service_charge',
         'IFNULL(sd.discontinue, 0) discontinue',
       ])
