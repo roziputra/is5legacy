@@ -276,13 +276,13 @@ export class CustomerRepository extends Repository<Customer> {
     let resultUpdateCustService = null;
 
     // Step 1 : Cek Data Pelanggan
-    let dataPelanggan = [];
-    dataPelanggan = await this.createQueryBuilder('c')
-      .where('c.CustId = :id', {
-        id: cid,
-      })
-      .getMany();
-    if (dataPelanggan.length > 0) {
+    const dataPelanggan = await this.findOne({ where: { CustId: cid } });
+
+    if (dataPelanggan) {
+      // Step 2 : Check Account ID
+      let accName = null;
+      accName = await this.checkAccountName(dataPelanggan.CustName, cid);
+
       const Services = new Subscription();
       Services.CustId = cid;
       Services.ServiceId = createNewServiceCustomersDto.package_code;
@@ -295,7 +295,7 @@ export class CustomerRepository extends Repository<Customer> {
       Services.CustUpdateDate = new Date(this.getDateNow());
       Services.CustBlockDate = new Date(this.getDateNow());
       Services.CustBlockFrom = true;
-      Services.CustAccName = '';
+      Services.CustAccName = accName;
       Services.Opsi = true;
       Services.StartTrial = new Date(this.getDateNow());
       Services.EndTrial = new Date(this.getDateNow());

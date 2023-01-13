@@ -5,8 +5,7 @@ export class CreateNewCustomerDto {
   @IsString()
   branch_id: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   display_branch_id: string;
 
   @IsNotEmpty()
@@ -49,16 +48,13 @@ export class CreateNewCustomerDto {
   @IsString()
   identity_address: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   company_name: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   company_address: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   company_phone_number: string;
 
   @IsNotEmpty()
@@ -101,8 +97,7 @@ export class CreateNewCustomerDto {
   @IsString()
   package_top: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   promo_id: string;
 
   @IsNotEmpty()

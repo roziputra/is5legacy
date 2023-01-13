@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 
 export class CreateNewServiceCustomersDto {
   @IsNotEmpty()
@@ -21,8 +21,7 @@ export class CreateNewServiceCustomersDto {
   @IsString()
   package_top: string;
 
-  @IsNotEmpty()
-  @IsString()
+  @IsOptional()
   promo_id: string;
 
   @IsNotEmpty()
