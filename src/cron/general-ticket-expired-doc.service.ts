@@ -9,8 +9,8 @@ export class GeneralTicketExpiredDocService {
   constructor(private ticketService: TtsService) {}
   @Cron('0 20 * * * *')
   async handleCron(date = new Date()) {
-    const cronStart = process.env.CRON_START || false;
-    if (cronStart == 'false') {
+    const cronStart = process.env.CRON_START || 'off';
+    if (cronStart == 'off') {
       return;
     }
 
