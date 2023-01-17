@@ -310,7 +310,7 @@ export class CustomerRepository extends Repository<Customer> {
       `);
       Services.InvoiceType = InvoiceType[0].InvoiceType;
       Services.InvoicePeriod = `${
-        new Date(this.getDateNow()).getMonth().toString() +
+        ('0' + (new Date(this.getDateNow()).getMonth() + 1)).slice(-2) +
         new Date(this.getDateNow()).getFullYear().toString().slice(-2)
       }`;
       Services.InvoiceDate1 = true;
