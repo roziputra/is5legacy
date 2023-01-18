@@ -21,6 +21,22 @@ export class ServicesService {
         );
         for (let b = 0; b < resultDataFetchService[a].length; b++) {
           newResultDataFetchService[idx] = resultDataFetchService[a][b];
+          if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
+            resultDataFetchService[a][b].service_charge = parseInt(
+              resultDataFetchService[a][b].service_charge,
+            );
+          } else {
+            const servicePriceObj = JSON.parse(
+              resultDataFetchService[a][b].service_charge,
+            );
+            for (const key in servicePriceObj) {
+              resultDataFetchService[a][b].service_charge =
+                servicePriceObj[key] / parseInt(key);
+            }
+            resultDataFetchService[a][b].service_charge = parseInt(
+              resultDataFetchService[a][b].service_charge,
+            );
+          }
           idx++;
         }
       }
@@ -48,6 +64,22 @@ export class ServicesService {
         );
         for (let b = 0; b < resultDataFetchService[a].length; b++) {
           newResultDataFetchService[idx] = resultDataFetchService[a][b];
+          if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
+            resultDataFetchService[a][b].service_charge = parseInt(
+              resultDataFetchService[a][b].service_charge,
+            );
+          } else {
+            const servicePriceObj = JSON.parse(
+              resultDataFetchService[a][b].service_charge,
+            );
+            for (const key in servicePriceObj) {
+              resultDataFetchService[a][b].service_charge =
+                servicePriceObj[key] / parseInt(key);
+            }
+            resultDataFetchService[a][b].service_charge = parseInt(
+              resultDataFetchService[a][b].service_charge,
+            );
+          }
           idx++;
         }
       }
@@ -78,6 +110,22 @@ export class ServicesService {
       );
       for (let b = 0; b < resultDataFetchService[a].length; b++) {
         newResultDataFetchService[idx] = resultDataFetchService[a][b];
+        if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
+          resultDataFetchService[a][b].service_charge = parseInt(
+            resultDataFetchService[a][b].service_charge,
+          );
+        } else {
+          const servicePriceObj = JSON.parse(
+            resultDataFetchService[a][b].service_charge,
+          );
+          for (const key in servicePriceObj) {
+            resultDataFetchService[a][b].service_charge =
+              servicePriceObj[key] / parseInt(key);
+          }
+          resultDataFetchService[a][b].service_charge = parseInt(
+            resultDataFetchService[a][b].service_charge,
+          );
+        }
         idx++;
       }
     }
@@ -110,7 +158,7 @@ export class ServicesService {
         's.ServiceId service_id',
         's.ServiceType service_type',
         's.ServiceLevel service_level',
-        's.ServiceCharge service_charge',
+        'IFNULL(s.ChargePerPeriod, s.ServiceCharge) service_charge',
         'IFNULL(sd.discontinue, 0) discontinue',
       ])
       .leftJoin(
@@ -127,5 +175,9 @@ export class ServicesService {
       )
       .orderBy('s.ServiceType')
       .getRawMany();
+  }
+
+  isNumeric(num) {
+    return !isNaN(num);
   }
 }
