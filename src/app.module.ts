@@ -18,6 +18,8 @@ import { SMSPhonebook } from './customers/entities/sms-phonebook.entity';
 import { Subscription } from './customers/entities/subscriber.entity';
 import { NPWPCustomer } from './customers/entities/customer-npwp.entity';
 import { Services } from './services/entities/service.entity';
+import { FinanceModule } from './finance/finance.module';
+import { StockInvoice } from './finance/entities/stock-invoice.entity';
 
 @Module({
   imports: [
@@ -43,6 +45,7 @@ import { Services } from './services/entities/service.entity';
         CustomerServiceTechnicalCustom,
         SalesPromo,
         Services,
+        StockInvoice,
       ],
       synchronize: false,
     }),
@@ -53,6 +56,7 @@ import { Services } from './services/entities/service.entity';
     TtsModule,
     SalesPromoModule,
     ServicesModule,
+    FinanceModule,
   ],
   controllers: [],
   providers: [],
