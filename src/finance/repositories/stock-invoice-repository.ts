@@ -26,11 +26,18 @@ export class StockInvoiceRepository extends Repository<StockInvoice> {
       .leftJoin('Master', 'm', 'm.Code = c.Code and m.Branch = :branchId', {
         branchId: branchId,
       })
-      .andWhere('a.Status IN ("PM", "IV")')
-      .andWhere('a.Reverse = 0')
-      .andWhere('m.Type = 1') // barang
-      .andWhere('e.Flag = 1') // approved
-      .andWhere('c.Unit > 0') // peminjaman
+      .andWhere('a.Status IN (:peminjaman, :inventaris)', {
+        peminjaman: STATUS_PEMINJAMAN,
+        inventaris: STATUS_INVENTARIS,
+      })
+      .andWhere('a.Reverse = :reverse', { reverse: NOT_REVERSE })
+      .andWhere('ifnull(RNo, 0) = :RNo', {
+        RNo: NO_RNo,
+      })
+      .andWhere('m.Type = :type', { type: TYPE_PERALATAN })
+      .andWhere('e.Flag = :flag', { flag: INVOICE_APPROVED })
+      .andWhere('c.Unit > 0')
+      .andWhere('c.Price != 0')
       .andWhere('ifnull(DisplayBranchId,branchId) = :branchId', {
         branchId: branchId,
       })
@@ -42,6 +49,7 @@ export class StockInvoiceRepository extends Repository<StockInvoice> {
       .orderBy('a.Status')
       .getRawMany();
   }
+
   getDepreciationStockStatus(
     fromDate: string,
     toDate: string,
@@ -60,11 +68,18 @@ export class StockInvoiceRepository extends Repository<StockInvoice> {
       .leftJoin('Master', 'm', 'm.Code = c.Code and m.Branch = :branchId', {
         branchId: branchId,
       })
-      .andWhere('a.Status IN ("PM", "IV")')
-      .andWhere('a.Reverse = 0')
-      .andWhere('m.Type = 1') // barang
-      .andWhere('e.Flag = 1') // approved
-      .andWhere('c.Unit > 0') // peminjaman
+      .andWhere('a.Status IN (:peminjaman, :inventaris)', {
+        peminjaman: STATUS_PEMINJAMAN,
+        inventaris: STATUS_INVENTARIS,
+      })
+      .andWhere('a.Reverse = :reverse', { reverse: NOT_REVERSE })
+      .andWhere('ifnull(RNo, 0) = :RNo', {
+        RNo: NO_RNo,
+      })
+      .andWhere('m.Type = :type', { type: TYPE_PERALATAN })
+      .andWhere('e.Flag = :flag', { flag: INVOICE_APPROVED })
+      .andWhere('c.Unit > 0')
+      .andWhere('c.Price != 0')
       .andWhere('ifnull(DisplayBranchId,branchId) = :branchId', {
         branchId: branchId,
       })
@@ -77,3 +92,10 @@ export class StockInvoiceRepository extends Repository<StockInvoice> {
       .getRawMany();
   }
 }
+
+export const STATUS_INVENTARIS = 'IV';
+export const STATUS_PEMINJAMAN = 'PM';
+export const NOT_REVERSE = 0;
+export const NO_RNo = 0;
+export const TYPE_PERALATAN = 1;
+export const INVOICE_APPROVED = 1;
