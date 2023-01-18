@@ -14,28 +14,39 @@ export class ServicesService {
       const newResultDataFetchService = [];
       let idx = 0;
 
-      for (let a = 0; a < branch_ids.length; a++) {
-        const branchNumber = branch_ids[a];
-        resultDataFetchService[a] = await this.getServicesByBranchID(
+      for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+        const branchNumber = branch_ids[idx_branch];
+        resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
           branchNumber,
         );
-        for (let b = 0; b < resultDataFetchService[a].length; b++) {
-          newResultDataFetchService[idx] = resultDataFetchService[a][b];
-          if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
-            resultDataFetchService[a][b].service_charge = parseInt(
-              resultDataFetchService[a][b].service_charge,
-            );
+        for (
+          let idx_data = 0;
+          idx_data < resultDataFetchService[idx_branch].length;
+          idx_data++
+        ) {
+          newResultDataFetchService[idx] =
+            resultDataFetchService[idx_branch][idx_data];
+          if (
+            this.isNumeric(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            )
+          ) {
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
           } else {
             const servicePriceObj = JSON.parse(
-              resultDataFetchService[a][b].service_charge,
+              resultDataFetchService[idx_branch][idx_data].service_charge,
             );
             for (const key in servicePriceObj) {
-              resultDataFetchService[a][b].service_charge =
+              resultDataFetchService[idx_branch][idx_data].service_charge =
                 servicePriceObj[key] / parseInt(key);
             }
-            resultDataFetchService[a][b].service_charge = parseInt(
-              resultDataFetchService[a][b].service_charge,
-            );
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
           }
           idx++;
         }
@@ -57,28 +68,39 @@ export class ServicesService {
       const newResultDataFetchService = [];
       let idx = 0;
 
-      for (let a = 0; a < branch_ids.length; a++) {
-        const branchNumber = branch_ids[a];
-        resultDataFetchService[a] = await this.getServicesByBranchID(
+      for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+        const branchNumber = branch_ids[idx_branch];
+        resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
           branchNumber,
         );
-        for (let b = 0; b < resultDataFetchService[a].length; b++) {
-          newResultDataFetchService[idx] = resultDataFetchService[a][b];
-          if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
-            resultDataFetchService[a][b].service_charge = parseInt(
-              resultDataFetchService[a][b].service_charge,
-            );
+        for (
+          let idx_data = 0;
+          idx_data < resultDataFetchService[idx_branch].length;
+          idx_data++
+        ) {
+          newResultDataFetchService[idx] =
+            resultDataFetchService[idx_branch][idx_data];
+          if (
+            this.isNumeric(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            )
+          ) {
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
           } else {
             const servicePriceObj = JSON.parse(
-              resultDataFetchService[a][b].service_charge,
+              resultDataFetchService[idx_branch][idx_data].service_charge,
             );
             for (const key in servicePriceObj) {
-              resultDataFetchService[a][b].service_charge =
+              resultDataFetchService[idx_branch][idx_data].service_charge =
                 servicePriceObj[key] / parseInt(key);
             }
-            resultDataFetchService[a][b].service_charge = parseInt(
-              resultDataFetchService[a][b].service_charge,
-            );
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
           }
           idx++;
         }
@@ -103,28 +125,39 @@ export class ServicesService {
     const newResultDataFetchService = [];
     let idx = 0;
 
-    for (let a = 0; a < branch_ids.length; a++) {
-      const branchNumber = branch_ids[a];
-      resultDataFetchService[a] = await this.getServicesByBranchID(
+    for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+      const branchNumber = branch_ids[idx_branch];
+      resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
         branchNumber,
       );
-      for (let b = 0; b < resultDataFetchService[a].length; b++) {
-        newResultDataFetchService[idx] = resultDataFetchService[a][b];
-        if (this.isNumeric(resultDataFetchService[a][b].service_charge)) {
-          resultDataFetchService[a][b].service_charge = parseInt(
-            resultDataFetchService[a][b].service_charge,
-          );
+      for (
+        let idx_data = 0;
+        idx_data < resultDataFetchService[idx_branch].length;
+        idx_data++
+      ) {
+        newResultDataFetchService[idx] =
+          resultDataFetchService[idx_branch][idx_data];
+        if (
+          this.isNumeric(
+            resultDataFetchService[idx_branch][idx_data].service_charge,
+          )
+        ) {
+          resultDataFetchService[idx_branch][idx_data].service_charge =
+            parseInt(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
         } else {
           const servicePriceObj = JSON.parse(
-            resultDataFetchService[a][b].service_charge,
+            resultDataFetchService[idx_branch][idx_data].service_charge,
           );
           for (const key in servicePriceObj) {
-            resultDataFetchService[a][b].service_charge =
+            resultDataFetchService[idx_branch][idx_data].service_charge =
               servicePriceObj[key] / parseInt(key);
           }
-          resultDataFetchService[a][b].service_charge = parseInt(
-            resultDataFetchService[a][b].service_charge,
-          );
+          resultDataFetchService[idx_branch][idx_data].service_charge =
+            parseInt(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
         }
         idx++;
       }
