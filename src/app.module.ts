@@ -18,9 +18,20 @@ import { SMSPhonebook } from './customers/entities/sms-phonebook.entity';
 import { Subscription } from './customers/entities/subscriber.entity';
 import { NPWPCustomer } from './customers/entities/customer-npwp.entity';
 import { Services } from './services/entities/service.entity';
+import { ScheduleModule } from '@nestjs/schedule';
+import { IsoDocument } from './tickets/entities/iso-document.entity';
+import { GeneralTicket } from './tickets/entities/general-ticket.entity';
+import { TicketPic } from './tickets/entities/ticket-pic.entity';
+import { CronModule } from './cron/cron.module';
+import { FinanceModule } from './finance/finance.module';
+import { StockInvoice } from './finance/entities/stock-invoice.entity';
+import { GeneralJournalBatchNo } from './finance/entities/general-journal-batch-no.entity';
+import { GeneralJournal } from './finance/entities/general-journal.entity';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: process.env.DB_TYPE as 'mysql' | 'mariadb' | 'postgres',
@@ -43,6 +54,12 @@ import { Services } from './services/entities/service.entity';
         CustomerServiceTechnicalCustom,
         SalesPromo,
         Services,
+        IsoDocument,
+        GeneralTicket,
+        TicketPic,
+        StockInvoice,
+        GeneralJournalBatchNo,
+        GeneralJournal,
       ],
       synchronize: false,
     }),
@@ -53,6 +70,9 @@ import { Services } from './services/entities/service.entity';
     TtsModule,
     SalesPromoModule,
     ServicesModule,
+    CronModule,
+    FinanceModule,
+    StockModule,
   ],
   controllers: [],
   providers: [],
