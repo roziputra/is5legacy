@@ -20,6 +20,9 @@ import { NPWPCustomer } from './customers/entities/customer-npwp.entity';
 import { Services } from './services/entities/service.entity';
 import { FinanceModule } from './finance/finance.module';
 import { StockInvoice } from './finance/entities/stock-invoice.entity';
+import { GeneralJournalBatchNo } from './finance/entities/general-journal-batch-no.entity';
+import { GeneralJournal } from './finance/entities/general-journal.entity';
+import { StockModule } from './stock/stock.module';
 
 @Module({
   imports: [
@@ -46,6 +49,8 @@ import { StockInvoice } from './finance/entities/stock-invoice.entity';
         SalesPromo,
         Services,
         StockInvoice,
+        GeneralJournalBatchNo,
+        GeneralJournal,
       ],
       synchronize: false,
     }),
@@ -57,6 +62,7 @@ import { StockInvoice } from './finance/entities/stock-invoice.entity';
     SalesPromoModule,
     ServicesModule,
     FinanceModule,
+    StockModule,
   ],
   controllers: [],
   providers: [],

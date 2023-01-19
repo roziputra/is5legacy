@@ -13,7 +13,7 @@ export class GetDepreciationFilterDto {
     const [year, month] = value.split('-', 2).map((i) => parseInt(i));
     const lastDate = new Date(year, month, 0).getDate();
     return {
-      fromDate: `${year}-${('0' + month).slice(-2)}-01`,
+      fromDate: `${year}-01-01`,
       toDate: `${year}-${('0' + month).slice(-2)}-${lastDate}`,
     };
   })
