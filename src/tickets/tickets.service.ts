@@ -1,10 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { Tts, TtsPIC, TtsChange, Ttschange } from './tickets.entity';
 import { EmployeesService } from '../employees/employees.service';
 import { IsoDocumentRepository } from './repositories/iso-document-repository';
-import { GeneralTicketRepository } from './repositories/general-ticket-repository';
+import {
+  DEFAULT_ASSIGN_NO,
+  DEFAULT_COST,
+  DEFAULT_PID,
+  DEFAULT_PROGRESS,
+  DEFAULT_SOURCE_ID,
+  GeneralTicketRepository,
+  PRIORITY_MEDIUM,
+  PRIVATE_FALSE,
+  REMINDER_EXPIRED_DOC_SUBJECT,
+  STATUS_OPEN,
+  SYSTEM,
+} from './repositories/general-ticket-repository';
 import { GeneralTicket } from './entities/general-ticket.entity';
 import { TicketPic } from './entities/ticket-pic.entity';
 import { TicketPicRepository } from './repositories/ticket-pic-repository';
@@ -39,6 +51,7 @@ export class TtsService {
     private isoDocumentRepository: IsoDocumentRepository,
     private generalTicketRepository: GeneralTicketRepository,
     private ticketPicRepository: TicketPicRepository,
+    private dataSource: DataSource,
   ) {
     this.setEmpMap();
   }
@@ -306,26 +319,120 @@ export class TtsService {
     return this.data;
   }
 
-  getIsoDocWhenEffectiveUntil(effectiveUntilDate: string) {
-    return this.isoDocumentRepository.getWhenEffectiveUntil(effectiveUntilDate);
-  }
-
-  getIsoDocWhenEffectiveUntilBetween(dateFrom: string, dateTo: string) {
-    return this.isoDocumentRepository.getWhenEffectiveUntilBetween(
-      dateFrom,
-      dateTo,
-    );
-  }
-
-  checkFirstReminderExpiredDocumentTicket() {
-    return this.generalTicketRepository.checkFirstReminderExpiredDocumentTicket();
-  }
-
   createGeneralTicket(data: GeneralTicket) {
     return this.generalTicketRepository.create(data).save();
   }
 
   addTicketPic(data: TicketPic) {
     return this.ticketPicRepository.create(data).save();
+  }
+
+  async generateGeneralTicketExpiredDoc(date: Date, forwardPic = []) {
+    const y = date.getFullYear();
+    const m = date.getMonth();
+    const d = date.getDate();
+    const h = date.getHours();
+    const i = date.getMinutes();
+    const s = date.getSeconds();
+
+    const nowDate = this.toDateFormat(date);
+    const effectiveUntilDate = this.toDateFormat(
+      new Date(y, m + 2, d, h, i, s),
+    );
+    const effectiveUntilFromDate = this.toDateFormat(
+      new Date(y, m - 2, d, h, i, s),
+    );
+    const timeCreated = this.toDateTimeFormat(date);
+    const timeExpired = this.toDateTimeFormat(new Date(y, m, d + 7, h, i, s));
+
+    const checkFirst =
+      this.generalTicketRepository.checkFirstReminderExpiredDocumentTicket();
+
+    let expiredIsoDoc = [];
+    if (checkFirst) {
+      expiredIsoDoc = await this.isoDocumentRepository.getWhenEffectiveUntil(
+        effectiveUntilDate,
+      );
+    } else {
+      expiredIsoDoc =
+        await this.isoDocumentRepository.getWhenEffectiveUntilBetween(
+          effectiveUntilFromDate,
+          nowDate,
+        );
+    }
+    const transaction = this.dataSource.createQueryRunner();
+    await transaction.connect();
+    await transaction.startTransaction();
+    console.info('run');
+
+    try {
+      for (const object of expiredIsoDoc) {
+        const desc = `Document ${object.document_nam} akan expired pada tanggal ${object.effective_until}
+                      <a href="/v2/general/maintained-document/detail/${object.document_id}"> Document </a>`;
+
+        const ticket = new GeneralTicket();
+        ticket.pid = DEFAULT_PID;
+        ticket.subject = REMINDER_EXPIRED_DOC_SUBJECT;
+        ticket.comment = desc;
+        ticket.empId = SYSTEM;
+        ticket.createdBy = SYSTEM;
+        ticket.custId = '';
+        ticket.timeCreated = timeCreated;
+        ticket.timeStart = timeCreated;
+        ticket.timeExpired = timeExpired;
+        ticket.statusId = STATUS_OPEN;
+        ticket.progress = DEFAULT_PROGRESS;
+        ticket.priorityId = PRIORITY_MEDIUM;
+        ticket.cost = DEFAULT_COST;
+        ticket.assignNo = DEFAULT_ASSIGN_NO;
+        ticket.sourceId = DEFAULT_SOURCE_ID;
+        ticket.private = PRIVATE_FALSE;
+
+        const ticketSaved = await transaction.manager.save(ticket);
+
+        let pic = object.created_by;
+        const newPic = forwardPic[pic] ?? null;
+
+        if (newPic) {
+          pic = newPic;
+        }
+
+        const ticketPic = new TicketPic();
+        ticketPic.ticketId = ticketSaved.id;
+        ticketPic.assignNo = 1;
+        ticketPic.type = 'employee';
+        ticketPic.typeId = pic;
+        await transaction.manager.save(ticketPic);
+
+        console.info(`General ticket created #${ticketSaved.id}`);
+      }
+
+      await transaction.commitTransaction();
+    } catch (error) {
+      await transaction.rollbackTransaction();
+      console.error(error);
+    } finally {
+      await transaction.release();
+    }
+  }
+
+  toDateTimeFormat(date: Date): string {
+    return `${this.toDateFormat(date)} ${this.toTimeFormat(date)}`;
+  }
+
+  toDateFormat(date: Date): string {
+    const y = date.getFullYear().toString();
+    const m = (date.getMonth() + 1).toString();
+    const d = date.getDate().toString();
+    return `${y}-${('0' + m).slice(-2)}-${('0' + d).slice(-2)}`;
+  }
+
+  toTimeFormat(date: Date): string {
+    const h = date.getHours().toString();
+    const i = date.getMinutes().toString();
+    const s = date.getSeconds().toString();
+    return `${('0' + h).slice(-2)}:${('0' + i).slice(-2)}:${('0' + s).slice(
+      -2,
+    )}`;
   }
 }

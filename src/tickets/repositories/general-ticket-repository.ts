@@ -14,3 +14,14 @@ export class GeneralTicketRepository extends Repository<GeneralTicket> {
       .getCount();
   }
 }
+
+export const REMINDER_EXPIRED_DOC_SUBJECT = 'Reminder Expired Document';
+export const DEFAULT_PID = 0;
+export const SYSTEM = 'SYSTEM';
+export const PRIORITY_MEDIUM = 1;
+export const STATUS_OPEN = 11;
+export const PRIVATE_FALSE = 0;
+export const DEFAULT_PROGRESS = 0;
+export const DEFAULT_COST = 0;
+export const DEFAULT_ASSIGN_NO = 1;
+export const DEFAULT_SOURCE_ID = 3;

@@ -10,7 +10,7 @@ export class IsoDocumentRepository extends Repository<IsoDocument> {
   getWhenEffectiveUntil(dateEffectiveUntil: string) {
     return IsoDocument.createQueryBuilder('d')
       .select(['d.*'])
-      .where('d.status = "approved"')
+      .where('d.status = :status', { status: ISO_DOCUMENT_STATUS_APPROVED })
       .andWhere('d.effective_until = :effectiveUntil', {
         effectiveUntil: dateEffectiveUntil,
       })
@@ -20,7 +20,7 @@ export class IsoDocumentRepository extends Repository<IsoDocument> {
   getWhenEffectiveUntilBetween(dateFrom: string, dateTo: string) {
     return IsoDocument.createQueryBuilder('d')
       .select(['d.*'])
-      .where('d.status = "approved"')
+      .where('d.status = :status', { status: ISO_DOCUMENT_STATUS_APPROVED })
       .andWhere('d.effective_until >= :dateFrom', {
         dateFrom: dateFrom,
       })
@@ -30,3 +30,5 @@ export class IsoDocumentRepository extends Repository<IsoDocument> {
       .getRawMany();
   }
 }
+
+export const ISO_DOCUMENT_STATUS_APPROVED = 'approved';
