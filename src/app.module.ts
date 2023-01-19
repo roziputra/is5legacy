@@ -19,11 +19,12 @@ import { Subscription } from './customers/entities/subscriber.entity';
 import { NPWPCustomer } from './customers/entities/customer-npwp.entity';
 import { Services } from './services/entities/service.entity';
 import { ScheduleModule } from '@nestjs/schedule';
-import { GeneralTicketExpiredDocService } from './cron/general-ticket-expired-doc.service';
 import { IsoDocument } from './tickets/entities/iso-document.entity';
 import { GeneralTicket } from './tickets/entities/general-ticket.entity';
 import { TicketPic } from './tickets/entities/ticket-pic.entity';
 import { CronModule } from './cron/cron.module';
+import { FinanceModule } from './finance/finance.module';
+import { StockInvoice } from './finance/entities/stock-invoice.entity';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { CronModule } from './cron/cron.module';
         IsoDocument,
         GeneralTicket,
         TicketPic,
+        StockInvoice,
       ],
       synchronize: false,
     }),
@@ -64,6 +66,7 @@ import { CronModule } from './cron/cron.module';
     SalesPromoModule,
     ServicesModule,
     CronModule,
+    FinanceModule,
   ],
   controllers: [],
   providers: [],

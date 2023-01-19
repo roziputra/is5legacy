@@ -14,13 +14,40 @@ export class ServicesService {
       const newResultDataFetchService = [];
       let idx = 0;
 
-      for (let a = 0; a < branch_ids.length; a++) {
-        const branchNumber = branch_ids[a];
-        resultDataFetchService[a] = await this.getServicesByBranchID(
+      for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+        const branchNumber = branch_ids[idx_branch];
+        resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
           branchNumber,
         );
-        for (let b = 0; b < resultDataFetchService[a].length; b++) {
-          newResultDataFetchService[idx] = resultDataFetchService[a][b];
+        for (
+          let idx_data = 0;
+          idx_data < resultDataFetchService[idx_branch].length;
+          idx_data++
+        ) {
+          newResultDataFetchService[idx] =
+            resultDataFetchService[idx_branch][idx_data];
+          if (
+            this.isNumeric(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            )
+          ) {
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
+          } else {
+            const servicePriceObj = JSON.parse(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
+            for (const key in servicePriceObj) {
+              resultDataFetchService[idx_branch][idx_data].service_charge =
+                servicePriceObj[key] / parseInt(key);
+            }
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
+          }
           idx++;
         }
       }
@@ -41,13 +68,40 @@ export class ServicesService {
       const newResultDataFetchService = [];
       let idx = 0;
 
-      for (let a = 0; a < branch_ids.length; a++) {
-        const branchNumber = branch_ids[a];
-        resultDataFetchService[a] = await this.getServicesByBranchID(
+      for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+        const branchNumber = branch_ids[idx_branch];
+        resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
           branchNumber,
         );
-        for (let b = 0; b < resultDataFetchService[a].length; b++) {
-          newResultDataFetchService[idx] = resultDataFetchService[a][b];
+        for (
+          let idx_data = 0;
+          idx_data < resultDataFetchService[idx_branch].length;
+          idx_data++
+        ) {
+          newResultDataFetchService[idx] =
+            resultDataFetchService[idx_branch][idx_data];
+          if (
+            this.isNumeric(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            )
+          ) {
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
+          } else {
+            const servicePriceObj = JSON.parse(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
+            for (const key in servicePriceObj) {
+              resultDataFetchService[idx_branch][idx_data].service_charge =
+                servicePriceObj[key] / parseInt(key);
+            }
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              parseInt(
+                resultDataFetchService[idx_branch][idx_data].service_charge,
+              );
+          }
           idx++;
         }
       }
@@ -71,13 +125,40 @@ export class ServicesService {
     const newResultDataFetchService = [];
     let idx = 0;
 
-    for (let a = 0; a < branch_ids.length; a++) {
-      const branchNumber = branch_ids[a];
-      resultDataFetchService[a] = await this.getServicesByBranchID(
+    for (let idx_branch = 0; idx_branch < branch_ids.length; idx_branch++) {
+      const branchNumber = branch_ids[idx_branch];
+      resultDataFetchService[idx_branch] = await this.getServicesByBranchID(
         branchNumber,
       );
-      for (let b = 0; b < resultDataFetchService[a].length; b++) {
-        newResultDataFetchService[idx] = resultDataFetchService[a][b];
+      for (
+        let idx_data = 0;
+        idx_data < resultDataFetchService[idx_branch].length;
+        idx_data++
+      ) {
+        newResultDataFetchService[idx] =
+          resultDataFetchService[idx_branch][idx_data];
+        if (
+          this.isNumeric(
+            resultDataFetchService[idx_branch][idx_data].service_charge,
+          )
+        ) {
+          resultDataFetchService[idx_branch][idx_data].service_charge =
+            parseInt(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
+        } else {
+          const servicePriceObj = JSON.parse(
+            resultDataFetchService[idx_branch][idx_data].service_charge,
+          );
+          for (const key in servicePriceObj) {
+            resultDataFetchService[idx_branch][idx_data].service_charge =
+              servicePriceObj[key] / parseInt(key);
+          }
+          resultDataFetchService[idx_branch][idx_data].service_charge =
+            parseInt(
+              resultDataFetchService[idx_branch][idx_data].service_charge,
+            );
+        }
         idx++;
       }
     }
@@ -110,12 +191,7 @@ export class ServicesService {
         's.ServiceId service_id',
         's.ServiceType service_type',
         's.ServiceLevel service_level',
-        'ss.NormalDownCeil normal_down_ceil',
-        'ss.NormalDownRate normal_down_rate',
-        'ss.NormalUpCeil normal_up_ceil',
-        'ss.NormalUpRate normal_up_rate',
-        '(s.MaxDownTime / 3600) down_time',
-        's.ServiceCharge service_charge',
+        'IFNULL(s.ChargePerPeriod, s.ServiceCharge) service_charge',
         'IFNULL(sd.discontinue, 0) discontinue',
       ])
       .leftJoin(
@@ -132,5 +208,9 @@ export class ServicesService {
       )
       .orderBy('s.ServiceType')
       .getRawMany();
+  }
+
+  isNumeric(num) {
+    return !isNaN(num);
   }
 }
