@@ -17,7 +17,7 @@ export class DepreciationJournalService {
 
     const period = {
       fromDate: `${year}-01-01`,
-      toDate: `${year}-${('0' + month).slice(-2)}-${lastDate}`,
+      toDate: `${year}-${('0' + month).slice(-2)}-${lastDate.getDate()}`,
     };
 
     const branches = process.env.DEPRECIATION_BRANCHES || false;
