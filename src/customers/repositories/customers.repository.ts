@@ -8,6 +8,11 @@ import { NOCFiber } from '../entities/noc-fiber.entity';
 import { CreateNewCustomerDto } from '../dto/create-customer.dto';
 import { CreateNewServiceCustomersDto } from '../dto/create-service-customer.dto';
 import { Injectable } from '@nestjs/common';
+import * as md5 from 'md5';
+import { CustomerInvoiceSignature } from '../entities/customer-invoice-signature.entity';
+import { CustomerFix } from '../entities/customer-fix.entity';
+import { CustomerProfileHistory } from '../entities/customer-profile-history.entity';
+import { CustomerVerifiedEmail } from '../entities/customer-verified-email.entity';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -120,39 +125,53 @@ export class CustomerRepository extends Repository<Customer> {
 
     // Step 2 : Init FormID
     let FormID = null;
-    FormID = await this.checkFormID();
+    if (createCustomerDto.display_branch_id) {
+      FormID = await this.checkFormID(createCustomerDto.display_branch_id);
+    } else {
+      FormID = await this.checkFormID(createCustomerDto.branch_id);
+    }
 
     // Step 3 : Check Account ID
     let accName = null;
     accName = await this.checkAccountName(createCustomerDto.full_name, CustID);
 
-    // Step 4 : Assign Data Pelanggan ke Tabel Customer
-    const pelanggan = new Customer();
     if (CustID && FormID) {
+      // Step 4 : Assign Data Pelanggan ke Tabel Customer
+      const pelanggan = new Customer();
       pelanggan.CustId = CustID;
+      pelanggan.CustPass = md5('12345');
       pelanggan.BranchId = createCustomerDto.branch_id;
       pelanggan.DisplayBranchId = createCustomerDto.display_branch_id;
       pelanggan.FormId = FormID;
-      pelanggan.CustName = createCustomerDto.full_name;
+      pelanggan.CustName = createCustomerDto.full_name.toUpperCase();
       pelanggan.CustGender = createCustomerDto.gender;
-      pelanggan.custPOB = createCustomerDto.place_of_birth;
+      pelanggan.custPOB = createCustomerDto.place_of_birth.toUpperCase();
       pelanggan.custDOB = createCustomerDto.date_of_birth;
       pelanggan.CustIdType = createCustomerDto.identity_type;
       pelanggan.CustIdNumber = createCustomerDto.identity_number;
-      pelanggan.CustCompany = createCustomerDto.company_name;
-      pelanggan.CustBusName = createCustomerDto.company_name;
+      pelanggan.CustCompany =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
+      pelanggan.CustBusName =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
       pelanggan.BusId = '090';
-      pelanggan.CustResAdd1 = createCustomerDto.identity_address;
+      pelanggan.CustResAdd1 = createCustomerDto.identity_address.toUpperCase();
       pelanggan.CustResPhone = createCustomerDto.phone_number;
-      pelanggan.CustOfficeAdd1 = createCustomerDto.company_address;
+      pelanggan.CustOfficeAdd1 =
+        createCustomerDto.company_address != null
+          ? createCustomerDto.company_address.toUpperCase()
+          : null;
       pelanggan.CustOfficePhone = createCustomerDto.company_phone_number;
       pelanggan.CustBillingAdd = true;
       pelanggan.CustHP = createCustomerDto.phone_number;
       pelanggan.CustEmail = createCustomerDto.email_address;
-      pelanggan.CustTechCP = createCustomerDto.technical_name;
+      pelanggan.CustTechCP = createCustomerDto.technical_name.toUpperCase();
       pelanggan.CustTechCPPhone = createCustomerDto.technical_phone;
       pelanggan.CustTechCPEmail = createCustomerDto.technical_email;
-      pelanggan.CustBillCP = createCustomerDto.billing_name;
+      pelanggan.CustBillCP = createCustomerDto.billing_name.toUpperCase();
       pelanggan.CustBillMethodLetter = false;
       pelanggan.CustBillMethodEmail = true;
       pelanggan.CustBillCPPhone = createCustomerDto.billing_phone;
@@ -160,7 +179,7 @@ export class CustomerRepository extends Repository<Customer> {
       pelanggan.CustRegDate = new Date(this.getDateNow());
       pelanggan.CustNotes = createCustomerDto.extend_note;
       pelanggan.EmpApproval = createCustomerDto.approval_emp_id;
-      pelanggan.CustStatus = 'AC';
+      pelanggan.CustStatus = 'BL';
       pelanggan.SalesId = createCustomerDto.sales_id;
       pelanggan.InsertDateTime = new Date(this.getDateNow());
       pelanggan.UpdateDateTime = new Date(this.getDateNow());
@@ -168,13 +187,145 @@ export class CustomerRepository extends Repository<Customer> {
       pelanggan.CetakDuluan = createCustomerDto.cetak_duluan;
       pelanggan.ManagerSalesId = createCustomerDto.manager_sales_id;
 
-      // Step 4 : Assign Data Layanan ke Tabel Customer Service
+      // Step 5 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature
+      const CustInvoiceSign = new CustomerInvoiceSignature();
+      CustInvoiceSign.CustId = CustID;
+      CustInvoiceSign.UseSignature = '020';
+      CustInvoiceSign.Mark = '0';
+
+      // Step 6 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature
+      const CustFix = new CustomerFix();
+      CustFix.CustId = CustID;
+      CustFix.CustPass = md5('12345');
+      CustFix.BranchId = createCustomerDto.display_branch_id
+        ? createCustomerDto.display_branch_id
+        : createCustomerDto.branch_id;
+      CustFix.FormId = FormID;
+      CustFix.CustName = createCustomerDto.full_name.toUpperCase();
+      CustFix.CustGender = createCustomerDto.gender;
+      CustFix.custPOB = createCustomerDto.place_of_birth.toUpperCase();
+      CustFix.custDOB = createCustomerDto.date_of_birth;
+      CustFix.CustIdType = createCustomerDto.identity_type;
+      CustFix.CustIdNumber = createCustomerDto.identity_number;
+      CustFix.CustCompany =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
+      CustFix.CustBusName =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
+      CustFix.BusId = '090';
+      CustFix.CustResAdd1 = createCustomerDto.identity_address.toUpperCase();
+      CustFix.CustResPhone = createCustomerDto.phone_number;
+      CustFix.CustOfficeAdd1 =
+        createCustomerDto.company_address != null
+          ? createCustomerDto.company_address.toUpperCase()
+          : null;
+      CustFix.CustOfficePhone = createCustomerDto.company_phone_number;
+      CustFix.CustBillingAdd = true;
+      CustFix.CustHP = createCustomerDto.phone_number;
+      CustFix.CustEmail = createCustomerDto.email_address;
+      CustFix.CustTechCP = createCustomerDto.technical_name.toUpperCase();
+      CustFix.CustTechCPPhone = createCustomerDto.technical_phone;
+      CustFix.CustTechCPEmail = createCustomerDto.technical_email;
+      CustFix.CustBillCP = createCustomerDto.billing_name.toUpperCase();
+      CustFix.CustBillCPPhone = createCustomerDto.billing_phone;
+      CustFix.CustBillCPEmail = createCustomerDto.billing_email;
+      CustFix.CustRegDate = new Date(this.getDateNow());
+      CustFix.CustNotes = createCustomerDto.extend_note;
+      CustFix.EmpApproval = createCustomerDto.approval_emp_id;
+      CustFix.CustStatus = 'BL';
+      CustFix.SalesId = createCustomerDto.sales_id;
+      CustFix.InsertDateTime = new Date(this.getDateNow());
+      CustFix.UpdateDateTime = new Date(this.getDateNow());
+      CustFix.TaxType = createCustomerDto.tax_type;
+
+      // Step 7 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
+      const CustProfileHistory = new CustomerProfileHistory();
+      CustProfileHistory.CustId = CustID;
+      CustProfileHistory.CustPass = md5('12345');
+      CustProfileHistory.BranchId = createCustomerDto.branch_id;
+      CustProfileHistory.DisplayBranchId = createCustomerDto.display_branch_id;
+      CustProfileHistory.FormId = FormID;
+      CustProfileHistory.CustName = createCustomerDto.full_name.toUpperCase();
+      CustProfileHistory.CustGender = createCustomerDto.gender;
+      CustProfileHistory.custPOB =
+        createCustomerDto.place_of_birth.toUpperCase();
+      CustProfileHistory.custDOB = createCustomerDto.date_of_birth;
+      CustProfileHistory.CustIdType = createCustomerDto.identity_type;
+      CustProfileHistory.CustIdNumber = createCustomerDto.identity_number;
+      CustProfileHistory.CustCompany =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
+      CustProfileHistory.CustBusName =
+        createCustomerDto.company_name != null
+          ? createCustomerDto.company_name.toUpperCase()
+          : null;
+      CustProfileHistory.BusId = '090';
+      CustProfileHistory.CustResAdd1 =
+        createCustomerDto.identity_address.toUpperCase();
+      CustProfileHistory.CustResPhone = createCustomerDto.phone_number;
+      CustProfileHistory.CustOfficeAdd1 =
+        createCustomerDto.company_address != null
+          ? createCustomerDto.company_address.toUpperCase()
+          : null;
+      CustProfileHistory.CustOfficePhone =
+        createCustomerDto.company_phone_number;
+      CustProfileHistory.CustBillingAdd = true;
+      CustProfileHistory.CustHP = createCustomerDto.phone_number;
+      CustProfileHistory.CustEmail = createCustomerDto.email_address;
+      CustProfileHistory.CustTechCP =
+        createCustomerDto.technical_name.toUpperCase();
+      CustProfileHistory.CustTechCPPhone = createCustomerDto.technical_phone;
+      CustProfileHistory.CustTechCPEmail = createCustomerDto.technical_email;
+      CustProfileHistory.CustBillCP =
+        createCustomerDto.billing_name.toUpperCase();
+      CustProfileHistory.CustBillMethodLetter = false;
+      CustProfileHistory.CustBillMethodEmail = true;
+      CustProfileHistory.CustBillCPPhone = createCustomerDto.billing_phone;
+      CustProfileHistory.CustBillCPEmail = createCustomerDto.billing_email;
+      CustProfileHistory.CustRegDate = new Date(this.getDateNow());
+      CustProfileHistory.CustNotes = createCustomerDto.extend_note;
+      CustProfileHistory.EmpApproval = createCustomerDto.approval_emp_id;
+      CustProfileHistory.CustStatus = 'BL';
+      CustProfileHistory.SalesId = createCustomerDto.sales_id;
+      CustProfileHistory.InsertDateTime = new Date(this.getDateNow());
+      CustProfileHistory.UpdateDateTime = new Date(this.getDateNow());
+      CustProfileHistory.TaxType = createCustomerDto.tax_type;
+      CustProfileHistory.CetakDuluan = createCustomerDto.cetak_duluan;
+      CustProfileHistory.ManagerSalesId = createCustomerDto.manager_sales_id;
+
+      // Step 8 : Assign Data Pelanggan ke Tabel CustomerVerifiedEmail
+      const CustVerifiedEmail1 = new CustomerVerifiedEmail();
+      const CustVerifiedEmail2 = new CustomerVerifiedEmail();
+      if (
+        createCustomerDto.billing_email != createCustomerDto.technical_email
+      ) {
+        CustVerifiedEmail1.cust_id = CustID;
+        CustVerifiedEmail1.cust_email = createCustomerDto.billing_email;
+        CustVerifiedEmail1.email_type = 'billing';
+        CustVerifiedEmail1.verified = '0';
+
+        CustVerifiedEmail2.cust_id = CustID;
+        CustVerifiedEmail2.cust_email = createCustomerDto.technical_email;
+        CustVerifiedEmail2.email_type = 'technical';
+        CustVerifiedEmail2.verified = '0';
+      } else {
+        CustVerifiedEmail1.cust_id = CustID;
+        CustVerifiedEmail1.cust_email = createCustomerDto.billing_email;
+        CustVerifiedEmail1.email_type = 'billing';
+        CustVerifiedEmail1.verified = '0';
+      }
+
+      // Step 9 : Assign Data Layanan ke Tabel Subscription
       const Services = new Subscription();
       Services.CustId = CustID;
       Services.ServiceId = createCustomerDto.package_code;
       Services.ServiceType = createCustomerDto.package_name;
       Services.EmpId = createCustomerDto.approval_emp_id;
-      Services.PayId = '006';
+      Services.PayId = '001';
       Services.CustStatus = 'BL';
       Services.CustRegDate = new Date(this.getDateNow());
       Services.CustActivationDate = new Date(this.getDateNow());
@@ -203,40 +354,56 @@ export class CustomerRepository extends Repository<Customer> {
       Services.AddEmailCharge = false;
       Services.AccessLog = true;
       Services.Description = createCustomerDto.extend_note;
-      Services.installation_address = createCustomerDto.installation_address;
+      Services.installation_address =
+        createCustomerDto.installation_address.toUpperCase();
       Services.ContractUntil = new Date(this.getDateNow());
       Services.Type = 'Rumah';
       Services.promo_id = createCustomerDto.promo_id;
       Services.BlockTypeId = true;
       Services.BlockTypeDate = '25';
       Services.CustBlockFromMenu = 'edit_subs';
+      Services.IPServer = '000.000.000.000';
 
-      // Step 5 : Assign Data NPWP ke Tabel NPWP
+      // Step 10 : Assign Data NPWP ke Tabel NPWP
       const npwpCust = new NPWPCustomer();
-      npwpCust.Name = createCustomerDto.full_name;
-      npwpCust.Address = createCustomerDto.identity_address;
+      npwpCust.Name = createCustomerDto.full_name.toUpperCase();
+      npwpCust.Address = createCustomerDto.identity_address.toUpperCase();
       npwpCust.NPWP = createCustomerDto.npwp_number;
       npwpCust.CustId = CustID;
       npwpCust.Selected = true;
 
-      // Step 6 : Assign Data SMS Phonebook ke SMS Phonebook
+      // Step 11 : Assign Data SMS Phonebook ke SMS Phonebook
       const smsPhoneBook1 = new SMSPhonebook();
-      smsPhoneBook1.phone = createCustomerDto.billing_phone;
-      smsPhoneBook1.name = createCustomerDto.billing_name;
-      smsPhoneBook1.custId = CustID;
-      smsPhoneBook1.billing = true;
-      smsPhoneBook1.technical = false;
-      smsPhoneBook1.insertTime = new Date(this.getDateNow());
-      smsPhoneBook1.insertBy = createCustomerDto.approval_emp_id;
       const smsPhoneBook2 = new SMSPhonebook();
-      smsPhoneBook2.phone = createCustomerDto.technical_phone;
-      smsPhoneBook2.name = createCustomerDto.technical_name;
-      smsPhoneBook2.custId = CustID;
-      smsPhoneBook2.billing = false;
-      smsPhoneBook2.technical = true;
-      smsPhoneBook2.insertTime = new Date(this.getDateNow());
-      smsPhoneBook2.insertBy = createCustomerDto.approval_emp_id;
+      if (
+        createCustomerDto.billing_phone != createCustomerDto.technical_phone
+      ) {
+        smsPhoneBook1.phone = createCustomerDto.billing_phone;
+        smsPhoneBook1.name = createCustomerDto.billing_name.toUpperCase();
+        smsPhoneBook1.custId = CustID;
+        smsPhoneBook1.billing = true;
+        smsPhoneBook1.technical = false;
+        smsPhoneBook1.insertTime = new Date(this.getDateNow());
+        smsPhoneBook1.insertBy = createCustomerDto.approval_emp_id;
 
+        smsPhoneBook2.phone = createCustomerDto.technical_phone;
+        smsPhoneBook2.name = createCustomerDto.technical_name.toUpperCase();
+        smsPhoneBook2.custId = CustID;
+        smsPhoneBook2.billing = false;
+        smsPhoneBook2.technical = true;
+        smsPhoneBook2.insertTime = new Date(this.getDateNow());
+        smsPhoneBook2.insertBy = createCustomerDto.approval_emp_id;
+      } else {
+        smsPhoneBook1.phone = createCustomerDto.billing_phone;
+        smsPhoneBook1.name = createCustomerDto.billing_name.toUpperCase();
+        smsPhoneBook1.custId = CustID;
+        smsPhoneBook1.billing = true;
+        smsPhoneBook1.technical = true;
+        smsPhoneBook1.insertTime = new Date(this.getDateNow());
+        smsPhoneBook1.insertBy = createCustomerDto.approval_emp_id;
+      }
+
+      // Step 12 : Eksekusi Logic Simpan Pelanggan Baru
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
@@ -247,22 +414,31 @@ export class CustomerRepository extends Repository<Customer> {
         );
         const saveDataPelangganTextSearch = dataPelangganSaveArr.join(' ');
         await queryRunner.manager.save(pelanggan);
+        await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
+        WHERE CustId = '${Services.CustId}'`);
         await queryRunner.manager.save(smsPhoneBook1);
         if (smsPhoneBook1.phone != smsPhoneBook2.phone) {
           await queryRunner.manager.save(smsPhoneBook2);
         }
-        await queryRunner.manager.save(Services);
         await queryRunner.manager.save(npwpCust);
-        await queryRunner.manager.query(`UPDATE CustomerTemp SET Taken = 1
-        WHERE CustId = '${Services.CustId}'`);
+        await queryRunner.manager.save(CustInvoiceSign);
+        await queryRunner.manager.save(CustFix);
+        await queryRunner.manager.save(CustProfileHistory);
+        await queryRunner.manager.save(CustVerifiedEmail1);
+        if (CustVerifiedEmail1.cust_email != CustVerifiedEmail2.cust_email) {
+          await queryRunner.manager.save(CustVerifiedEmail2);
+        }
         await queryRunner.manager
           .query(`INSERT INTO CustomerGlobalSearch (custId, textSearch, flag)
         VALUES ('${Services.CustId}', '${saveDataPelangganTextSearch}', '0')`);
+        await queryRunner.manager.save(Services);
+
         await queryRunner.commitTransaction();
 
         resultSaveDataCustomer = CustID;
       } catch (error) {
         resultSaveDataCustomer = null;
+        await queryRunner.rollbackTransaction();
       }
     }
 
@@ -318,7 +494,7 @@ export class CustomerRepository extends Repository<Customer> {
       Services.AccessLog = true;
       Services.Description = createNewServiceCustomersDto.extend_note;
       Services.installation_address =
-        createNewServiceCustomersDto.installation_address;
+        createNewServiceCustomersDto.installation_address.toUpperCase();
       Services.ContractUntil = new Date(this.getDateNow());
       Services.Type = 'Rumah';
       Services.promo_id = createNewServiceCustomersDto.promo_id;
@@ -367,21 +543,30 @@ export class CustomerRepository extends Repository<Customer> {
     return CustIDResult;
   }
 
-  async checkFormID() {
+  async checkFormID(branch_id) {
     let FormIDResult = '';
 
     // Step 1 : Ambil Data dari CustomerTemp
     const fetchDataCustomerLast = await this.dataSource.query(`
-      SELECT (c.FormId) FROM Customer c
-      ORDER BY c.FormId DESC
-      LIMIT 1
+      SELECT FormId FROM Customer 
+      WHERE IFNULL(DisplayBranchId, BranchId) = '${branch_id}' 
+      ORDER BY CustId DESC LIMIT 1
     `);
 
     const formIDIdentifier = [];
     const resultLastFormID = fetchDataCustomerLast[0].FormId;
-    formIDIdentifier['num'] = parseInt(resultLastFormID.match(/\d+/g)) + 1;
-    formIDIdentifier['char'] = String(resultLastFormID.match(/[a-zA-Z]+/g));
-    FormIDResult = formIDIdentifier['char'].concat(formIDIdentifier['num']);
+    if (/[a-zA-Z]+/g.test(resultLastFormID)) {
+      formIDIdentifier['num'] = parseInt(resultLastFormID.match(/\d+/g)) + 1;
+      formIDIdentifier['char'] = String(resultLastFormID.match(/[a-zA-Z]+/g));
+      FormIDResult = formIDIdentifier['char'].concat(formIDIdentifier['num']);
+    } else {
+      const number = resultLastFormID;
+      if (number.length != parseInt(number).toString().length) {
+        FormIDResult = '0' + (parseInt(number) + 1).toString();
+      } else {
+        FormIDResult = `${parseInt(resultLastFormID.match(/\d+/g)) + 1}`;
+      }
+    }
 
     return FormIDResult;
   }
@@ -418,7 +603,7 @@ export class CustomerRepository extends Repository<Customer> {
 
   getDateNow() {
     const date = new Date().toLocaleString('id', { timeZone: 'Asia/Jakarta' });
-    const dateSplit = date.split(' ');
+    const dateSplit = date.split(', ');
 
     let tanggal;
     let jam;

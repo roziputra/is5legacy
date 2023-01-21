@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'Customer', synchronize: false })
-export class Customer extends BaseEntity {
+@Entity({ name: 'CustomerProfileHistory', synchronize: false })
+export class CustomerProfileHistory extends BaseEntity {
   @PrimaryColumn()
   CustId: string;
 

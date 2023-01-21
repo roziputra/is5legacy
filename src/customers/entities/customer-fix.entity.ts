@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'Customer', synchronize: false })
-export class Customer extends BaseEntity {
+@Entity({ name: 'CustomerFix', synchronize: false })
+export class CustomerFix extends BaseEntity {
   @PrimaryColumn()
   CustId: string;
 
@@ -10,9 +10,6 @@ export class Customer extends BaseEntity {
 
   @Column()
   CustPass: string;
-
-  @Column()
-  DisplayBranchId: string;
 
   @Column()
   FormId: string;
@@ -90,12 +87,6 @@ export class Customer extends BaseEntity {
   CustBillCP: string;
 
   @Column()
-  CustBillMethodLetter: boolean;
-
-  @Column()
-  CustBillMethodEmail: boolean;
-
-  @Column()
   CustBillCPPhone: string;
 
   @Column()
@@ -124,10 +115,4 @@ export class Customer extends BaseEntity {
 
   @Column()
   TaxType: boolean;
-
-  @Column()
-  CetakDuluan: boolean;
-
-  @Column()
-  ManagerSalesId: string;
 }

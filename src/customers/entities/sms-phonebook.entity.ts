@@ -26,6 +26,9 @@ export class SMSPhonebook extends BaseEntity {
   @Column()
   technical: boolean;
 
+  @Column()
+  salutationid: string;
+
   @CreateDateColumn()
   insertTime: Date;
 

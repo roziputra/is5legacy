@@ -103,4 +103,7 @@ export class Subscription extends BaseEntity {
 
   @Column()
   CustBlockFromMenu: string;
+
+  @Column()
+  IPServer: string;
 }
