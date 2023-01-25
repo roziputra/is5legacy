@@ -485,11 +485,11 @@ export class CustomerRepository extends Repository<Customer> {
     CustFix.CustCompany =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     CustFix.CustBusName =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     CustFix.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     CustFix.CustOfficeAdd1 =
       createCustomerDto.company_address != null
