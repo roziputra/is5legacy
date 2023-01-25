@@ -707,7 +707,7 @@ export class CustomerRepository extends Repository<Customer> {
   }
 
   async assignSubscription(
-    createCustomerDto: CreateNewCustomerDto,
+    createCustomerDto: CreateNewServiceCustomersDto,
     CustID,
     accName,
   ): Promise<Subscription> {
@@ -767,7 +767,7 @@ export class CustomerRepository extends Repository<Customer> {
   }
 
   async assignCustomerServiceHistoryNew(
-    customerDto: CreateNewCustomerDto,
+    customerDto: CreateNewServiceCustomersDto,
     customerService: Subscription,
   ): Promise<CustomerServicesHistoryNew> {
     const customerServiceHistoryNew = new CustomerServicesHistoryNew();
@@ -797,54 +797,27 @@ export class CustomerRepository extends Repository<Customer> {
         createNewServiceCustomersDto.installation_address,
       );
 
-      const Services = new Subscription();
-      Services.CustId = cid;
-      Services.ServiceId = createNewServiceCustomersDto.package_code;
-      Services.ServiceType = createNewServiceCustomersDto.package_name;
-      Services.EmpId = createNewServiceCustomersDto.approval_emp_id;
-      Services.PayId = '006';
-      Services.CustStatus = 'BL';
-      Services.CustRegDate = new Date(this.getDateNow());
-      Services.CustActivationDate = new Date(this.getDateNow());
-      Services.CustUpdateDate = new Date(this.getDateNow());
-      Services.CustBlockDate = new Date(this.getDateNow());
-      Services.CustBlockFrom = true;
-      Services.CustAccName = accName;
-      Services.Opsi = true;
-      Services.StartTrial = new Date(this.getDateNow());
-      Services.EndTrial = new Date(this.getDateNow());
-      Services.StatusPerangkat = 'PM';
-      Services.Gabung = false;
-      Services.Tampil = true;
-      Services.TglHarga = new Date(this.getDateNow());
-      Services.Subscription = createNewServiceCustomersDto.package_price;
-      const InvoiceType = await this.dataSource.query(`
-        SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
-        WHERE itm.Month = '${createNewServiceCustomersDto.package_top}'
-      `);
-      Services.InvoiceType = InvoiceType[0].InvoiceType;
-      Services.InvoicePeriod = `${
-        ('0' + (new Date(this.getDateNow()).getMonth() + 1)).slice(-2) +
-        new Date(this.getDateNow()).getFullYear().toString().slice(-2)
-      }`;
-      Services.InvoiceDate1 = true;
-      Services.AddEmailCharge = false;
-      Services.AccessLog = true;
-      Services.Description = createNewServiceCustomersDto.extend_note;
-      Services.installation_address =
-        createNewServiceCustomersDto.installation_address.toUpperCase();
-      Services.ContractUntil = new Date(this.getDateNow());
-      Services.Type = 'Rumah';
-      Services.promo_id = createNewServiceCustomersDto.promo_id;
-      Services.BlockTypeId = true;
-      Services.BlockTypeDate = '25';
-      Services.CustBlockFromMenu = 'edit_subs';
+      // Step 3 : Assign Data Layanan ke Tabel CustomerService
+      let customerService = null;
+      customerService = await this.assignSubscription(
+        createNewServiceCustomersDto,
+        cid,
+        accName,
+      );
+
+      // Step 4 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
+      let customerServiceHistoryNew = null;
+      customerServiceHistoryNew = await this.assignCustomerServiceHistoryNew(
+        createNewServiceCustomersDto,
+        customerService,
+      );
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        await queryRunner.manager.save(Services);
+        await queryRunner.manager.save(customerService);
+        await queryRunner.manager.save(customerServiceHistoryNew);
         await queryRunner.commitTransaction();
         resultUpdateCustService = 'Success';
       } catch (error) {

@@ -7,6 +7,14 @@ export class CreateNewServiceCustomersDto {
 
   @IsNotEmpty()
   @IsString()
+  installation_address_city: string;
+
+  @IsNotEmpty()
+  @IsString()
+  installation_address_zip_code: string;
+
+  @IsNotEmpty()
+  @IsString()
   package_code: string;
 
   @IsNotEmpty()
@@ -20,6 +28,10 @@ export class CreateNewServiceCustomersDto {
   @IsNotEmpty()
   @IsString()
   package_top: string;
+
+  @IsNotEmpty()
+  @IsString()
+  PPN: string;
 
   @IsOptional()
   promo_id: string;
