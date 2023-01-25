@@ -3,7 +3,7 @@ import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'Customer', synchronize: false })
 export class Customer extends BaseEntity {
   @PrimaryColumn()
-  CustId: string;
+  CustId: number;
 
   @Column()
   BranchId: string;
