@@ -403,7 +403,7 @@ export class CustomerRepository extends Repository<Customer> {
         ? createCustomerDto.company_address_city
         : createCustomerDto.installation_address_city;
     pelanggan.CustOfficeZC =
-      createCustomerDto.company_address_city != null
+      createCustomerDto.company_address_zip_code != null
         ? createCustomerDto.company_address_zip_code
         : createCustomerDto.installation_address_zip_code;
     pelanggan.CustBillingAdd = CUSTOMER_BILLING_ADD;
@@ -504,7 +504,7 @@ export class CustomerRepository extends Repository<Customer> {
         ? createCustomerDto.company_address_city
         : createCustomerDto.installation_address_city;
     CustFix.CustOfficeZC =
-      createCustomerDto.company_address_city != null
+      createCustomerDto.company_address_zip_code != null
         ? createCustomerDto.company_address_zip_code
         : createCustomerDto.installation_address_zip_code;
     CustFix.CustBillingAdd = CUSTOMER_BILLING_ADD;
@@ -549,7 +549,7 @@ export class CustomerRepository extends Repository<Customer> {
     const smsPhoneBook2 = new SMSPhonebook();
     if (createCustomerDto.billing_phone != createCustomerDto.technical_phone) {
       smsPhoneBook1.phone = createCustomerDto.billing_phone;
-      smsPhoneBook1.name = createCustomerDto.billing_name.toUpperCase();
+      smsPhoneBook1.name = createCustomerDto.billing_name;
       smsPhoneBook1.custId = CustID;
       smsPhoneBook1.billing = DEFAULT_BILLING_SMS_PHONEBOOK_1;
       smsPhoneBook1.technical = DEFAULT_TECHNICAL_SMS_PHONEBOOK_1;
@@ -558,7 +558,7 @@ export class CustomerRepository extends Repository<Customer> {
       smsPhoneBook1.insertBy = createCustomerDto.approval_emp_id;
 
       smsPhoneBook2.phone = createCustomerDto.technical_phone;
-      smsPhoneBook2.name = createCustomerDto.technical_name.toUpperCase();
+      smsPhoneBook2.name = createCustomerDto.technical_name;
       smsPhoneBook2.custId = CustID;
       smsPhoneBook2.billing = DEFAULT_BILLING_SMS_PHONEBOOK_2;
       smsPhoneBook2.technical = DEFAULT_TECHNICAL_SMS_PHONEBOOK_2;
@@ -567,7 +567,7 @@ export class CustomerRepository extends Repository<Customer> {
       smsPhoneBook2.insertBy = createCustomerDto.approval_emp_id;
     } else {
       smsPhoneBook1.phone = createCustomerDto.billing_phone;
-      smsPhoneBook1.name = createCustomerDto.billing_name.toUpperCase();
+      smsPhoneBook1.name = createCustomerDto.billing_name;
       smsPhoneBook1.custId = CustID;
       smsPhoneBook1.billing = DEFAULT_BILLING_SMS_PHONEBOOK_1;
       smsPhoneBook1.technical = DEFAULT_TECHNICAL_SMS_PHONEBOOK_2;
@@ -633,7 +633,7 @@ export class CustomerRepository extends Repository<Customer> {
         ? createCustomerDto.company_address_city
         : createCustomerDto.installation_address_city;
     CustProfileHistory.CustOfficeZC =
-      createCustomerDto.company_address_city != null
+      createCustomerDto.company_address_zip_code != null
         ? createCustomerDto.company_address_zip_code
         : createCustomerDto.installation_address_zip_code;
     CustProfileHistory.CustBillingAdd = CUSTOMER_BILLING_ADD;
@@ -745,8 +745,7 @@ export class CustomerRepository extends Repository<Customer> {
     Services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     Services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
     Services.Description = createCustomerDto.extend_note;
-    Services.installation_address =
-      createCustomerDto.installation_address.toUpperCase();
+    Services.installation_address = createCustomerDto.installation_address;
     Services.ContractUntil = new Date(this.getDateNow());
     Services.Type = SERVICE_DEFAULT_INSTALLATION_TYPE;
     Services.promo_id = createCustomerDto.promo_id;
