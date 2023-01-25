@@ -59,11 +59,19 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
+  billing_salutation: string;
+
+  @IsNotEmpty()
+  @IsString()
   billing_name: string;
 
   @IsNotEmpty()
   @IsString()
   billing_email: string;
+
+  @IsNotEmpty()
+  @IsString()
+  technical_salutation: string;
 
   @IsNotEmpty()
   @IsString()
