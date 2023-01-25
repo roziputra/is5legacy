@@ -33,6 +33,9 @@ export class CustomerFix extends BaseEntity {
   CustIdNumber: string;
 
   @Column()
+  CustJobTitle: string;
+
+  @Column()
   CustCompany: string;
 
   @Column()
@@ -51,7 +54,7 @@ export class CustomerFix extends BaseEntity {
   CustResCity: string;
 
   @Column()
-  CustResPhone: string;
+  CustResZC: string;
 
   @Column()
   CustOfficeAdd1: string;
@@ -63,34 +66,25 @@ export class CustomerFix extends BaseEntity {
   CustOfficeCity: string;
 
   @Column()
-  CustOfficePhone: string;
+  CustOfficeZC: string;
 
   @Column()
   CustBillingAdd: boolean;
 
   @Column()
-  CustHP: string;
-
-  @Column()
-  CustEmail: string;
-
-  @Column()
   CustTechCP: string;
 
   @Column()
-  CustTechCPPhone: string;
-
-  @Column()
-  CustTechCPEmail: string;
+  CustTechCPPosition: string;
 
   @Column()
   CustBillCP: string;
 
   @Column()
-  CustBillCPPhone: string;
+  CustBillCPEmail: string;
 
   @Column()
-  CustBillCPEmail: string;
+  CustBillCPPosition: string;
 
   @Column()
   CustRegDate: Date;
@@ -109,6 +103,9 @@ export class CustomerFix extends BaseEntity {
 
   @Column()
   InsertDateTime: Date;
+
+  @Column()
+  InsertEmpId: string;
 
   @Column()
   UpdateDateTime: Date;

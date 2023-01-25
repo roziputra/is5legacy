@@ -252,14 +252,12 @@ export class CustomerRepository extends Repository<Customer> {
       await queryRunner.manager.save(customerGlobalSearch);
       await queryRunner.manager.save(customerService);
       await queryRunner.manager.save(customerServiceHistoryNew);
-
       await queryRunner.commitTransaction();
       resultSaveDataCustomer = custId;
     } catch (error) {
       resultSaveDataCustomer = null;
       await queryRunner.rollbackTransaction();
     }
-
     return resultSaveDataCustomer;
   }
 
@@ -363,7 +361,9 @@ export class CustomerRepository extends Repository<Customer> {
 
     pelanggan.CustId = CustID;
     pelanggan.CustPass = this.hashPasswordMd5();
-    pelanggan.BranchId = createCustomerDto.branch_id;
+    pelanggan.BranchId = createCustomerDto.display_branch_id
+      ? createCustomerDto.display_branch_id
+      : createCustomerDto.branch_id;
     pelanggan.DisplayBranchId = createCustomerDto.display_branch_id;
     pelanggan.FormId = FormID;
     pelanggan.CustName = createCustomerDto.full_name;
@@ -372,35 +372,51 @@ export class CustomerRepository extends Repository<Customer> {
     pelanggan.custDOB = createCustomerDto.date_of_birth;
     pelanggan.CustIdType = createCustomerDto.identity_type;
     pelanggan.CustIdNumber = createCustomerDto.identity_number;
+    pelanggan.CustJobTitle = createCustomerDto.job_title_personal;
+    pelanggan.CustResAdd1 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[0];
+    pelanggan.CustResAdd2 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[1];
+    pelanggan.CustResCity = createCustomerDto.identity_city;
+    pelanggan.CustResZC = createCustomerDto.identity_zip_code;
     pelanggan.CustCompany =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     pelanggan.CustBusName =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     pelanggan.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
-    pelanggan.CustResAdd1 = createCustomerDto.identity_address;
-    pelanggan.CustResPhone = createCustomerDto.phone_number;
     pelanggan.CustOfficeAdd1 =
       createCustomerDto.company_address != null
-        ? createCustomerDto.company_address
-        : null;
-    pelanggan.CustOfficePhone = createCustomerDto.company_phone_number;
+        ? this.addressSplitter(createCustomerDto.company_address)[0]
+        : this.addressSplitter(createCustomerDto.installation_address)[0];
+    pelanggan.CustOfficeAdd2 =
+      createCustomerDto.company_address != null
+        ? this.addressSplitter(createCustomerDto.company_address)[1]
+        : this.addressSplitter(createCustomerDto.installation_address)[1];
+    pelanggan.CustOfficeCity =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_city
+        : createCustomerDto.installation_address_city;
+    pelanggan.CustOfficeZC =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_zip_code
+        : createCustomerDto.installation_address_zip_code;
     pelanggan.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    pelanggan.CustHP = createCustomerDto.phone_number;
-    pelanggan.CustEmail = createCustomerDto.email_address;
     pelanggan.CustTechCP = createCustomerDto.technical_name;
-    pelanggan.CustTechCPPhone = createCustomerDto.technical_phone;
-    pelanggan.CustTechCPEmail = createCustomerDto.technical_email;
+    pelanggan.CustTechCPPosition = createCustomerDto.technical_job_title;
     pelanggan.CustBillCP = createCustomerDto.billing_name;
+    pelanggan.CustBillCPPosition = createCustomerDto.billing_job_title;
     pelanggan.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
     pelanggan.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
-    pelanggan.CustBillCPPhone = createCustomerDto.billing_phone;
     pelanggan.CustBillCPEmail = createCustomerDto.billing_email;
     pelanggan.CustRegDate = new Date(this.getDateNow());
     pelanggan.CustNotes = createCustomerDto.extend_note;
+    pelanggan.InsertEmpId = createCustomerDto.approval_emp_id;
     pelanggan.EmpApproval = createCustomerDto.approval_emp_id;
     pelanggan.CustStatus = CUSTOMER_DEFAULT_STATUS;
     pelanggan.SalesId = createCustomerDto.sales_id;
@@ -457,6 +473,15 @@ export class CustomerRepository extends Repository<Customer> {
     CustFix.custDOB = createCustomerDto.date_of_birth;
     CustFix.CustIdType = createCustomerDto.identity_type;
     CustFix.CustIdNumber = createCustomerDto.identity_number;
+    CustFix.CustJobTitle = createCustomerDto.job_title_personal;
+    CustFix.CustResAdd1 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[0];
+    CustFix.CustResAdd2 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[1];
+    CustFix.CustResCity = createCustomerDto.identity_city;
+    CustFix.CustResZC = createCustomerDto.identity_zip_code;
     CustFix.CustCompany =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
@@ -466,24 +491,31 @@ export class CustomerRepository extends Repository<Customer> {
         ? createCustomerDto.company_name
         : null;
     CustFix.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
-    CustFix.CustResAdd1 = createCustomerDto.identity_address;
-    CustFix.CustResPhone = createCustomerDto.phone_number;
     CustFix.CustOfficeAdd1 =
       createCustomerDto.company_address != null
-        ? createCustomerDto.company_address
-        : null;
-    CustFix.CustOfficePhone = createCustomerDto.company_phone_number;
+        ? this.addressSplitter(createCustomerDto.company_address)[0]
+        : this.addressSplitter(createCustomerDto.installation_address)[0];
+    CustFix.CustOfficeAdd2 =
+      createCustomerDto.company_address != null
+        ? this.addressSplitter(createCustomerDto.company_address)[1]
+        : this.addressSplitter(createCustomerDto.installation_address)[1];
+    CustFix.CustOfficeCity =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_city
+        : createCustomerDto.installation_address_city;
+    CustFix.CustOfficeZC =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_zip_code
+        : createCustomerDto.installation_address_zip_code;
     CustFix.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    CustFix.CustHP = createCustomerDto.phone_number;
-    CustFix.CustEmail = createCustomerDto.email_address;
     CustFix.CustTechCP = createCustomerDto.technical_name;
-    CustFix.CustTechCPPhone = createCustomerDto.technical_phone;
-    CustFix.CustTechCPEmail = createCustomerDto.technical_email;
+    CustFix.CustTechCPPosition = createCustomerDto.technical_job_title;
     CustFix.CustBillCP = createCustomerDto.billing_name;
-    CustFix.CustBillCPPhone = createCustomerDto.billing_phone;
+    CustFix.CustBillCPPosition = createCustomerDto.billing_job_title;
     CustFix.CustBillCPEmail = createCustomerDto.billing_email;
     CustFix.CustRegDate = new Date(this.getDateNow());
     CustFix.CustNotes = createCustomerDto.extend_note;
+    CustFix.InsertEmpId = createCustomerDto.approval_emp_id;
     CustFix.EmpApproval = createCustomerDto.approval_emp_id;
     CustFix.CustStatus = CUSTOMER_DEFAULT_STATUS;
     CustFix.SalesId = createCustomerDto.sales_id;
@@ -559,7 +591,9 @@ export class CustomerRepository extends Repository<Customer> {
 
     CustProfileHistory.CustId = CustID;
     CustProfileHistory.CustPass = this.hashPasswordMd5();
-    CustProfileHistory.BranchId = createCustomerDto.branch_id;
+    CustProfileHistory.BranchId = createCustomerDto.display_branch_id
+      ? createCustomerDto.display_branch_id
+      : createCustomerDto.branch_id;
     CustProfileHistory.DisplayBranchId = createCustomerDto.display_branch_id;
     CustProfileHistory.FormId = FormID;
     CustProfileHistory.CustName = createCustomerDto.full_name;
@@ -568,35 +602,52 @@ export class CustomerRepository extends Repository<Customer> {
     CustProfileHistory.custDOB = createCustomerDto.date_of_birth;
     CustProfileHistory.CustIdType = createCustomerDto.identity_type;
     CustProfileHistory.CustIdNumber = createCustomerDto.identity_number;
+    CustProfileHistory.CustJobTitle = createCustomerDto.job_title_personal;
+    CustProfileHistory.CustResAdd1 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[0];
+    CustProfileHistory.CustResAdd2 = this.addressSplitter(
+      createCustomerDto.identity_address,
+    )[1];
+    CustProfileHistory.CustResCity = createCustomerDto.identity_city;
+    CustProfileHistory.CustResZC = createCustomerDto.identity_zip_code;
     CustProfileHistory.CustCompany =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     CustProfileHistory.CustBusName =
       createCustomerDto.company_name != null
         ? createCustomerDto.company_name
-        : null;
+        : createCustomerDto.full_name;
     CustProfileHistory.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
-    CustProfileHistory.CustResAdd1 = createCustomerDto.identity_address;
-    CustProfileHistory.CustResPhone = createCustomerDto.phone_number;
     CustProfileHistory.CustOfficeAdd1 =
       createCustomerDto.company_address != null
-        ? createCustomerDto.company_address
-        : null;
-    CustProfileHistory.CustOfficePhone = createCustomerDto.company_phone_number;
+        ? this.addressSplitter(createCustomerDto.company_address)[0]
+        : this.addressSplitter(createCustomerDto.installation_address)[0];
+    CustProfileHistory.CustOfficeAdd2 =
+      createCustomerDto.company_address != null
+        ? this.addressSplitter(createCustomerDto.company_address)[1]
+        : this.addressSplitter(createCustomerDto.installation_address)[1];
+    CustProfileHistory.CustOfficeCity =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_city
+        : createCustomerDto.installation_address_city;
+    CustProfileHistory.CustOfficeZC =
+      createCustomerDto.company_address_city != null
+        ? createCustomerDto.company_address_zip_code
+        : createCustomerDto.installation_address_zip_code;
     CustProfileHistory.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    CustProfileHistory.CustHP = createCustomerDto.phone_number;
-    CustProfileHistory.CustEmail = createCustomerDto.email_address;
     CustProfileHistory.CustTechCP = createCustomerDto.technical_name;
-    CustProfileHistory.CustTechCPPhone = createCustomerDto.technical_phone;
-    CustProfileHistory.CustTechCPEmail = createCustomerDto.technical_email;
+    CustProfileHistory.CustTechCPPosition =
+      createCustomerDto.technical_job_title;
     CustProfileHistory.CustBillCP = createCustomerDto.billing_name;
+    CustProfileHistory.CustBillCPPosition = createCustomerDto.billing_job_title;
     CustProfileHistory.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
     CustProfileHistory.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
-    CustProfileHistory.CustBillCPPhone = createCustomerDto.billing_phone;
     CustProfileHistory.CustBillCPEmail = createCustomerDto.billing_email;
     CustProfileHistory.CustRegDate = new Date(this.getDateNow());
     CustProfileHistory.CustNotes = createCustomerDto.extend_note;
+    CustProfileHistory.InsertEmpId = createCustomerDto.approval_emp_id;
     CustProfileHistory.EmpApproval = createCustomerDto.approval_emp_id;
     CustProfileHistory.CustStatus = CUSTOMER_DEFAULT_STATUS;
     CustProfileHistory.SalesId = createCustomerDto.sales_id;
@@ -674,6 +725,7 @@ export class CustomerRepository extends Repository<Customer> {
     Services.CustBlockDate = new Date(this.getDateNow());
     Services.CustBlockFrom = SERVICE_DEFAULT_BLOCK_FROM;
     Services.CustAccName = accName;
+    Services.EmpIdEdit = createCustomerDto.approval_emp_id;
     Services.Opsi = SERVICE_DEFAULT_OPTION;
     Services.StartTrial = new Date(this.getDateNow());
     Services.EndTrial = new Date(this.getDateNow());
@@ -702,6 +754,7 @@ export class CustomerRepository extends Repository<Customer> {
     Services.BlockTypeDate = SERVICE_DEFAULT_BLOCK_TYPE_DATE;
     Services.CustBlockFromMenu = SERVICE_DEFAULT_CUSTOMER_BLOCK_FROM_MENU;
     Services.IPServer = SERVICE_DEFAULT_IP_SERVER;
+    Services.PPN = createCustomerDto.PPN;
 
     return Services;
   }
@@ -804,6 +857,16 @@ export class CustomerRepository extends Repository<Customer> {
     return resultUpdateCustService;
   }
 
+  addressSplitter(addressStr) {
+    return {
+      0: addressStr.substring(0, Math.round(addressStr.length / 2)),
+      1: addressStr.substring(
+        Math.round(addressStr.length / 2),
+        addressStr.length,
+      ),
+    };
+  }
+
   hashPasswordMd5(password = CUSTOMER_DEFAULT_PASSWORD) {
     return md5(password);
   }
@@ -876,7 +939,7 @@ const CUSTOMER_BILLING_METHOD = {
   letter: false,
   email: true,
 };
-const CUSTOMER_DEFAULT_STATUS = 'BL';
+const CUSTOMER_DEFAULT_STATUS = 'AC';
 const CUSTOMER_DEFAULT_USE_SIGNATURE_ID = '020';
 const CUSTOMER_DEFAULT_MARK_SIGNATURE = '0';
 

@@ -34,10 +34,6 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
-  installation_address: string;
-
-  @IsNotEmpty()
-  @IsString()
   identity_type: string;
 
   @IsNotEmpty()
@@ -48,14 +44,31 @@ export class CreateNewCustomerDto {
   @IsString()
   identity_address: string;
 
+  @IsNotEmpty()
+  @IsString()
+  identity_city: string;
+
+  @IsNotEmpty()
+  @IsString()
+  identity_zip_code: string;
+
+  @IsOptional()
+  job_title_personal: string;
+
   @IsOptional()
   company_name: string;
+
+  @IsOptional()
+  company_phone_number: string;
 
   @IsOptional()
   company_address: string;
 
   @IsOptional()
-  company_phone_number: string;
+  company_address_city: string;
+
+  @IsOptional()
+  company_address_zip_code: string;
 
   @IsNotEmpty()
   @IsString()
@@ -69,6 +82,9 @@ export class CreateNewCustomerDto {
   @IsString()
   billing_email: string;
 
+  @IsOptional()
+  billing_job_title: string;
+
   @IsNotEmpty()
   @IsString()
   technical_salutation: string;
@@ -81,6 +97,9 @@ export class CreateNewCustomerDto {
   @IsString()
   technical_email: string;
 
+  @IsOptional()
+  technical_job_title: string;
+
   @IsNotEmpty()
   @IsString()
   billing_phone: string;
@@ -88,6 +107,18 @@ export class CreateNewCustomerDto {
   @IsNotEmpty()
   @IsString()
   technical_phone: string;
+
+  @IsNotEmpty()
+  @IsString()
+  installation_address: string;
+
+  @IsNotEmpty()
+  @IsString()
+  installation_address_city: string;
+
+  @IsNotEmpty()
+  @IsString()
+  installation_address_zip_code: string;
 
   @IsNotEmpty()
   @IsString()
@@ -107,6 +138,10 @@ export class CreateNewCustomerDto {
 
   @IsOptional()
   promo_id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  PPN: string;
 
   @IsNotEmpty()
   @IsString()
