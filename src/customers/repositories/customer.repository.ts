@@ -213,56 +213,62 @@ export class CustomerRepository extends Repository<Customer> {
       : newCustomerValue.branchId;
     pelanggan.DisplayBranchId = newCustomerValue.displayBranchId;
     pelanggan.FormId = newCustomerValue.formId;
-    pelanggan.CustName = newCustomerValue.fullName;
+    pelanggan.CustName = newCustomerValue.fullName.toUpperCase();
     pelanggan.CustGender = newCustomerValue.gender;
-    pelanggan.custPOB = newCustomerValue.placeOfBirth;
+    pelanggan.custPOB = newCustomerValue.placeOfBirth.toUpperCase();
     pelanggan.custDOB = newCustomerValue.dateOfBirth;
     pelanggan.CustIdType = newCustomerValue.identityType;
     pelanggan.CustIdNumber = newCustomerValue.identityNumber;
-    pelanggan.CustJobTitle = newCustomerValue.jobTitlePersonal;
+    pelanggan.CustJobTitle = newCustomerValue.jobTitlePersonal.toUpperCase();
     pelanggan.CustResAdd1 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[0];
+    )[0].toUpperCase();
     pelanggan.CustResAdd2 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[1];
-    pelanggan.CustResCity = newCustomerValue.identityCity;
+    )[1].toUpperCase();
+    pelanggan.CustResCity = newCustomerValue.identityCity.toUpperCase();
     pelanggan.CustResZC = newCustomerValue.identityZipCode;
     pelanggan.CustCompany =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     pelanggan.CustBusName =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     pelanggan.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     pelanggan.CustOfficeAdd1 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[0]
-        : addressSplitter(newCustomerValue.installationAddress)[0];
+        ? addressSplitter(newCustomerValue.companyAddress)[0].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[0].toUpperCase();
     pelanggan.CustOfficeAdd2 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[1]
-        : addressSplitter(newCustomerValue.installationAddress)[1];
+        ? addressSplitter(newCustomerValue.companyAddress)[1].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[1].toUpperCase();
     pelanggan.CustOfficeCity =
       newCustomerValue.companyAddressCity != null
-        ? newCustomerValue.companyAddressCity
-        : newCustomerValue.installationAddressCity;
+        ? newCustomerValue.companyAddressCity.toUpperCase()
+        : newCustomerValue.installationAddressCity.toUpperCase();
     pelanggan.CustOfficeZC =
       newCustomerValue.companyAddressZipCode != null
         ? newCustomerValue.companyAddressZipCode
         : newCustomerValue.installationAddressZipCode;
     pelanggan.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    pelanggan.CustTechCP = newCustomerValue.technicalName;
-    pelanggan.CustTechCPPosition = newCustomerValue.technicalJobTitle;
-    pelanggan.CustBillCP = newCustomerValue.billingName;
-    pelanggan.CustBillCPPosition = newCustomerValue.billingJobTitle;
+    pelanggan.CustTechCP = newCustomerValue.technicalName.toUpperCase();
+    pelanggan.CustTechCPPosition =
+      newCustomerValue.technicalJobTitle.toUpperCase();
+    pelanggan.CustBillCP = newCustomerValue.billingName.toUpperCase();
+    pelanggan.CustBillCPPosition =
+      newCustomerValue.billingJobTitle.toUpperCase();
     pelanggan.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
     pelanggan.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
     pelanggan.CustBillCPEmail = newCustomerValue.billingEmail;
     pelanggan.CustRegDate = new Date();
-    pelanggan.CustNotes = newCustomerValue.extendNote;
+    pelanggan.CustNotes = newCustomerValue.extendNote.toUpperCase();
     pelanggan.InsertEmpId = newCustomerValue.approvalEmpId;
     pelanggan.EmpApproval = newCustomerValue.approvalEmpId;
     pelanggan.CustStatus = CUSTOMER_DEFAULT_STATUS;

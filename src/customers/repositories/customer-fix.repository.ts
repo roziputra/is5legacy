@@ -24,50 +24,59 @@ export class CustomerFixRepository extends Repository<CustomerFix> {
       ? newCustomerValue.displayBranchId
       : newCustomerValue.branchId;
     CustFix.FormId = newCustomerValue.formId;
-    CustFix.CustName = newCustomerValue.fullName;
+    CustFix.CustName = newCustomerValue.fullName.toUpperCase();
     CustFix.CustGender = newCustomerValue.gender;
-    CustFix.custPOB = newCustomerValue.placeOfBirth;
+    CustFix.custPOB = newCustomerValue.placeOfBirth.toUpperCase();
     CustFix.custDOB = newCustomerValue.dateOfBirth;
     CustFix.CustIdType = newCustomerValue.identityType;
     CustFix.CustIdNumber = newCustomerValue.identityNumber;
-    CustFix.CustJobTitle = newCustomerValue.jobTitlePersonal;
-    CustFix.CustResAdd1 = addressSplitter(newCustomerValue.identityAddress)[0];
-    CustFix.CustResAdd2 = addressSplitter(newCustomerValue.identityAddress)[1];
-    CustFix.CustResCity = newCustomerValue.identityCity;
+    CustFix.CustJobTitle = newCustomerValue.jobTitlePersonal.toUpperCase();
+    CustFix.CustResAdd1 = addressSplitter(
+      newCustomerValue.identityAddress,
+    )[0].toUpperCase();
+    CustFix.CustResAdd2 = addressSplitter(
+      newCustomerValue.identityAddress,
+    )[1].toUpperCase();
+    CustFix.CustResCity = newCustomerValue.identityCity.toUpperCase();
     CustFix.CustResZC = newCustomerValue.identityZipCode;
     CustFix.CustCompany =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     CustFix.CustBusName =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     CustFix.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     CustFix.CustOfficeAdd1 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[0]
-        : addressSplitter(newCustomerValue.installationAddress)[0];
+        ? addressSplitter(newCustomerValue.companyAddress)[0].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[0].toUpperCase();
     CustFix.CustOfficeAdd2 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[1]
-        : addressSplitter(newCustomerValue.installationAddress)[1];
+        ? addressSplitter(newCustomerValue.companyAddress)[1].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[1].toUpperCase();
     CustFix.CustOfficeCity =
       newCustomerValue.companyAddressCity != null
-        ? newCustomerValue.companyAddressCity
-        : newCustomerValue.installationAddressCity;
+        ? newCustomerValue.companyAddressCity.toUpperCase()
+        : newCustomerValue.installationAddressCity.toUpperCase();
     CustFix.CustOfficeZC =
       newCustomerValue.companyAddressZipCode != null
         ? newCustomerValue.companyAddressZipCode
         : newCustomerValue.installationAddressZipCode;
     CustFix.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    CustFix.CustTechCP = newCustomerValue.technicalName;
-    CustFix.CustTechCPPosition = newCustomerValue.technicalJobTitle;
-    CustFix.CustBillCP = newCustomerValue.billingName;
-    CustFix.CustBillCPPosition = newCustomerValue.billingJobTitle;
+    CustFix.CustTechCP = newCustomerValue.technicalName.toUpperCase();
+    CustFix.CustTechCPPosition =
+      newCustomerValue.technicalJobTitle.toUpperCase();
+    CustFix.CustBillCP = newCustomerValue.billingName.toUpperCase();
+    CustFix.CustBillCPPosition = newCustomerValue.billingJobTitle.toUpperCase();
     CustFix.CustBillCPEmail = newCustomerValue.billingEmail;
     CustFix.CustRegDate = new Date();
-    CustFix.CustNotes = newCustomerValue.extendNote;
+    CustFix.CustNotes = newCustomerValue.extendNote.toUpperCase();
     CustFix.InsertEmpId = newCustomerValue.approvalEmpId;
     CustFix.EmpApproval = newCustomerValue.approvalEmpId;
     CustFix.CustStatus = CUSTOMER_DEFAULT_STATUS;
