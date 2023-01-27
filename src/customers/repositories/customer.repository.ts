@@ -3,7 +3,6 @@ import { Customer } from '../entities/customer.entity';
 import { Subscription } from '../entities/subscriber.entity';
 import { CustomerServiceTechnicalCustom } from '../entities/customer-service-technical-custom.entity';
 import { NOCFiber } from '../entities/noc-fiber.entity';
-import { CreateNewCustomerDto } from '../dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from '../dtos/create-service-customer.dto';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
@@ -131,38 +130,43 @@ export class CustomerRepository extends Repository<Customer> {
     let custIdResult = null;
 
     // Step 1 : Ambil Data dari CustomerTemp
-    const fetchCustomerTemp = await CustomerTemp.findOne({
+    const fetchCustomerTemp = await CustomerTemp.find({
       where: {
         Taken: 0,
       },
     });
 
-    // Step 2 : Cek Data Customer
-    const fetchCustomerByCustId = await this.findOne({
-      where: {
-        CustId: fetchCustomerTemp.CustId,
-      },
-    });
+    for (let idx = 0; idx < fetchCustomerTemp.length; idx++) {
+      const isCustomerExist = (await this.findOne({
+        where: {
+          CustId: fetchCustomerTemp[idx].CustId,
+        },
+      }))
+        ? true
+        : false;
 
-    if (fetchCustomerByCustId) {
-      await this.generateCustomerId();
-    } else {
-      custIdResult = fetchCustomerTemp.CustId;
+      if (!isCustomerExist) {
+        custIdResult = fetchCustomerTemp[idx].CustId;
+        break;
+      } else {
+        continue;
+      }
     }
 
     return custIdResult;
   }
 
-  async checkFormID(branch_id) {
+  async checkFormID(branchId) {
     let formIdResult = null;
 
     // Step 1 : Ambil Data dari CustomerTemp
-    const fetchDataCustomerLast = await this.createQueryBuilder()
-      .select('FormId')
-      .where('IFNULL(DisplayBranchId, BranchId) = :branch_id', {
-        branch_id: branch_id,
+    const fetchDataCustomerLast = await Subscription.createQueryBuilder('cs')
+      .select('c.FormId FormId')
+      .innerJoin('Customer', 'c', 'cs.CustId = c.CustId')
+      .where('IFNULL(c.DisplayBranchId, c.BranchId) = :branchId', {
+        branchId: branchId,
       })
-      .orderBy('CustId', 'DESC')
+      .orderBy('cs.CustServId', 'DESC')
       .limit(1)
       .getRawMany();
 
