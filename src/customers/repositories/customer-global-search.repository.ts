@@ -20,6 +20,7 @@ export class CustomerGlobalSearchRepository extends Repository<CustomerGlobalSea
     const customerGlobalSearch = new CustomerGlobalSearch();
     customerGlobalSearch.custId = newCustomerValue.custId;
     customerGlobalSearch.textSearch = saveDataPelangganTextSearch;
+
     return customerGlobalSearch;
   }
 }
