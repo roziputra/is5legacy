@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository, DataSource } from 'typeorm';
 import { CustomerServicesHistoryNew } from '../entities/customer-service-history-new.entity';
 import { Subscription } from '../entities/subscriber.entity';
-import { NewCustomerInitValue } from '../interfaces/new-customer.interface';
+import { CustomerExistingInitValue } from '../interfaces/customer-existing.interface';
 
 @Injectable()
 export class CustomerServiceHistoryRepository extends Repository<CustomerServicesHistoryNew> {
@@ -11,7 +11,7 @@ export class CustomerServiceHistoryRepository extends Repository<CustomerService
   }
 
   assignCustomerServiceHistoryNew(
-    newCustomerValue: NewCustomerInitValue,
+    newCustomerValue: CustomerExistingInitValue,
     customerService: Subscription,
   ): CustomerServicesHistoryNew {
     const customerServiceHistoryNew = new CustomerServicesHistoryNew();

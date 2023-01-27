@@ -15,7 +15,7 @@ export class CreateNewServiceCustomersDto {
 
   @IsNotEmpty()
   @IsString()
-  package_code: string;
+  packageCode: string;
 
   @IsNotEmpty()
   @IsString()
@@ -31,7 +31,7 @@ export class CreateNewServiceCustomersDto {
 
   @IsNotEmpty()
   @IsString()
-  PPN: string;
+  ppn: string;
 
   @IsOptional()
   promoId: string;
