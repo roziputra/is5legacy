@@ -16,9 +16,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { CustomersService } from './customers.service';
 import { Query } from '@nestjs/common';
 import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscription.interceptor';
-import { GetOperatorSubscriptionDto } from './dto/get-operator-subscription.dto';
-import { CreateNewCustomerDto } from './dto/create-customer.dto';
-import { CreateNewServiceCustomersDto } from './dto/create-service-customer.dto';
+import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
+import { CreateNewCustomerDto } from './dtos/create-customer.dto';
+import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')

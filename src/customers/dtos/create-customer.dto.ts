@@ -3,14 +3,14 @@ import { IsBoolean, IsNotEmpty, IsString, IsOptional } from 'class-validator';
 export class CreateNewCustomerDto {
   @IsNotEmpty()
   @IsString()
-  branch_id: string;
+  branchId: string;
 
   @IsOptional()
-  display_branch_id: string;
+  displayBranchId: string;
 
   @IsNotEmpty()
   @IsString()
-  full_name: string;
+  fullName: string;
 
   @IsNotEmpty()
   @IsString()
@@ -18,156 +18,156 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
-  place_of_birth: string;
+  placeOfBirth: string;
 
   @IsNotEmpty()
   @IsString()
-  date_of_birth: string;
+  dateOfBirth: string;
 
   @IsNotEmpty()
   @IsString()
-  email_address: string;
+  emailAddress: string;
 
   @IsNotEmpty()
   @IsString()
-  phone_number: string;
+  phoneNumber: string;
 
   @IsNotEmpty()
   @IsString()
-  identity_type: string;
+  identityType: string;
 
   @IsNotEmpty()
   @IsString()
-  identity_number: string;
+  identityNumber: string;
 
   @IsNotEmpty()
   @IsString()
-  identity_address: string;
+  identityAddress: string;
 
   @IsNotEmpty()
   @IsString()
-  identity_city: string;
+  identityCity: string;
 
   @IsNotEmpty()
   @IsString()
-  identity_zip_code: string;
+  identityZipCode: string;
 
   @IsOptional()
-  job_title_personal: string;
+  jobTitlePersonal: string;
 
   @IsOptional()
-  company_name: string;
+  companyName: string;
 
   @IsOptional()
-  company_phone_number: string;
+  companyPhoneNumber: string;
 
   @IsOptional()
-  company_address: string;
+  companyAddress: string;
 
   @IsOptional()
-  company_address_city: string;
+  companyAddressCity: string;
 
   @IsOptional()
-  company_address_zip_code: string;
+  companyAddressZipCode: string;
 
   @IsNotEmpty()
   @IsString()
-  billing_salutation: string;
+  billingSalutation: string;
 
   @IsNotEmpty()
   @IsString()
-  billing_name: string;
+  billingName: string;
 
   @IsNotEmpty()
   @IsString()
-  billing_email: string;
+  billingEmail: string;
 
   @IsOptional()
-  billing_job_title: string;
+  billingJobTitle: string;
 
   @IsNotEmpty()
   @IsString()
-  technical_salutation: string;
+  technicalSalutation: string;
 
   @IsNotEmpty()
   @IsString()
-  technical_name: string;
+  technicalName: string;
 
   @IsNotEmpty()
   @IsString()
-  technical_email: string;
+  technicalEmail: string;
 
   @IsOptional()
-  technical_job_title: string;
+  technicalJobTitle: string;
 
   @IsNotEmpty()
   @IsString()
-  billing_phone: string;
+  billingPhone: string;
 
   @IsNotEmpty()
   @IsString()
-  technical_phone: string;
+  technicalPhone: string;
 
   @IsNotEmpty()
   @IsString()
-  installation_address: string;
+  installationAddress: string;
 
   @IsNotEmpty()
   @IsString()
-  installation_address_city: string;
+  installationAddressCity: string;
 
   @IsNotEmpty()
   @IsString()
-  installation_address_zip_code: string;
+  installationAddressZipCode: string;
 
   @IsNotEmpty()
   @IsString()
-  package_code: string;
+  packageCode: string;
 
   @IsNotEmpty()
   @IsString()
-  package_name: string;
+  packageName: string;
 
   @IsNotEmpty()
   @IsString()
-  package_price: string;
+  packagePrice: string;
 
   @IsNotEmpty()
   @IsString()
-  package_top: string;
+  packageTop: string;
 
   @IsOptional()
-  promo_id: string;
+  promoId: string;
 
   @IsNotEmpty()
   @IsString()
-  PPN: string;
+  ppn: string;
 
   @IsNotEmpty()
   @IsString()
-  sales_id: string;
+  salesId: string;
 
   @IsNotEmpty()
   @IsString()
-  manager_sales_id: string;
+  managerSalesId: string;
 
   @IsNotEmpty()
   @IsString()
-  extend_note: string;
+  extendNote: string;
 
   @IsNotEmpty()
   @IsString()
-  approval_emp_id: string;
+  approvalEmpId: string;
 
   @IsOptional()
   @IsString()
-  npwp_number: string;
+  npwpNumber: string;
 
   @IsNotEmpty()
   @IsBoolean()
-  tax_type: boolean;
+  taxType: boolean;
 
   @IsNotEmpty()
   @IsBoolean()
-  cetak_duluan: boolean;
+  cetakDuluan: boolean;
 }

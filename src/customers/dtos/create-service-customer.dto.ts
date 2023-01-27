@@ -3,15 +3,15 @@ import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
 export class CreateNewServiceCustomersDto {
   @IsNotEmpty()
   @IsString()
-  installation_address: string;
+  installationAddress: string;
 
   @IsNotEmpty()
   @IsString()
-  installation_address_city: string;
+  installationAddressCity: string;
 
   @IsNotEmpty()
   @IsString()
-  installation_address_zip_code: string;
+  installationAddressZipCode: string;
 
   @IsNotEmpty()
   @IsString()
@@ -19,36 +19,36 @@ export class CreateNewServiceCustomersDto {
 
   @IsNotEmpty()
   @IsString()
-  package_name: string;
+  packageName: string;
 
   @IsNotEmpty()
   @IsString()
-  package_price: string;
+  packagePrice: string;
 
   @IsNotEmpty()
   @IsString()
-  package_top: string;
+  packageTop: string;
 
   @IsNotEmpty()
   @IsString()
   PPN: string;
 
   @IsOptional()
-  promo_id: string;
+  promoId: string;
 
   @IsNotEmpty()
   @IsString()
-  sales_id: string;
+  salesId: string;
 
   @IsNotEmpty()
   @IsString()
-  manager_sales_id: string;
+  managerSalesId: string;
 
   @IsNotEmpty()
   @IsString()
-  extend_note: string;
+  extendNote: string;
 
   @IsNotEmpty()
   @IsString()
-  approval_emp_id: string;
+  approvalEmpId: string;
 }
