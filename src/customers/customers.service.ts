@@ -70,7 +70,7 @@ export class CustomersService {
       resultSaveDataCustomer = searchCustomerExist;
     }
 
-    // Step 2 : Init CustID
+    // // Step 2 : Init CustID
     let custId = null;
     custId = await this.customerRepository.generateCustomerId();
 
@@ -154,7 +154,7 @@ export class CustomersService {
     let customerGlobalSearch = null;
     customerGlobalSearch =
       await this.customerGlobalSearchRepository.assignCustomerGlobalSearch(
-        customerData,
+        newAssignValueCustomer,
       );
 
     // Step 14 : Assign Data Layanan ke Tabel CustomerService
@@ -208,6 +208,7 @@ export class CustomersService {
       await queryRunner.commitTransaction();
       resultSaveDataCustomer = custId;
     } catch (error) {
+      console.log(error);
       resultSaveDataCustomer = null;
       await queryRunner.rollbackTransaction();
     }
