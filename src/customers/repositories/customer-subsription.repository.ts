@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Repository, DataSource } from 'typeorm';
 import { Subscription } from '../entities/subscriber.entity';
-import { NewCustomerInitValue } from '../interfaces/new-customer.interface';
 import { InvoiceTypeMonthRepository } from './invoice-type-month.repository';
+import { CustomerExistingInitValue } from '../interfaces/customer-existing.interface';
 
 @Injectable()
 export class CustomerSubscriptionRepository extends Repository<Subscription> {
@@ -14,7 +14,7 @@ export class CustomerSubscriptionRepository extends Repository<Subscription> {
   }
 
   async assignSubscription(
-    newCustomerValue: NewCustomerInitValue,
+    newCustomerValue: CustomerExistingInitValue,
     accName: string,
   ): Promise<Subscription> {
     const Services = new Subscription();

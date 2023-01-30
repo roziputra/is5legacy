@@ -28,56 +28,64 @@ export class CustomerProfileHistoryRepository extends Repository<CustomerProfile
       : newCustomerValue.branchId;
     CustProfileHistory.DisplayBranchId = newCustomerValue.displayBranchId;
     CustProfileHistory.FormId = newCustomerValue.formId;
-    CustProfileHistory.CustName = newCustomerValue.fullName;
+    CustProfileHistory.CustName = newCustomerValue.fullName.toUpperCase();
     CustProfileHistory.CustGender = newCustomerValue.gender;
-    CustProfileHistory.custPOB = newCustomerValue.placeOfBirth;
+    CustProfileHistory.custPOB = newCustomerValue.placeOfBirth.toUpperCase();
     CustProfileHistory.custDOB = newCustomerValue.dateOfBirth;
     CustProfileHistory.CustIdType = newCustomerValue.identityType;
     CustProfileHistory.CustIdNumber = newCustomerValue.identityNumber;
-    CustProfileHistory.CustJobTitle = newCustomerValue.jobTitlePersonal;
+    CustProfileHistory.CustJobTitle =
+      newCustomerValue.jobTitlePersonal.toUpperCase();
     CustProfileHistory.CustResAdd1 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[0];
+    )[0].toUpperCase();
     CustProfileHistory.CustResAdd2 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[1];
+    )[1].toUpperCase();
     CustProfileHistory.CustResCity = newCustomerValue.identityCity;
     CustProfileHistory.CustResZC = newCustomerValue.identityZipCode;
     CustProfileHistory.CustCompany =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     CustProfileHistory.CustBusName =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     CustProfileHistory.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     CustProfileHistory.CustOfficeAdd1 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[0]
-        : addressSplitter(newCustomerValue.installationAddress)[0];
+        ? addressSplitter(newCustomerValue.companyAddress)[0].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[0].toUpperCase();
     CustProfileHistory.CustOfficeAdd2 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[1]
-        : addressSplitter(newCustomerValue.installationAddress)[1];
+        ? addressSplitter(newCustomerValue.companyAddress)[1].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[1].toUpperCase();
     CustProfileHistory.CustOfficeCity =
       newCustomerValue.companyAddressCity != null
-        ? newCustomerValue.companyAddressCity
-        : newCustomerValue.installationAddressCity;
+        ? newCustomerValue.companyAddressCity.toUpperCase()
+        : newCustomerValue.installationAddressCity.toUpperCase();
     CustProfileHistory.CustOfficeZC =
       newCustomerValue.companyAddressZipCode != null
         ? newCustomerValue.companyAddressZipCode
         : newCustomerValue.installationAddressZipCode;
     CustProfileHistory.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    CustProfileHistory.CustTechCP = newCustomerValue.technicalName;
-    CustProfileHistory.CustTechCPPosition = newCustomerValue.technicalJobTitle;
-    CustProfileHistory.CustBillCP = newCustomerValue.billingName;
-    CustProfileHistory.CustBillCPPosition = newCustomerValue.billingJobTitle;
+    CustProfileHistory.CustTechCP =
+      newCustomerValue.technicalName.toUpperCase();
+    CustProfileHistory.CustTechCPPosition =
+      newCustomerValue.technicalJobTitle.toUpperCase();
+    CustProfileHistory.CustBillCP = newCustomerValue.billingName.toUpperCase();
+    CustProfileHistory.CustBillCPPosition =
+      newCustomerValue.billingJobTitle.toUpperCase();
     CustProfileHistory.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
     CustProfileHistory.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
     CustProfileHistory.CustBillCPEmail = newCustomerValue.billingEmail;
     CustProfileHistory.CustRegDate = new Date();
-    CustProfileHistory.CustNotes = newCustomerValue.extendNote;
+    CustProfileHistory.CustNotes = newCustomerValue.extendNote.toUpperCase();
     CustProfileHistory.InsertEmpId = newCustomerValue.approvalEmpId;
     CustProfileHistory.EmpApproval = newCustomerValue.approvalEmpId;
     CustProfileHistory.CustStatus = CUSTOMER_DEFAULT_STATUS;

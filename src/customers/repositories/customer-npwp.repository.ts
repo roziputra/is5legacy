@@ -11,8 +11,8 @@ export class CustomerNpwpRepository extends Repository<NPWPCustomer> {
 
   assignNpwpCust(newCustomerValue: NewCustomerInitValue): NPWPCustomer {
     const npwpCust = new NPWPCustomer();
-    npwpCust.Name = newCustomerValue.fullName;
-    npwpCust.Address = newCustomerValue.identityAddress;
+    npwpCust.Name = newCustomerValue.fullName.toUpperCase();
+    npwpCust.Address = newCustomerValue.identityAddress.toUpperCase();
     npwpCust.NPWP = newCustomerValue.npwpNumber;
     npwpCust.CustId = newCustomerValue.custId;
     npwpCust.Selected = DEFAULT_SELECTED_NPWP_CUSTOMER;

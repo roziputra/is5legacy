@@ -217,56 +217,62 @@ export class CustomerRepository extends Repository<Customer> {
       : newCustomerValue.branchId;
     pelanggan.DisplayBranchId = newCustomerValue.displayBranchId;
     pelanggan.FormId = newCustomerValue.formId;
-    pelanggan.CustName = newCustomerValue.fullName;
+    pelanggan.CustName = newCustomerValue.fullName.toUpperCase();
     pelanggan.CustGender = newCustomerValue.gender;
-    pelanggan.custPOB = newCustomerValue.placeOfBirth;
+    pelanggan.custPOB = newCustomerValue.placeOfBirth.toUpperCase();
     pelanggan.custDOB = newCustomerValue.dateOfBirth;
     pelanggan.CustIdType = newCustomerValue.identityType;
     pelanggan.CustIdNumber = newCustomerValue.identityNumber;
-    pelanggan.CustJobTitle = newCustomerValue.jobTitlePersonal;
+    pelanggan.CustJobTitle = newCustomerValue.jobTitlePersonal.toUpperCase();
     pelanggan.CustResAdd1 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[0];
+    )[0].toUpperCase();
     pelanggan.CustResAdd2 = addressSplitter(
       newCustomerValue.identityAddress,
-    )[1];
-    pelanggan.CustResCity = newCustomerValue.identityCity;
+    )[1].toUpperCase();
+    pelanggan.CustResCity = newCustomerValue.identityCity.toUpperCase();
     pelanggan.CustResZC = newCustomerValue.identityZipCode;
     pelanggan.CustCompany =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     pelanggan.CustBusName =
       newCustomerValue.companyName != null
-        ? newCustomerValue.companyName
-        : newCustomerValue.fullName;
+        ? newCustomerValue.companyName.toUpperCase()
+        : newCustomerValue.fullName.toUpperCase();
     pelanggan.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     pelanggan.CustOfficeAdd1 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[0]
-        : addressSplitter(newCustomerValue.installationAddress)[0];
+        ? addressSplitter(newCustomerValue.companyAddress)[0].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[0].toUpperCase();
     pelanggan.CustOfficeAdd2 =
       newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[1]
-        : addressSplitter(newCustomerValue.installationAddress)[1];
+        ? addressSplitter(newCustomerValue.companyAddress)[1].toUpperCase()
+        : addressSplitter(
+            newCustomerValue.installationAddress,
+          )[1].toUpperCase();
     pelanggan.CustOfficeCity =
       newCustomerValue.companyAddressCity != null
-        ? newCustomerValue.companyAddressCity
-        : newCustomerValue.installationAddressCity;
+        ? newCustomerValue.companyAddressCity.toUpperCase()
+        : newCustomerValue.installationAddressCity.toUpperCase();
     pelanggan.CustOfficeZC =
       newCustomerValue.companyAddressZipCode != null
         ? newCustomerValue.companyAddressZipCode
         : newCustomerValue.installationAddressZipCode;
     pelanggan.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    pelanggan.CustTechCP = newCustomerValue.technicalName;
-    pelanggan.CustTechCPPosition = newCustomerValue.technicalJobTitle;
-    pelanggan.CustBillCP = newCustomerValue.billingName;
-    pelanggan.CustBillCPPosition = newCustomerValue.billingJobTitle;
+    pelanggan.CustTechCP = newCustomerValue.technicalName.toUpperCase();
+    pelanggan.CustTechCPPosition =
+      newCustomerValue.technicalJobTitle.toUpperCase();
+    pelanggan.CustBillCP = newCustomerValue.billingName.toUpperCase();
+    pelanggan.CustBillCPPosition =
+      newCustomerValue.billingJobTitle.toUpperCase();
     pelanggan.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
     pelanggan.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
     pelanggan.CustBillCPEmail = newCustomerValue.billingEmail;
     pelanggan.CustRegDate = new Date();
-    pelanggan.CustNotes = newCustomerValue.extendNote;
+    pelanggan.CustNotes = newCustomerValue.extendNote.toUpperCase();
     pelanggan.InsertEmpId = newCustomerValue.approvalEmpId;
     pelanggan.EmpApproval = newCustomerValue.approvalEmpId;
     pelanggan.CustStatus = CUSTOMER_DEFAULT_STATUS;
@@ -278,83 +284,6 @@ export class CustomerRepository extends Repository<Customer> {
     pelanggan.ManagerSalesId = newCustomerValue.managerSalesId;
 
     return pelanggan;
-  }
-
-  async saveCustomerServiceRepository(
-    createNewServiceCustomersDto: CreateNewServiceCustomersDto,
-    cid,
-  ) {
-    let resultUpdateCustService = null;
-
-    // Step 1 : Cek Data Pelanggan
-    const dataPelanggan = await this.findOne({ where: { CustId: cid } });
-
-    if (dataPelanggan) {
-      // Step 2 : Check Account ID
-      let accName = null;
-      accName = await this.checkAccountName(
-        dataPelanggan.CustName,
-        createNewServiceCustomersDto.installationAddress,
-      );
-
-      const Services = new Subscription();
-      Services.CustId = cid;
-      Services.ServiceId = createNewServiceCustomersDto.packageCode;
-      Services.ServiceType = createNewServiceCustomersDto.packageName;
-      Services.EmpId = createNewServiceCustomersDto.approvalEmpId;
-      Services.PayId = '006';
-      Services.CustStatus = 'BL';
-      Services.CustRegDate = new Date();
-      Services.CustActivationDate = new Date();
-      Services.CustUpdateDate = new Date();
-      Services.CustBlockDate = new Date();
-      Services.CustBlockFrom = true;
-      Services.CustAccName = accName;
-      Services.Opsi = true;
-      Services.StartTrial = new Date();
-      Services.EndTrial = new Date();
-      Services.StatusPerangkat = 'PM';
-      Services.Gabung = false;
-      Services.Tampil = true;
-      Services.TglHarga = new Date();
-      Services.Subscription = createNewServiceCustomersDto.packagePrice;
-      const InvoiceType = await this.dataSource.query(`
-        SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
-        WHERE itm.Month = '${createNewServiceCustomersDto.packageTop}'
-      `);
-      Services.InvoiceType = InvoiceType[0].InvoiceType;
-      Services.InvoicePeriod = `${
-        ('0' + (new Date().getMonth() + 1)).slice(-2) +
-        new Date().getFullYear().toString().slice(-2)
-      }`;
-      Services.InvoiceDate1 = true;
-      Services.AddEmailCharge = false;
-      Services.AccessLog = true;
-      Services.Description = createNewServiceCustomersDto.extendNote;
-      Services.installation_address =
-        createNewServiceCustomersDto.installationAddress.toUpperCase();
-      Services.ContractUntil = new Date();
-      Services.Type = 'Rumah';
-      Services.promo_id = createNewServiceCustomersDto.promoId;
-      Services.BlockTypeId = true;
-      Services.BlockTypeDate = '25';
-      Services.CustBlockFromMenu = 'edit_subs';
-
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-      try {
-        await queryRunner.manager.save(Services);
-        await queryRunner.commitTransaction();
-        resultUpdateCustService = 'Success';
-      } catch (error) {
-        resultUpdateCustService = null;
-      }
-    } else {
-      resultUpdateCustService = null;
-    }
-
-    return resultUpdateCustService;
   }
 
   getNocFiberId(branchIds: string[], vendorIds: number[]) {
