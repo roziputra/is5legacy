@@ -42,6 +42,9 @@ export class Subscription extends BaseEntity {
   CustAccName: string;
 
   @Column()
+  EmpIdEdit: string;
+
+  @Column()
   Opsi: boolean;
 
   @Column()
@@ -103,4 +106,10 @@ export class Subscription extends BaseEntity {
 
   @Column()
   CustBlockFromMenu: string;
+
+  @Column()
+  IPServer: string;
+
+  @Column()
+  PPN: string;
 }
