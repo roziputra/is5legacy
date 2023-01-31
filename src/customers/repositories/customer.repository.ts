@@ -5,7 +5,6 @@ import { CustomerServiceTechnicalCustom } from '../entities/customer-service-tec
 import { NOCFiber } from '../entities/noc-fiber.entity';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
-import { CreateNewServiceCustomersDto } from '../dtos/create-service-customer.dto';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -148,98 +147,6 @@ export class CustomerRepository extends Repository<Customer> {
         CustAccName: accName,
       },
     });
-  }
-
-  async getAccountName(fullName: string, address: string): Promise<any> {
-    let resultAccName = null;
-    const fullNameStr = fullName.toLowerCase().split(' ')[0];
-    const randNumber = Math.floor(1000 + Math.random() * 9000);
-    resultAccName = fullNameStr + randNumber;
-
-    const checkAccName = await this.checkAccountName(resultAccName);
-
-    if (checkAccName.length > 0) {
-      await this.getAccountName(fullName, address);
-    }
-
-    return resultAccName;
-  }
-
-  async saveCustomerServiceRepository(
-    createNewServiceCustomersDto: CreateNewServiceCustomersDto,
-    cid,
-  ) {
-    let resultUpdateCustService = null;
-
-    // Step 1 : Cek Data Pelanggan
-    const dataPelanggan = await this.findOne({ where: { CustId: cid } });
-
-    if (dataPelanggan) {
-      // Step 2 : Check Account ID
-      let accName = null;
-      accName = await this.getAccountName(
-        dataPelanggan.CustName,
-        createNewServiceCustomersDto.installationAddress,
-      );
-
-      const Services = new Subscription();
-      Services.CustId = cid;
-      Services.ServiceId = createNewServiceCustomersDto.packageCode;
-      Services.ServiceType = createNewServiceCustomersDto.packageName;
-      Services.EmpId = createNewServiceCustomersDto.approvalEmpId;
-      Services.PayId = '006';
-      Services.CustStatus = 'BL';
-      Services.CustRegDate = new Date();
-      Services.CustActivationDate = new Date();
-      Services.CustUpdateDate = new Date();
-      Services.CustBlockDate = new Date();
-      Services.CustBlockFrom = true;
-      Services.CustAccName = accName;
-      Services.Opsi = true;
-      Services.StartTrial = new Date();
-      Services.EndTrial = new Date();
-      Services.StatusPerangkat = 'PM';
-      Services.Gabung = false;
-      Services.Tampil = true;
-      Services.TglHarga = new Date();
-      Services.Subscription = createNewServiceCustomersDto.packagePrice;
-      const InvoiceType = await this.dataSource.query(`
-        SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
-        WHERE itm.Month = '${createNewServiceCustomersDto.packageTop}'
-      `);
-      Services.InvoiceType = InvoiceType[0].InvoiceType;
-      Services.InvoicePeriod = `${
-        ('0' + (new Date().getMonth() + 1)).slice(-2) +
-        new Date().getFullYear().toString().slice(-2)
-      }`;
-      Services.InvoiceDate1 = true;
-      Services.AddEmailCharge = false;
-      Services.AccessLog = true;
-      Services.Description = createNewServiceCustomersDto.extendNote;
-      Services.installation_address =
-        createNewServiceCustomersDto.installationAddress.toUpperCase();
-      Services.ContractUntil = new Date();
-      Services.Type = 'Rumah';
-      Services.promo_id = createNewServiceCustomersDto.promoId;
-      Services.BlockTypeId = true;
-      Services.BlockTypeDate = '25';
-      Services.CustBlockFromMenu = 'edit_subs';
-
-      const queryRunner = this.dataSource.createQueryRunner();
-      await queryRunner.connect();
-      await queryRunner.startTransaction();
-      try {
-        await queryRunner.manager.save(Services);
-        await queryRunner.commitTransaction();
-        resultUpdateCustService = 'Success';
-      } catch (error) {
-        resultUpdateCustService = null;
-      }
-    } else {
-      resultUpdateCustService = null;
-    }
-
-    return resultUpdateCustService;
   }
 
   getNocFiberId(branchIds: string[], vendorIds: number[]) {

@@ -19,6 +19,7 @@ import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscri
 import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -70,8 +71,12 @@ export class CustomersController {
         },
       };
     else {
-      throw new BadRequestException(
-        'Pendaftaran pelanggan tidak dapat diproses',
+      throw new Is5LegacyException(
+        {
+          title: 'Error',
+          message: 'Pendaftaran pelanggan tidak dapat diproses',
+        },
+        500,
       );
     }
   }
@@ -94,7 +99,13 @@ export class CustomersController {
         message: 'Berhasil menambahkan data layanan pelanggan',
       };
     else {
-      throw new NotFoundException('Data pelanggan tidak ditemukan');
+      throw new Is5LegacyException(
+        {
+          title: 'Error',
+          message: 'Data pelanggan tidak dapat ditemukan',
+        },
+        404,
+      );
     }
   }
 }
