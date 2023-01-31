@@ -39,6 +39,9 @@ export class Customer extends BaseEntity {
   CustCompany: string;
 
   @Column()
+  CustJobTitle: string;
+
+  @Column()
   CustBusName: string;
 
   @Column()
@@ -54,7 +57,7 @@ export class Customer extends BaseEntity {
   CustResCity: string;
 
   @Column()
-  CustResPhone: string;
+  CustResZC: string;
 
   @Column()
   CustOfficeAdd1: string;
@@ -66,37 +69,28 @@ export class Customer extends BaseEntity {
   CustOfficeCity: string;
 
   @Column()
-  CustOfficePhone: string;
+  CustOfficeZC: string;
 
   @Column()
   CustBillingAdd: boolean;
 
   @Column()
-  CustHP: string;
-
-  @Column()
-  CustEmail: string;
-
-  @Column()
   CustTechCP: string;
 
   @Column()
-  CustTechCPPhone: string;
-
-  @Column()
-  CustTechCPEmail: string;
+  CustTechCPPosition: string;
 
   @Column()
   CustBillCP: string;
+
+  @Column()
+  CustBillCPPosition: string;
 
   @Column()
   CustBillMethodLetter: boolean;
 
   @Column()
   CustBillMethodEmail: boolean;
-
-  @Column()
-  CustBillCPPhone: string;
 
   @Column()
   CustBillCPEmail: string;
@@ -115,6 +109,9 @@ export class Customer extends BaseEntity {
 
   @Column()
   SalesId: string;
+
+  @Column()
+  InsertEmpId: string;
 
   @Column()
   InsertDateTime: Date;

@@ -32,6 +32,10 @@ import { CustomerInvoiceSignature } from './customers/entities/customer-invoice-
 import { CustomerFix } from './customers/entities/customer-fix.entity';
 import { CustomerProfileHistory } from './customers/entities/customer-profile-history.entity';
 import { CustomerVerifiedEmail } from './customers/entities/customer-verified-email.entity';
+import { CustomerTemp } from './customers/entities/customer-temp.entity';
+import { CustomerGlobalSearch } from './customers/entities/customer-global-search.entity';
+import { CustomerServicesHistoryNew } from './customers/entities/customer-service-history-new.entity';
+import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
 
 @Module({
   imports: [
@@ -68,6 +72,10 @@ import { CustomerVerifiedEmail } from './customers/entities/customer-verified-em
         CustomerFix,
         CustomerProfileHistory,
         CustomerVerifiedEmail,
+        CustomerTemp,
+        CustomerGlobalSearch,
+        CustomerServicesHistoryNew,
+        InvoiceTypeMonth,
       ],
       synchronize: false,
     }),
