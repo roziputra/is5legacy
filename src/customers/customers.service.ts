@@ -233,36 +233,29 @@ export class CustomersService {
     if (dataPelanggan) {
       // Step 2 : Check Account ID
       let accName = null;
-      accName = await this.customerRepository.getAccountName(
+      accName = await this.getAccountName(
         dataPelanggan.CustName,
         createNewServiceCustDto.installationAddress,
       );
-
-      createNewServiceCustDto['custId'] = custId;
-      const newAssignValueCustomerService = JSON.parse(
-        JSON.stringify(createNewServiceCustDto),
-      );
-
-      // let serviceData = null;
-      // serviceData =
-      //   await this.customerSubscriptionRepository.assignSubscription(
-      //     newAssignValueCustomerService,
-      //     accName,
-      //   );
-
-      // let serviceHistory = null;
-      // serviceHistory =
-      //   await this.customerServiceHistoryRepository.assignCustomerServiceHistoryNew(
-      //     newAssignValueCustomerService,
-      //     serviceData,
-      //   );
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        // await queryRunner.manager.save(serviceData);
-        // await queryRunner.manager.save(serviceHistory);
+        let serviceData = null;
+        serviceData = await this.saveCustomerService(
+          queryRunner,
+          createNewServiceCustDto,
+          custId,
+          accName,
+        );
+
+        let serviceHistory = null;
+        serviceHistory = await this.saveCustomerServiceHistoryNew(
+          queryRunner,
+          createNewServiceCustDto,
+          serviceData,
+        );
         await queryRunner.commitTransaction();
 
         resultUpdateCustService = 'Success';
@@ -711,16 +704,16 @@ export class CustomersService {
 
   async saveCustomerService(
     transaction: QueryRunner,
-    createNewCustomerDto: CreateNewCustomerDto,
+    createNewServiceCustomerDto: CreateNewServiceCustomersDto,
     custId: string,
     accName: string,
   ): Promise<any> {
     const services = new Subscription();
 
     services.CustId = custId;
-    services.ServiceId = createNewCustomerDto.packageCode;
-    services.ServiceType = createNewCustomerDto.packageName;
-    services.EmpId = createNewCustomerDto.approvalEmpId;
+    services.ServiceId = createNewServiceCustomerDto.packageCode;
+    services.ServiceType = createNewServiceCustomerDto.packageName;
+    services.EmpId = createNewServiceCustomerDto.approvalEmpId;
     services.PayId = SERVICE_PAY_ID_METHOD; // PayId adalah sistem metode pembayaran default idnya = '001' dan valuenya = 'Transfer'
     services.CustStatus = SERVICE_DEFAULT_STATUS;
     services.CustRegDate = new Date();
@@ -729,7 +722,7 @@ export class CustomersService {
     services.CustBlockDate = new Date();
     services.CustBlockFrom = SERVICE_DEFAULT_BLOCK_FROM;
     services.CustAccName = accName;
-    services.EmpIdEdit = createNewCustomerDto.approvalEmpId;
+    services.EmpIdEdit = createNewServiceCustomerDto.approvalEmpId;
     services.Opsi = SERVICE_DEFAULT_OPTION;
     services.StartTrial = new Date();
     services.EndTrial = new Date();
@@ -737,11 +730,11 @@ export class CustomersService {
     services.Gabung = SERVICE_DEFAULT_JOIN_STATUS;
     services.Tampil = SERVICE_DEFAULT_SHOW_STATUS;
     services.TglHarga = new Date();
-    services.Subscription = createNewCustomerDto.packagePrice;
+    services.Subscription = createNewServiceCustomerDto.packagePrice;
     services.InvoiceType = (
       await InvoiceTypeMonth.findOne({
         where: {
-          Month: parseInt(createNewCustomerDto.packageTop),
+          Month: parseInt(createNewServiceCustomerDto.packageTop),
         },
       })
     ).InvoiceType.toString();
@@ -752,29 +745,31 @@ export class CustomersService {
     services.InvoiceDate1 = SERVICE_DEFAULT_INVOICE_DATE_STATUS;
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
-    services.Description = createNewCustomerDto.extendNote;
-    services.installation_address = createNewCustomerDto.installationAddress;
+    services.Description = createNewServiceCustomerDto.extendNote;
+    services.installation_address =
+      createNewServiceCustomerDto.installationAddress;
     services.ContractUntil = new Date();
     services.Type = SERVICE_DEFAULT_INSTALLATION_TYPE;
-    services.promo_id = createNewCustomerDto.promoId;
+    services.promo_id = createNewServiceCustomerDto.promoId;
     services.BlockTypeId = SERVICE_DEFAULT_BLOCK_TYPE_STATUS;
     services.BlockTypeDate = SERVICE_DEFAULT_BLOCK_TYPE_DATE;
     services.CustBlockFromMenu = SERVICE_DEFAULT_CUSTOMER_BLOCK_FROM_MENU;
     services.IPServer = SERVICE_DEFAULT_IP_SERVER;
-    services.PPN = createNewCustomerDto.ppn;
+    services.PPN = createNewServiceCustomerDto.ppn;
 
     return await transaction.manager.save(services);
   }
 
   async saveCustomerServiceHistoryNew(
     transaction: QueryRunner,
-    createNewCustomerDto: CreateNewCustomerDto,
+    createNewServiceCustomerDto: CreateNewServiceCustomersDto,
     customerService,
   ): Promise<any> {
     const customerServiceHistoryNew = new CustomerServicesHistoryNew();
 
     customerServiceHistoryNew.cust_serv_id = customerService.ServiceId;
-    customerServiceHistoryNew.emp_id = createNewCustomerDto.approvalEmpId;
+    customerServiceHistoryNew.emp_id =
+      createNewServiceCustomerDto.approvalEmpId;
     customerServiceHistoryNew.insert_time = new Date();
     customerServiceHistoryNew.description = SERVICE_DEFAULT_HISTORY_DESCRIPTION;
 
