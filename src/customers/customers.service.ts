@@ -221,12 +221,59 @@ export class CustomersService {
 
   async saveNewCustomerServiceServices(
     createNewServiceCustDto: CreateNewServiceCustomersDto,
-    cust_id: string,
+    custId: string,
   ): Promise<any> {
-    return await this.customerRepository.saveCustomerServiceRepository(
-      createNewServiceCustDto,
-      cust_id,
-    );
+    let resultUpdateCustService = null;
+
+    // Step 1 : Cek Data Pelanggan
+    const dataPelanggan = await this.customerRepository.findOne({
+      where: { CustId: custId },
+    });
+
+    if (dataPelanggan) {
+      // Step 2 : Check Account ID
+      let accName = null;
+      accName = await this.customerRepository.checkAccountName(
+        dataPelanggan.CustName,
+        createNewServiceCustDto.installationAddress,
+      );
+
+      createNewServiceCustDto['custId'] = custId;
+      const newAssignValueCustomerService = JSON.parse(
+        JSON.stringify(createNewServiceCustDto),
+      );
+
+      let serviceData = null;
+      serviceData =
+        await this.customerSubscriptionRepository.assignSubscription(
+          newAssignValueCustomerService,
+          accName,
+        );
+
+      let serviceHistory = null;
+      serviceHistory =
+        await this.customerServiceHistoryRepository.assignCustomerServiceHistoryNew(
+          newAssignValueCustomerService,
+          serviceData,
+        );
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        await queryRunner.manager.save(serviceData);
+        await queryRunner.manager.save(serviceHistory);
+        await queryRunner.commitTransaction();
+
+        resultUpdateCustService = 'Success';
+      } catch (error) {
+        resultUpdateCustService = null;
+      }
+    } else {
+      resultUpdateCustService = null;
+    }
+
+    return resultUpdateCustService;
   }
 
   async getNewFormId(branchId: string): Promise<any> {
