@@ -3,12 +3,9 @@ import { Customer } from '../entities/customer.entity';
 import { Subscription } from '../entities/subscriber.entity';
 import { CustomerServiceTechnicalCustom } from '../entities/customer-service-technical-custom.entity';
 import { NOCFiber } from '../entities/noc-fiber.entity';
-import { CreateNewServiceCustomersDto } from '../dtos/create-service-customer.dto';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
-import { hashPasswordMd5 } from '../../utils/md5-hashing.util';
-import { NewCustomerInitValue } from '../interfaces/new-customer.interface';
-import { addressSplitter } from '../../utils/address-splitter.util';
+import { CreateNewServiceCustomersDto } from '../dtos/create-service-customer.dto';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -110,53 +107,23 @@ export class CustomerRepository extends Repository<Customer> {
     return resultObject;
   }
 
-  async searchCustomerByIdentityNum(identityNumber: string): Promise<any> {
-    let resultSearchCustomerByIdentityNum = null;
-
-    // Step 1 : Check Customer Service Active with Identity Number
-    const findCustomerByIdentityNumber = await this.createQueryBuilder('c')
-      .innerJoin('CustomerServices', 'cs', 'c.CustId = cs.CustId')
-      .where(`c.CustIdNumber = ${identityNumber} AND cs.CustStatus = 'AC'`)
-      .getRawOne();
-
-    if (typeof findCustomerByIdentityNumber != 'undefined') {
-      resultSearchCustomerByIdentityNum = findCustomerByIdentityNumber.c_CustId;
-    }
-
-    return resultSearchCustomerByIdentityNum;
-  }
-
-  async generateCustomerId() {
+  async getNewCustomerId(): Promise<any> {
     let custIdResult = null;
 
-    // Step 1 : Ambil Data dari CustomerTemp
-    const fetchCustomerTemp = await CustomerTemp.find({
-      where: {
-        Taken: 0,
-      },
-    });
+    const fetchCustomerTemp = await CustomerTemp.createQueryBuilder('ct')
+      .select('ct.CustId customer_id')
+      .leftJoin('Customer', 'c', 'ct.CustId = c.CustId')
+      .where('ct.Taken = 0 AND c.CustId <=> NULL')
+      .orderBy('ct.CustId', 'ASC')
+      .limit(1)
+      .getRawMany();
 
-    for (let idx = 0; idx < fetchCustomerTemp.length; idx++) {
-      const isCustomerExist = (await this.findOne({
-        where: {
-          CustId: fetchCustomerTemp[idx].CustId,
-        },
-      }))
-        ? true
-        : false;
-
-      if (!isCustomerExist) {
-        custIdResult = fetchCustomerTemp[idx].CustId;
-        break;
-      } else {
-        continue;
-      }
-    }
+    custIdResult = fetchCustomerTemp[0].customer_id;
 
     return custIdResult;
   }
 
-  async checkFormID(branchId) {
+  async getLastFormId(branchId: string): Promise<any> {
     let formIdResult = null;
 
     // Step 1 : Ambil Data dari CustomerTemp
@@ -170,120 +137,109 @@ export class CustomerRepository extends Repository<Customer> {
       .limit(1)
       .getRawMany();
 
-    const formIdIdentifier = [];
-    const resultLastFormId = fetchDataCustomerLast[0].FormId;
-    if (/[a-zA-Z]+/g.test(resultLastFormId)) {
-      formIdIdentifier['num'] = parseInt(resultLastFormId.match(/\d+/g)) + 1;
-      formIdIdentifier['char'] = String(resultLastFormId.match(/[a-zA-Z]+/g));
-      formIdResult = formIdIdentifier['char'].concat(formIdIdentifier['num']);
-    } else {
-      const number = resultLastFormId;
-      if (number.length != parseInt(number).toString().length) {
-        formIdResult = '0' + (parseInt(number) + 1).toString();
-      } else {
-        formIdResult = `${parseInt(resultLastFormId.match(/\d+/g)) + 1}`;
-      }
-    }
+    formIdResult = fetchDataCustomerLast[0].FormId;
 
     return formIdResult;
   }
 
-  async checkAccountName(fullName: string, address: string) {
+  async checkAccountName(accName: string): Promise<Subscription[]> {
+    return await Subscription.find({
+      where: {
+        CustAccName: accName,
+      },
+    });
+  }
+
+  async getAccountName(fullName: string, address: string): Promise<any> {
     let resultAccName = null;
     const fullNameStr = fullName.toLowerCase().split(' ')[0];
     const randNumber = Math.floor(1000 + Math.random() * 9000);
     resultAccName = fullNameStr + randNumber;
-    const searchByAccName = await Subscription.find({
-      where: {
-        CustAccName: resultAccName,
-      },
-    });
 
-    if (searchByAccName.length > 0) {
-      await this.checkAccountName(fullName, address);
+    const checkAccName = await this.checkAccountName(resultAccName);
+
+    if (checkAccName.length > 0) {
+      await this.getAccountName(fullName, address);
     }
 
     return resultAccName;
   }
 
-  async assignCustomerData(
-    newCustomerValue: NewCustomerInitValue,
-  ): Promise<Customer> {
-    const pelanggan = new Customer();
-    pelanggan.CustId = newCustomerValue.custId;
-    pelanggan.CustPass = hashPasswordMd5();
-    pelanggan.BranchId = newCustomerValue.displayBranchId
-      ? newCustomerValue.displayBranchId
-      : newCustomerValue.branchId;
-    pelanggan.DisplayBranchId = newCustomerValue.displayBranchId;
-    pelanggan.FormId = newCustomerValue.formId;
-    pelanggan.CustName = newCustomerValue.fullName.toUpperCase();
-    pelanggan.CustGender = newCustomerValue.gender;
-    pelanggan.custPOB = newCustomerValue.placeOfBirth.toUpperCase();
-    pelanggan.custDOB = newCustomerValue.dateOfBirth;
-    pelanggan.CustIdType = newCustomerValue.identityType;
-    pelanggan.CustIdNumber = newCustomerValue.identityNumber;
-    pelanggan.CustJobTitle = newCustomerValue.jobTitlePersonal.toUpperCase();
-    pelanggan.CustResAdd1 = addressSplitter(
-      newCustomerValue.identityAddress,
-    )[0].toUpperCase();
-    pelanggan.CustResAdd2 = addressSplitter(
-      newCustomerValue.identityAddress,
-    )[1].toUpperCase();
-    pelanggan.CustResCity = newCustomerValue.identityCity.toUpperCase();
-    pelanggan.CustResZC = newCustomerValue.identityZipCode;
-    pelanggan.CustCompany =
-      newCustomerValue.companyName != null
-        ? newCustomerValue.companyName.toUpperCase()
-        : newCustomerValue.fullName.toUpperCase();
-    pelanggan.CustBusName =
-      newCustomerValue.companyName != null
-        ? newCustomerValue.companyName.toUpperCase()
-        : newCustomerValue.fullName.toUpperCase();
-    pelanggan.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
-    pelanggan.CustOfficeAdd1 =
-      newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[0].toUpperCase()
-        : addressSplitter(
-            newCustomerValue.installationAddress,
-          )[0].toUpperCase();
-    pelanggan.CustOfficeAdd2 =
-      newCustomerValue.companyAddress != null
-        ? addressSplitter(newCustomerValue.companyAddress)[1].toUpperCase()
-        : addressSplitter(
-            newCustomerValue.installationAddress,
-          )[1].toUpperCase();
-    pelanggan.CustOfficeCity =
-      newCustomerValue.companyAddressCity != null
-        ? newCustomerValue.companyAddressCity.toUpperCase()
-        : newCustomerValue.installationAddressCity.toUpperCase();
-    pelanggan.CustOfficeZC =
-      newCustomerValue.companyAddressZipCode != null
-        ? newCustomerValue.companyAddressZipCode
-        : newCustomerValue.installationAddressZipCode;
-    pelanggan.CustBillingAdd = CUSTOMER_BILLING_ADD;
-    pelanggan.CustTechCP = newCustomerValue.technicalName.toUpperCase();
-    pelanggan.CustTechCPPosition =
-      newCustomerValue.technicalJobTitle.toUpperCase();
-    pelanggan.CustBillCP = newCustomerValue.billingName.toUpperCase();
-    pelanggan.CustBillCPPosition =
-      newCustomerValue.billingJobTitle.toUpperCase();
-    pelanggan.CustBillMethodLetter = CUSTOMER_BILLING_METHOD.letter;
-    pelanggan.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
-    pelanggan.CustBillCPEmail = newCustomerValue.billingEmail;
-    pelanggan.CustRegDate = new Date();
-    pelanggan.CustNotes = newCustomerValue.extendNote.toUpperCase();
-    pelanggan.InsertEmpId = newCustomerValue.approvalEmpId;
-    pelanggan.EmpApproval = newCustomerValue.approvalEmpId;
-    pelanggan.CustStatus = CUSTOMER_DEFAULT_STATUS;
-    pelanggan.SalesId = newCustomerValue.salesId;
-    pelanggan.InsertDateTime = new Date();
-    pelanggan.UpdateDateTime = new Date();
-    pelanggan.TaxType = newCustomerValue.taxType;
-    pelanggan.CetakDuluan = newCustomerValue.cetakDuluan;
-    pelanggan.ManagerSalesId = newCustomerValue.managerSalesId;
+  async saveCustomerServiceRepository(
+    createNewServiceCustomersDto: CreateNewServiceCustomersDto,
+    cid,
+  ) {
+    let resultUpdateCustService = null;
 
-    return pelanggan;
+    // Step 1 : Cek Data Pelanggan
+    const dataPelanggan = await this.findOne({ where: { CustId: cid } });
+
+    if (dataPelanggan) {
+      // Step 2 : Check Account ID
+      let accName = null;
+      accName = await this.getAccountName(
+        dataPelanggan.CustName,
+        createNewServiceCustomersDto.installationAddress,
+      );
+
+      const Services = new Subscription();
+      Services.CustId = cid;
+      Services.ServiceId = createNewServiceCustomersDto.packageCode;
+      Services.ServiceType = createNewServiceCustomersDto.packageName;
+      Services.EmpId = createNewServiceCustomersDto.approvalEmpId;
+      Services.PayId = '006';
+      Services.CustStatus = 'BL';
+      Services.CustRegDate = new Date();
+      Services.CustActivationDate = new Date();
+      Services.CustUpdateDate = new Date();
+      Services.CustBlockDate = new Date();
+      Services.CustBlockFrom = true;
+      Services.CustAccName = accName;
+      Services.Opsi = true;
+      Services.StartTrial = new Date();
+      Services.EndTrial = new Date();
+      Services.StatusPerangkat = 'PM';
+      Services.Gabung = false;
+      Services.Tampil = true;
+      Services.TglHarga = new Date();
+      Services.Subscription = createNewServiceCustomersDto.packagePrice;
+      const InvoiceType = await this.dataSource.query(`
+        SELECT itm.InvoiceType FROM InvoiceTypeMonth itm
+        WHERE itm.Month = '${createNewServiceCustomersDto.packageTop}'
+      `);
+      Services.InvoiceType = InvoiceType[0].InvoiceType;
+      Services.InvoicePeriod = `${
+        ('0' + (new Date().getMonth() + 1)).slice(-2) +
+        new Date().getFullYear().toString().slice(-2)
+      }`;
+      Services.InvoiceDate1 = true;
+      Services.AddEmailCharge = false;
+      Services.AccessLog = true;
+      Services.Description = createNewServiceCustomersDto.extendNote;
+      Services.installation_address =
+        createNewServiceCustomersDto.installationAddress.toUpperCase();
+      Services.ContractUntil = new Date();
+      Services.Type = 'Rumah';
+      Services.promo_id = createNewServiceCustomersDto.promoId;
+      Services.BlockTypeId = true;
+      Services.BlockTypeDate = '25';
+      Services.CustBlockFromMenu = 'edit_subs';
+
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
+      try {
+        await queryRunner.manager.save(Services);
+        await queryRunner.commitTransaction();
+        resultUpdateCustService = 'Success';
+      } catch (error) {
+        resultUpdateCustService = null;
+      }
+    } else {
+      resultUpdateCustService = null;
+    }
+
+    return resultUpdateCustService;
   }
 
   getNocFiberId(branchIds: string[], vendorIds: number[]) {
