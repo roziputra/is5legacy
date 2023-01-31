@@ -233,7 +233,7 @@ export class CustomersService {
     if (dataPelanggan) {
       // Step 2 : Check Account ID
       let accName = null;
-      accName = await this.customerRepository.checkAccountName(
+      accName = await this.customerRepository.getAccountName(
         dataPelanggan.CustName,
         createNewServiceCustDto.installationAddress,
       );
@@ -243,26 +243,26 @@ export class CustomersService {
         JSON.stringify(createNewServiceCustDto),
       );
 
-      let serviceData = null;
-      serviceData =
-        await this.customerSubscriptionRepository.assignSubscription(
-          newAssignValueCustomerService,
-          accName,
-        );
+      // let serviceData = null;
+      // serviceData =
+      //   await this.customerSubscriptionRepository.assignSubscription(
+      //     newAssignValueCustomerService,
+      //     accName,
+      //   );
 
-      let serviceHistory = null;
-      serviceHistory =
-        await this.customerServiceHistoryRepository.assignCustomerServiceHistoryNew(
-          newAssignValueCustomerService,
-          serviceData,
-        );
+      // let serviceHistory = null;
+      // serviceHistory =
+      //   await this.customerServiceHistoryRepository.assignCustomerServiceHistoryNew(
+      //     newAssignValueCustomerService,
+      //     serviceData,
+      //   );
 
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
       try {
-        await queryRunner.manager.save(serviceData);
-        await queryRunner.manager.save(serviceHistory);
+        // await queryRunner.manager.save(serviceData);
+        // await queryRunner.manager.save(serviceHistory);
         await queryRunner.commitTransaction();
 
         resultUpdateCustService = 'Success';
@@ -501,7 +501,9 @@ export class CustomersService {
 
     npwpCust.Name = createNewCustomerDto.fullName;
     npwpCust.Address = createNewCustomerDto.identityAddress;
-    npwpCust.NPWP = createNewCustomerDto.npwpNumber;
+    npwpCust.NPWP = createNewCustomerDto.npwpNumber
+      ? createNewCustomerDto.npwpNumber
+      : '';
     npwpCust.CustId = custId;
     npwpCust.Selected = DEFAULT_SELECTED_NPWP_CUSTOMER;
 
