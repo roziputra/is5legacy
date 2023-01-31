@@ -76,7 +76,7 @@ export class CustomersController {
           title: 'Error',
           message: 'Pendaftaran pelanggan tidak dapat diproses',
         },
-        400,
+        500,
       );
     }
   }
