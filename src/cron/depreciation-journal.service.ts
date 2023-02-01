@@ -11,7 +11,7 @@ export class DepreciationJournalService {
     }
 
     const d = new Date();
-    const month = d.getMonth() + 1;
+    const month = d.getMonth();
     const lastDate = new Date(d.getFullYear(), month, 0);
     const year = lastDate.getFullYear();
 
@@ -23,6 +23,7 @@ export class DepreciationJournalService {
     const branches = process.env.DEPRECIATION_BRANCHES || false;
 
     if (!branches) {
+      console.info('no branches');
       return;
     }
 
