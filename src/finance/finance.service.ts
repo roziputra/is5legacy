@@ -1,6 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GetDepreciationFilterDto } from './dto/get-depreciation-filter.dto';
-import { StockInvoiceRepository } from './repositories/stock-invoice-repository';
+import {
+  BRANCH_MEDAN,
+  StockInvoiceRepository,
+} from './repositories/stock-invoice-repository';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { DataSource } from 'typeorm';
@@ -20,9 +23,10 @@ export class FinanceService {
     getDepreciationFilterDto: GetDepreciationFilterDto,
   ) {
     const { branchId, period } = getDepreciationFilterDto;
-    const month = new Date(period.fromDate).getMonth();
+    const month = new Date(period.toDate).getMonth();
+    const fromDate = period.toDate.slice(0, -2) + '01';
     return this.stockInvoiceRepository
-      .getDepreciationStock(period.fromDate, period.toDate, branchId)
+      .getDepreciationStock(fromDate, period.toDate, branchId)
       .then((data) => {
         return data
           .map((stock) => {
@@ -42,6 +46,7 @@ export class FinanceService {
   }
 
   async addDepreciationToGeneralJournal(branchId: string, period) {
+    const monthPeriod = period.toDate.substring(0, 7);
     const transaction = this.dataSource.createQueryRunner();
     await transaction.connect();
     await transaction.startTransaction();
@@ -51,6 +56,11 @@ export class FinanceService {
         period,
       );
 
+      if (!totalDepreciation) {
+        console.info(
+          `there is no depreciation ${monthPeriod} from branch ${branchId}`,
+        );
+      }
       await this.generalJornalRepository.addDepreciationToGeneralJournal(
         transaction,
         totalDepreciation,
@@ -59,6 +69,7 @@ export class FinanceService {
       );
 
       await transaction.commitTransaction();
+      console.info(`add depreciation ${monthPeriod} from branch ${branchId}`);
     } catch (error) {
       await transaction.rollbackTransaction();
       throw new InternalServerErrorException('Failed to add depreciation');
@@ -99,7 +110,13 @@ export class FinanceService {
   async getTotalDepreciationPerMonth(branchId: string, period) {
     const month = new Date(period.fromDate).getMonth();
     const year = period.fromDate.substring(0, 4);
-    const depreciationUntil = await this.getMonthlyDepreciationUntil(year);
+    const depreciationUntil = await this.getMonthlyDepreciationUntil(
+      branchId,
+      year,
+    );
+    if (depreciationUntil == null) {
+      return 0;
+    }
     return await this.stockInvoiceRepository
       .getDepreciationStockStatus(period.fromDate, period.toDate, branchId)
       .then((data) => {
@@ -114,7 +131,10 @@ export class FinanceService {
       });
   }
 
-  async getMonthlyDepreciationUntil(year) {
+  async getMonthlyDepreciationUntil(branchId, year) {
+    if (branchId != BRANCH_MEDAN) {
+      return null;
+    }
     const jsonString = await readFileSync(
       join(process.cwd(), 'src/finance', './depreciation-store.json'),
       'utf-8',

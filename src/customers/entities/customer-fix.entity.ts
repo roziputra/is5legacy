@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'Customer', synchronize: false })
-export class Customer extends BaseEntity {
+@Entity({ name: 'CustomerFix', synchronize: false })
+export class CustomerFix extends BaseEntity {
   @PrimaryColumn()
   CustId: string;
 
@@ -10,9 +10,6 @@ export class Customer extends BaseEntity {
 
   @Column()
   CustPass: string;
-
-  @Column()
-  DisplayBranchId: string;
 
   @Column()
   FormId: string;
@@ -36,10 +33,10 @@ export class Customer extends BaseEntity {
   CustIdNumber: string;
 
   @Column()
-  CustCompany: string;
+  CustJobTitle: string;
 
   @Column()
-  CustJobTitle: string;
+  CustCompany: string;
 
   @Column()
   CustBusName: string;
@@ -84,16 +81,10 @@ export class Customer extends BaseEntity {
   CustBillCP: string;
 
   @Column()
-  CustBillCPPosition: string;
-
-  @Column()
-  CustBillMethodLetter: boolean;
-
-  @Column()
-  CustBillMethodEmail: boolean;
-
-  @Column()
   CustBillCPEmail: string;
+
+  @Column()
+  CustBillCPPosition: string;
 
   @Column()
   CustRegDate: Date;
@@ -111,20 +102,14 @@ export class Customer extends BaseEntity {
   SalesId: string;
 
   @Column()
-  InsertEmpId: string;
+  InsertDateTime: Date;
 
   @Column()
-  InsertDateTime: Date;
+  InsertEmpId: string;
 
   @Column()
   UpdateDateTime: Date;
 
   @Column()
   TaxType: boolean;
-
-  @Column()
-  CetakDuluan: boolean;
-
-  @Column()
-  ManagerSalesId: string;
 }

@@ -28,6 +28,14 @@ import { StockInvoice } from './finance/entities/stock-invoice.entity';
 import { GeneralJournalBatchNo } from './finance/entities/general-journal-batch-no.entity';
 import { GeneralJournal } from './finance/entities/general-journal.entity';
 import { StockModule } from './stock/stock.module';
+import { CustomerInvoiceSignature } from './customers/entities/customer-invoice-signature.entity';
+import { CustomerFix } from './customers/entities/customer-fix.entity';
+import { CustomerProfileHistory } from './customers/entities/customer-profile-history.entity';
+import { CustomerVerifiedEmail } from './customers/entities/customer-verified-email.entity';
+import { CustomerTemp } from './customers/entities/customer-temp.entity';
+import { CustomerGlobalSearch } from './customers/entities/customer-global-search.entity';
+import { CustomerServicesHistoryNew } from './customers/entities/customer-service-history-new.entity';
+import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
 
 @Module({
   imports: [
@@ -60,6 +68,14 @@ import { StockModule } from './stock/stock.module';
         StockInvoice,
         GeneralJournalBatchNo,
         GeneralJournal,
+        CustomerInvoiceSignature,
+        CustomerFix,
+        CustomerProfileHistory,
+        CustomerVerifiedEmail,
+        CustomerTemp,
+        CustomerGlobalSearch,
+        CustomerServicesHistoryNew,
+        InvoiceTypeMonth,
       ],
       synchronize: false,
     }),

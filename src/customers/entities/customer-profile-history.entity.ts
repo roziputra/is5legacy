@@ -1,7 +1,7 @@
 import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 
-@Entity({ name: 'Customer', synchronize: false })
-export class Customer extends BaseEntity {
+@Entity({ name: 'CustomerProfileHistory', synchronize: false })
+export class CustomerProfileHistory extends BaseEntity {
   @PrimaryColumn()
   CustId: string;
 
@@ -24,6 +24,9 @@ export class Customer extends BaseEntity {
   CustGender: string;
 
   @Column()
+  CustJobTitle: string;
+
+  @Column()
   custPOB: string;
 
   @Column({ type: 'date' })
@@ -37,9 +40,6 @@ export class Customer extends BaseEntity {
 
   @Column()
   CustCompany: string;
-
-  @Column()
-  CustJobTitle: string;
 
   @Column()
   CustBusName: string;
