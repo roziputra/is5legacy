@@ -277,19 +277,11 @@ export class CustomersService {
 
     const getLastFormId = await this.customerRepository.getLastFormId(branchId);
 
-    const formIdIdentifier = [];
-    const resultLastFormId = getLastFormId;
-    if (/[a-zA-Z]+/g.test(resultLastFormId)) {
-      formIdIdentifier['num'] = parseInt(resultLastFormId.match(/\d+/g)) + 1;
-      formIdIdentifier['char'] = String(resultLastFormId.match(/[a-zA-Z]+/g));
-      formIdResult = formIdIdentifier['char'].concat(formIdIdentifier['num']);
+    if (/[a-zA-Z]+/g.test(getLastFormId)) {
+      formIdResult = null;
     } else {
-      const number = resultLastFormId;
-      if (number.length != parseInt(number).toString().length) {
-        formIdResult = '0' + (parseInt(number) + 1).toString();
-      } else {
-        formIdResult = `${parseInt(resultLastFormId.match(/\d+/g)) + 1}`;
-      }
+      const number = getLastFormId;
+      formIdResult = (parseInt(number) + 1).toString();
     }
 
     return formIdResult;
