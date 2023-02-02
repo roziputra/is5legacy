@@ -186,6 +186,9 @@ export class CustomersService {
 
       // Step 12 : Assign Data Pelanggan ke Tabel CustomerGlobalSearch
       let customerGlobalSearch = null;
+      createNewCustomerDto['custId'] = custId;
+      createNewCustomerDto['formId'] = formId;
+      createNewCustomerDto = JSON.parse(JSON.stringify(createNewCustomerDto));
       customerGlobalSearch = await this.saveCustomerGlobalSearch(
         queryRunner,
         createNewCustomerDto,

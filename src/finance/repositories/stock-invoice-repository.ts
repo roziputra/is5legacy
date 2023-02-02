@@ -99,3 +99,4 @@ export const NOT_REVERSE = 0;
 export const NO_RNo = 0;
 export const TYPE_PERALATAN = 1;
 export const INVOICE_APPROVED = 1;
+export const BRANCH_MEDAN = '020';

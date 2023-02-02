@@ -9,12 +9,12 @@ export class CronService {
     private generalTicketExpiredDocService: GeneralTicketExpiredDocService,
     private depreciationJournalService: DepreciationJournalService,
   ) {}
-  @Cron('0 20 * * * *')
+  @Cron('20 2 * * *')
   generalTicketExpiredDoc() {
     this.generalTicketExpiredDocService.runCron();
   }
 
-  @Cron('* 2 1 * * *')
+  @Cron('* 2 1 * *')
   depreciationJournal() {
     this.depreciationJournalService.runCron();
   }
