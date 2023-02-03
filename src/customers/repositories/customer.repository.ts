@@ -126,13 +126,12 @@ export class CustomerRepository extends Repository<Customer> {
     let formIdResult = null;
 
     // Step 1 : Ambil Data dari CustomerTemp
-    const fetchDataCustomerLast = await Subscription.createQueryBuilder('cs')
+    const fetchDataCustomerLast = await this.createQueryBuilder('c')
       .select('c.FormId FormId')
-      .innerJoin('Customer', 'c', 'cs.CustId = c.CustId')
       .where('IFNULL(c.DisplayBranchId, c.BranchId) = :branchId', {
         branchId: branchId,
       })
-      .orderBy('cs.CustServId', 'DESC')
+      .orderBy('c.CustId', 'DESC')
       .limit(1)
       .getRawMany();
 
