@@ -6,7 +6,7 @@ import { Is5LegacyValidationException } from 'src/exceptions/is5-legacy-validati
 @Injectable()
 export class Is5LegacyValidationPipe implements PipeTransform<any> {
   async transform(value: any, { metatype }: ArgumentMetadata) {
-    if (!metatype) {
+    if (!metatype || !this.toValidate(metatype)) {
       return value;
     }
     const object = plainToInstance(metatype, value);
@@ -15,5 +15,10 @@ export class Is5LegacyValidationPipe implements PipeTransform<any> {
       throw new Is5LegacyValidationException(errors);
     }
     return value;
+  }
+
+  private toValidate(metatype: any): boolean {
+    const types: any[] = [String, Boolean, Number, Array, Object];
+    return !types.includes(metatype);
   }
 }
