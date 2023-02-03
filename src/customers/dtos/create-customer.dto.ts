@@ -145,6 +145,14 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
+  firstInvoicePeriod: string;
+
+  @IsNotEmpty()
+  @IsString()
+  contractEnd: string;
+
+  @IsNotEmpty()
+  @IsString()
   salesId: string;
 
   @IsNotEmpty()

@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -61,7 +60,6 @@ export class CustomersController {
     const saveNewCustomer = await this.customersService.saveNewCustomerServices(
       createNewCustomerDto,
     );
-
     if (saveNewCustomer)
       return {
         title: 'Berhasil',

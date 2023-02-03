@@ -727,6 +727,7 @@ export class CustomersService {
     services.Tampil = SERVICE_DEFAULT_SHOW_STATUS;
     services.TglHarga = new Date();
     services.Subscription = createNewServiceCustomerDto.packagePrice;
+
     services.InvoiceType = (
       await InvoiceTypeMonth.findOne({
         where: {
@@ -734,10 +735,9 @@ export class CustomersService {
         },
       })
     ).InvoiceType.toString();
-    services.InvoicePeriod = `${
-      ('0' + (new Date().getMonth() + 1)).slice(-2) +
-      new Date().getFullYear().toString().slice(-2)
-    }`;
+    services.InvoicePeriod = createNewServiceCustomerDto.firstInvoicePeriod;
+    services.ContractUntil = new Date(createNewServiceCustomerDto.contractEnd);
+
     services.InvoiceDate1 = SERVICE_DEFAULT_INVOICE_DATE_STATUS;
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
@@ -745,7 +745,6 @@ export class CustomersService {
     services.Surveyor = createNewServiceCustomerDto.surveyorId;
     services.installation_address =
       createNewServiceCustomerDto.installationAddress;
-    services.ContractUntil = new Date();
     services.Type = SERVICE_DEFAULT_INSTALLATION_TYPE;
     services.promo_id = createNewServiceCustomerDto.promoId;
     services.BlockTypeId = SERVICE_DEFAULT_BLOCK_TYPE_STATUS;
