@@ -99,9 +99,6 @@ export class Customer extends BaseEntity {
   CustRegDate: Date;
 
   @Column()
-  CustNotes: string;
-
-  @Column()
   EmpApproval: string;
 
   @Column()

@@ -112,4 +112,7 @@ export class Subscription extends BaseEntity {
 
   @Column()
   PPN: string;
+
+  @Column()
+  Surveyor: string;
 }

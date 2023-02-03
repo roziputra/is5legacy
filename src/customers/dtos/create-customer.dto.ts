@@ -153,6 +153,10 @@ export class CreateNewCustomerDto {
 
   @IsNotEmpty()
   @IsString()
+  surveyorId: string;
+
+  @IsNotEmpty()
+  @IsString()
   extendNote: string;
 
   @IsNotEmpty()
