@@ -1,10 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { GetDepreciationFilterDto } from 'src/finance/dto/get-depreciation-filter.dto';
 import { FinanceService } from 'src/finance/finance.service';
@@ -16,7 +10,7 @@ export class StockController {
 
   @Get('depreciation-list')
   async getDepreciationData(
-    @Query(new ValidationPipe({ transform: true }))
+    @Query()
     getDepreciationFilterDto: GetDepreciationFilterDto,
   ): Promise<any> {
     return this.financeService.getDepreciationData(getDepreciationFilterDto);
