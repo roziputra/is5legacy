@@ -117,106 +117,108 @@ export class CustomersService {
       createNewCustomerDto.installationAddress,
     );
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    if (custId != null && formId != null) {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-    try {
-      // Step 4 : Assign Data Pelanggan ke Tabel Customer dan Simpan
-      let customerData = null;
-      customerData = await this.saveNewCustomer(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+      try {
+        // Step 4 : Assign Data Pelanggan ke Tabel Customer dan Simpan
+        let customerData = null;
+        customerData = await this.saveNewCustomer(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 5 : Update Customer Temp To Taken = 1
-      let customerTemp = null;
-      customerTemp = await this.updateCustomerTemp(queryRunner, custId);
+        // Step 5 : Update Customer Temp To Taken = 1
+        let customerTemp = null;
+        customerTemp = await this.updateCustomerTemp(queryRunner, custId);
 
-      // Step 6 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature dan Simpan
-      let customerInvoiceSign = null;
-      customerInvoiceSign = await this.saveCustomerInvoiceSignature(
-        queryRunner,
-        custId,
-      );
+        // Step 6 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature dan Simpan
+        let customerInvoiceSign = null;
+        customerInvoiceSign = await this.saveCustomerInvoiceSignature(
+          queryRunner,
+          custId,
+        );
 
-      // Step 7 : Assign Data Pelanggan ke Tabel CustomerFix dan Simpan
-      let customerFix = null;
-      customerFix = await this.saveCustomerFix(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+        // Step 7 : Assign Data Pelanggan ke Tabel CustomerFix dan Simpan
+        let customerFix = null;
+        customerFix = await this.saveCustomerFix(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 8 : Assign Data NPWP ke Tabel NPWP dan Simpan
-      let npwpCustomer = null;
-      npwpCustomer = await this.saveNpwpCustomer(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 8 : Assign Data NPWP ke Tabel NPWP dan Simpan
+        let npwpCustomer = null;
+        npwpCustomer = await this.saveNpwpCustomer(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 9 : Assign Data SMS Phonebook ke SMS Phonebook dan Simpan
-      let smsPhonebook = null;
-      smsPhonebook = await this.saveSmsPhonebook(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 9 : Assign Data SMS Phonebook ke SMS Phonebook dan Simpan
+        let smsPhonebook = null;
+        smsPhonebook = await this.saveSmsPhonebook(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 10 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
-      let customerProfileHistory = null;
-      customerProfileHistory = await this.saveCustomerProfileHistory(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+        // Step 10 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
+        let customerProfileHistory = null;
+        customerProfileHistory = await this.saveCustomerProfileHistory(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 11 : Assign Data Pelanggan ke Tabel CustomerVerifiedEmail
-      let customerVerifiedEmail = null;
-      customerVerifiedEmail = await this.saveCustomerVerifiedEmail(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 11 : Assign Data Pelanggan ke Tabel CustomerVerifiedEmail
+        let customerVerifiedEmail = null;
+        customerVerifiedEmail = await this.saveCustomerVerifiedEmail(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 12 : Assign Data Pelanggan ke Tabel CustomerGlobalSearch
-      let customerGlobalSearch = null;
-      createNewCustomerDto['custId'] = custId;
-      createNewCustomerDto['formId'] = formId;
-      createNewCustomerDto = JSON.parse(JSON.stringify(createNewCustomerDto));
-      customerGlobalSearch = await this.saveCustomerGlobalSearch(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 12 : Assign Data Pelanggan ke Tabel CustomerGlobalSearch
+        let customerGlobalSearch = null;
+        createNewCustomerDto['custId'] = custId;
+        createNewCustomerDto['formId'] = formId;
+        createNewCustomerDto = JSON.parse(JSON.stringify(createNewCustomerDto));
+        customerGlobalSearch = await this.saveCustomerGlobalSearch(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 13 : Assign Data Layanan ke Tabel CustomerService
-      let customerService = null;
-      customerService = await this.saveCustomerService(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        accName,
-      );
+        // Step 13 : Assign Data Layanan ke Tabel CustomerService
+        let customerService = null;
+        customerService = await this.saveCustomerService(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          accName,
+        );
 
-      // Step 14 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
-      let customerServiceHistoryNew = null;
-      customerServiceHistoryNew = await this.saveCustomerServiceHistoryNew(
-        queryRunner,
-        createNewCustomerDto,
-        customerService,
-      );
+        // Step 14 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
+        let customerServiceHistoryNew = null;
+        customerServiceHistoryNew = await this.saveCustomerServiceHistoryNew(
+          queryRunner,
+          createNewCustomerDto,
+          customerService,
+        );
 
-      await queryRunner.commitTransaction();
-      resultSaveDataCustomer = custId;
-    } catch (error) {
-      resultSaveDataCustomer = null;
-      await queryRunner.rollbackTransaction();
+        await queryRunner.commitTransaction();
+        resultSaveDataCustomer = custId;
+      } catch (error) {
+        resultSaveDataCustomer = null;
+        await queryRunner.rollbackTransaction();
+      }
     }
 
     return resultSaveDataCustomer;
@@ -368,7 +370,6 @@ export class CustomersService {
     customer.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
     customer.CustBillCPEmail = createNewCustomerDto.billingEmail;
     customer.CustRegDate = new Date();
-    customer.CustNotes = createNewCustomerDto.extendNote;
     customer.InsertEmpId = createNewCustomerDto.approvalEmpId;
     customer.EmpApproval = createNewCustomerDto.approvalEmpId;
     customer.CustStatus = CUSTOMER_DEFAULT_STATUS;
@@ -741,6 +742,7 @@ export class CustomersService {
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
     services.Description = createNewServiceCustomerDto.extendNote;
+    services.Surveyor = createNewServiceCustomerDto.surveyorId;
     services.installation_address =
       createNewServiceCustomerDto.installationAddress;
     services.ContractUntil = new Date();
