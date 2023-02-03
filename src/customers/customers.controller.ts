@@ -53,7 +53,7 @@ export class CustomersController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   async saveNewCustomer(
     @Body() createNewCustomerDto: CreateNewCustomerDto,
   ): Promise<any> {
