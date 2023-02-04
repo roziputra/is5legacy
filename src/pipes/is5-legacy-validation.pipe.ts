@@ -10,11 +10,12 @@ export class Is5LegacyValidationPipe implements PipeTransform<any> {
       return value;
     }
     const object = plainToInstance(metatype, value);
+
     const errors = await validate(object);
     if (errors.length > 0) {
       throw new Is5LegacyValidationException(errors);
     }
-    return value;
+    return object;
   }
 
   private toValidate(metatype: any): boolean {
