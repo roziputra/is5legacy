@@ -53,7 +53,6 @@ export class CustomersController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ transform: true }))
   async saveNewCustomer(
     @Body() createNewCustomerDto: CreateNewCustomerDto,
   ): Promise<any> {
@@ -81,7 +80,6 @@ export class CustomersController {
 
   @Post(':customer_id/services')
   @HttpCode(201)
-  @UsePipes(new ValidationPipe({ transform: true }))
   async saveDataCustServices(
     @Param('customer_id') customer_id,
     @Body() createNewServiceCustomersDto: CreateNewServiceCustomersDto,
