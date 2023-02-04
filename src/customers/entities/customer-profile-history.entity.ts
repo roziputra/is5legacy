@@ -51,9 +51,6 @@ export class CustomerProfileHistory extends BaseEntity {
   CustResAdd1: string;
 
   @Column()
-  CustResAdd2: string;
-
-  @Column()
   CustResCity: string;
 
   @Column()
@@ -61,9 +58,6 @@ export class CustomerProfileHistory extends BaseEntity {
 
   @Column()
   CustOfficeAdd1: string;
-
-  @Column()
-  CustOfficeAdd2: string;
 
   @Column()
   CustOfficeCity: string;

@@ -63,7 +63,6 @@ import { CustomerVerifiedEmail } from './entities/customer-verified-email.entity
 import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
-import { addressSplitter } from '../utils/address-splitter.util';
 
 @Injectable()
 export class CustomersService {
@@ -328,12 +327,7 @@ export class CustomersService {
     customer.CustIdType = createNewCustomerDto.identityType;
     customer.CustIdNumber = createNewCustomerDto.identityNumber;
     customer.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    customer.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    customer.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    customer.CustResAdd1 = createNewCustomerDto.identityAddress;
     customer.CustResCity = createNewCustomerDto.identityCity;
     customer.CustResZC = createNewCustomerDto.identityZipCode;
     customer.CustCompany =
@@ -347,12 +341,8 @@ export class CustomersService {
     customer.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     customer.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    customer.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     customer.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
@@ -429,12 +419,7 @@ export class CustomersService {
     customerFix.CustIdType = createNewCustomerDto.identityType;
     customerFix.CustIdNumber = createNewCustomerDto.identityNumber;
     customerFix.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    customerFix.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    customerFix.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    customerFix.CustResAdd1 = createNewCustomerDto.identityAddress;
     customerFix.CustResCity = createNewCustomerDto.identityCity;
     customerFix.CustResZC = createNewCustomerDto.identityZipCode;
     customerFix.CustCompany =
@@ -448,12 +433,8 @@ export class CustomersService {
     customerFix.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     customerFix.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    customerFix.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     customerFix.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
@@ -573,12 +554,7 @@ export class CustomersService {
     custProfileHistory.CustIdType = createNewCustomerDto.identityType;
     custProfileHistory.CustIdNumber = createNewCustomerDto.identityNumber;
     custProfileHistory.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    custProfileHistory.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    custProfileHistory.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    custProfileHistory.CustResAdd1 = createNewCustomerDto.identityAddress;
     custProfileHistory.CustResCity = createNewCustomerDto.identityCity;
     custProfileHistory.CustResZC = createNewCustomerDto.identityZipCode;
     custProfileHistory.CustCompany =
@@ -592,12 +568,8 @@ export class CustomersService {
     custProfileHistory.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     custProfileHistory.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    custProfileHistory.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     custProfileHistory.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
