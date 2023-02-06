@@ -15,4 +15,19 @@ export class StockController {
   ): Promise<any> {
     return this.financeService.getDepreciationData(getDepreciationFilterDto);
   }
+
+  /**
+   *
+   * for testing total depreciation result
+   * @param getDepreciationFilterDto
+   * @returns
+   */
+  @Get('total-depreciation')
+  async totalDepreciationPerMonth(
+    @Query()
+    getDepreciationFilterDto: GetDepreciationFilterDto,
+  ): Promise<any> {
+    const { branchId, period } = getDepreciationFilterDto;
+    return this.financeService.getTotalDepreciationPerMonth(branchId, period);
+  }
 }
