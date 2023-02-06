@@ -4,11 +4,7 @@ import { StockInvoiceRepository } from './repositories/stock-invoice-repository'
 import { GeneralJournalRepository } from './repositories/general-journal-repository';
 
 @Module({
-  providers: [
-    FinanceService,
-    StockInvoiceRepository,
-    GeneralJournalRepository,
-  ],
+  providers: [FinanceService, StockInvoiceRepository, GeneralJournalRepository],
   exports: [FinanceService],
 })
 export class FinanceModule {}

@@ -473,8 +473,8 @@ export class CustomersService {
   ): Promise<any> {
     const npwpCust = new NPWPCustomer();
 
-    npwpCust.Name = createNewCustomerDto.fullName;
-    npwpCust.Address = createNewCustomerDto.identityAddress;
+    npwpCust.Name = createNewCustomerDto.companyName;
+    npwpCust.Address = createNewCustomerDto.companyAddress;
     npwpCust.NPWP = createNewCustomerDto.npwpNumber
       ? createNewCustomerDto.npwpNumber
       : '';

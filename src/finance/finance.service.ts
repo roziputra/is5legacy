@@ -123,7 +123,7 @@ export class FinanceService {
         return data.reduce((total, item) => {
           const amount = Math.round(item.Price);
           const depreciation =
-            amount * DEPRECIATION_PERSENTAGE * (1 - month / 12); // rumus penyusutan
+            ((amount * DEPRECIATION_PERSENTAGE) / 100) * (1 - month / 12); // rumus penyusutan
           const depreciationPerMonth = Math.round(depreciation / 12); // div 12 month
           total = total + depreciationPerMonth + depreciationUntil[item.Status];
           return total;
