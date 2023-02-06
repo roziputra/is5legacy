@@ -36,6 +36,7 @@ import { CustomerTemp } from './customers/entities/customer-temp.entity';
 import { CustomerGlobalSearch } from './customers/entities/customer-global-search.entity';
 import { CustomerServicesHistoryNew } from './customers/entities/customer-service-history-new.entity';
 import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
+import { CustomerSalutation } from './customers/entities/salutation.entity';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity
         CustomerGlobalSearch,
         CustomerServicesHistoryNew,
         InvoiceTypeMonth,
+        CustomerSalutation,
       ],
       synchronize: false,
     }),

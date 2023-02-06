@@ -6,7 +6,6 @@ import {
   Param,
   Query,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GetPromoFilterDto } from './dto/get-promo-filter.dto';
 import { SalesPromoService } from './sales-promo.service';
@@ -19,10 +18,7 @@ export class SalesPromoController {
 
   @Get()
   @HttpCode(200)
-  async getAllDataPromo(
-    @Query(new ValidationPipe({ transform: true }))
-    filterPromoDto: GetPromoFilterDto,
-  ) {
+  async getAllDataPromo(@Query() filterPromoDto: GetPromoFilterDto) {
     try {
       const resultAllPromo = await this.salesPromoService.getAllPromoService(
         filterPromoDto,

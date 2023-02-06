@@ -25,6 +25,19 @@ import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
+  @Get('salutations')
+  async getListSalutation(): Promise<any> {
+    const resultAllSalutations =
+      await this.customersService.getListSalutationService();
+    if (Object.keys(resultAllSalutations).length !== 0)
+      return {
+        data: resultAllSalutations,
+      };
+    else {
+      throw new NotFoundException('Data salutation tidak ditemukan');
+    }
+  }
+
   @Get('operator-subscriptions')
   @UseInterceptors(OperatorSubscriptionInterceptor)
   async getOperatorSubscription(

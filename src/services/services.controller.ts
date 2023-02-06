@@ -19,10 +19,7 @@ export class ServicesController {
 
   @Get()
   @HttpCode(200)
-  async getAllServices(
-    @Query(new ValidationPipe({ transform: true }))
-    filterServiceDto: GetServiceFilterDto,
-  ) {
+  async getAllServices(@Query() filterServiceDto: GetServiceFilterDto) {
     try {
       const resultAllServices =
         await this.servicesService.getAllServicesService(filterServiceDto);
