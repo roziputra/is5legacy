@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class GetDepreciationFilterDto {
   @IsNotEmpty()
@@ -17,5 +17,7 @@ export class GetDepreciationFilterDto {
       toDate: `${year}-${('0' + month).slice(-2)}-${lastDate}`,
     };
   })
-  period: any;
+  period: Period;
 }
+
+export type Period = { fromDate: string; toDate: string };
