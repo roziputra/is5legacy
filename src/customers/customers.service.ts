@@ -63,6 +63,7 @@ import { CustomerVerifiedEmail } from './entities/customer-verified-email.entity
 import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
+import { CustomerSalutation } from './entities/salutation.entity';
 
 @Injectable()
 export class CustomersService {
@@ -72,6 +73,10 @@ export class CustomersService {
     private nocFiberRepository: NOCFiberRepository,
     private dataSource: DataSource,
   ) {}
+
+  async getListSalutationService(): Promise<any> {
+    return await CustomerSalutation.find();
+  }
 
   async getOperatorSubscriptions(
     getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
