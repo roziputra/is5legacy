@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -25,6 +24,19 @@ import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 @Controller('customers')
 export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
+
+  @Get('salutations')
+  async getListSalutation(): Promise<any> {
+    const resultAllSalutations =
+      await this.customersService.getListSalutationService();
+    if (Object.keys(resultAllSalutations).length !== 0)
+      return {
+        data: resultAllSalutations,
+      };
+    else {
+      throw new NotFoundException('Data salutation tidak ditemukan');
+    }
+  }
 
   @Get('operator-subscriptions')
   @UseInterceptors(OperatorSubscriptionInterceptor)
@@ -54,14 +66,12 @@ export class CustomersController {
 
   @Post()
   @HttpCode(201)
-  @UsePipes(ValidationPipe)
   async saveNewCustomer(
     @Body() createNewCustomerDto: CreateNewCustomerDto,
   ): Promise<any> {
     const saveNewCustomer = await this.customersService.saveNewCustomerServices(
       createNewCustomerDto,
     );
-
     if (saveNewCustomer)
       return {
         title: 'Berhasil',
@@ -83,7 +93,6 @@ export class CustomersController {
 
   @Post(':customer_id/services')
   @HttpCode(201)
-  @UsePipes(ValidationPipe)
   async saveDataCustServices(
     @Param('customer_id') customer_id,
     @Body() createNewServiceCustomersDto: CreateNewServiceCustomersDto,

@@ -1,6 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
 import { Response } from 'express';
 import { Is5LegacyException } from './is5-legacy.exception';
+import { Is5LegacyValidationException } from './is5-legacy-validation.exception';
 
 @Catch(Is5LegacyException)
 export class Is5LegacyExceptionFilter implements ExceptionFilter {
@@ -10,9 +11,14 @@ export class Is5LegacyExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    response.status(status).json({
+    const responseBody = {
       title: exceptionResponse['title'],
       message: exception.message,
-    });
+    }
+
+    if (exception instanceof Is5LegacyValidationException) {
+      responseBody['errors'] = exceptionResponse['errors']
+    }
+    response.status(status).json(responseBody);
   }
 }

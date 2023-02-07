@@ -51,9 +51,6 @@ export class Customer extends BaseEntity {
   CustResAdd1: string;
 
   @Column()
-  CustResAdd2: string;
-
-  @Column()
   CustResCity: string;
 
   @Column()
@@ -61,9 +58,6 @@ export class Customer extends BaseEntity {
 
   @Column()
   CustOfficeAdd1: string;
-
-  @Column()
-  CustOfficeAdd2: string;
 
   @Column()
   CustOfficeCity: string;
@@ -97,9 +91,6 @@ export class Customer extends BaseEntity {
 
   @Column()
   CustRegDate: Date;
-
-  @Column()
-  CustNotes: string;
 
   @Column()
   EmpApproval: string;

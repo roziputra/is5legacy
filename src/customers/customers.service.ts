@@ -63,7 +63,7 @@ import { CustomerVerifiedEmail } from './entities/customer-verified-email.entity
 import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
-import { addressSplitter } from '../utils/address-splitter.util';
+import { CustomerSalutation } from './entities/salutation.entity';
 
 @Injectable()
 export class CustomersService {
@@ -73,6 +73,10 @@ export class CustomersService {
     private nocFiberRepository: NOCFiberRepository,
     private dataSource: DataSource,
   ) {}
+
+  async getListSalutationService(): Promise<any> {
+    return await CustomerSalutation.find();
+  }
 
   async getOperatorSubscriptions(
     getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
@@ -117,106 +121,108 @@ export class CustomersService {
       createNewCustomerDto.installationAddress,
     );
 
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
+    if (custId != null && formId != null) {
+      const queryRunner = this.dataSource.createQueryRunner();
+      await queryRunner.connect();
+      await queryRunner.startTransaction();
 
-    try {
-      // Step 4 : Assign Data Pelanggan ke Tabel Customer dan Simpan
-      let customerData = null;
-      customerData = await this.saveNewCustomer(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+      try {
+        // Step 4 : Assign Data Pelanggan ke Tabel Customer dan Simpan
+        let customerData = null;
+        customerData = await this.saveNewCustomer(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 5 : Update Customer Temp To Taken = 1
-      let customerTemp = null;
-      customerTemp = await this.updateCustomerTemp(queryRunner, custId);
+        // Step 5 : Update Customer Temp To Taken = 1
+        let customerTemp = null;
+        customerTemp = await this.updateCustomerTemp(queryRunner, custId);
 
-      // Step 6 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature dan Simpan
-      let customerInvoiceSign = null;
-      customerInvoiceSign = await this.saveCustomerInvoiceSignature(
-        queryRunner,
-        custId,
-      );
+        // Step 6 : Assign Data Pelanggan ke Tabel CustomerInvoiceSignature dan Simpan
+        let customerInvoiceSign = null;
+        customerInvoiceSign = await this.saveCustomerInvoiceSignature(
+          queryRunner,
+          custId,
+        );
 
-      // Step 7 : Assign Data Pelanggan ke Tabel CustomerFix dan Simpan
-      let customerFix = null;
-      customerFix = await this.saveCustomerFix(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+        // Step 7 : Assign Data Pelanggan ke Tabel CustomerFix dan Simpan
+        let customerFix = null;
+        customerFix = await this.saveCustomerFix(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 8 : Assign Data NPWP ke Tabel NPWP dan Simpan
-      let npwpCustomer = null;
-      npwpCustomer = await this.saveNpwpCustomer(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 8 : Assign Data NPWP ke Tabel NPWP dan Simpan
+        let npwpCustomer = null;
+        npwpCustomer = await this.saveNpwpCustomer(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 9 : Assign Data SMS Phonebook ke SMS Phonebook dan Simpan
-      let smsPhonebook = null;
-      smsPhonebook = await this.saveSmsPhonebook(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 9 : Assign Data SMS Phonebook ke SMS Phonebook dan Simpan
+        let smsPhonebook = null;
+        smsPhonebook = await this.saveSmsPhonebook(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 10 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
-      let customerProfileHistory = null;
-      customerProfileHistory = await this.saveCustomerProfileHistory(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        formId,
-      );
+        // Step 10 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
+        let customerProfileHistory = null;
+        customerProfileHistory = await this.saveCustomerProfileHistory(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          formId,
+        );
 
-      // Step 11 : Assign Data Pelanggan ke Tabel CustomerVerifiedEmail
-      let customerVerifiedEmail = null;
-      customerVerifiedEmail = await this.saveCustomerVerifiedEmail(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 11 : Assign Data Pelanggan ke Tabel CustomerVerifiedEmail
+        let customerVerifiedEmail = null;
+        customerVerifiedEmail = await this.saveCustomerVerifiedEmail(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 12 : Assign Data Pelanggan ke Tabel CustomerGlobalSearch
-      let customerGlobalSearch = null;
-      createNewCustomerDto['custId'] = custId;
-      createNewCustomerDto['formId'] = formId;
-      createNewCustomerDto = JSON.parse(JSON.stringify(createNewCustomerDto));
-      customerGlobalSearch = await this.saveCustomerGlobalSearch(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-      );
+        // Step 12 : Assign Data Pelanggan ke Tabel CustomerGlobalSearch
+        let customerGlobalSearch = null;
+        createNewCustomerDto['custId'] = custId;
+        createNewCustomerDto['formId'] = formId;
+        createNewCustomerDto = JSON.parse(JSON.stringify(createNewCustomerDto));
+        customerGlobalSearch = await this.saveCustomerGlobalSearch(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+        );
 
-      // Step 13 : Assign Data Layanan ke Tabel CustomerService
-      let customerService = null;
-      customerService = await this.saveCustomerService(
-        queryRunner,
-        createNewCustomerDto,
-        custId,
-        accName,
-      );
+        // Step 13 : Assign Data Layanan ke Tabel CustomerService
+        let customerService = null;
+        customerService = await this.saveCustomerService(
+          queryRunner,
+          createNewCustomerDto,
+          custId,
+          accName,
+        );
 
-      // Step 14 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
-      let customerServiceHistoryNew = null;
-      customerServiceHistoryNew = await this.saveCustomerServiceHistoryNew(
-        queryRunner,
-        createNewCustomerDto,
-        customerService,
-      );
+        // Step 14 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
+        let customerServiceHistoryNew = null;
+        customerServiceHistoryNew = await this.saveCustomerServiceHistoryNew(
+          queryRunner,
+          createNewCustomerDto,
+          customerService,
+        );
 
-      await queryRunner.commitTransaction();
-      resultSaveDataCustomer = custId;
-    } catch (error) {
-      resultSaveDataCustomer = null;
-      await queryRunner.rollbackTransaction();
+        await queryRunner.commitTransaction();
+        resultSaveDataCustomer = custId;
+      } catch (error) {
+        resultSaveDataCustomer = null;
+        await queryRunner.rollbackTransaction();
+      }
     }
 
     return resultSaveDataCustomer;
@@ -277,19 +283,15 @@ export class CustomersService {
 
     const getLastFormId = await this.customerRepository.getLastFormId(branchId);
 
-    const formIdIdentifier = [];
-    const resultLastFormId = getLastFormId;
-    if (/[a-zA-Z]+/g.test(resultLastFormId)) {
-      formIdIdentifier['num'] = parseInt(resultLastFormId.match(/\d+/g)) + 1;
-      formIdIdentifier['char'] = String(resultLastFormId.match(/[a-zA-Z]+/g));
-      formIdResult = formIdIdentifier['char'].concat(formIdIdentifier['num']);
+    if (/[a-zA-Z]+/g.test(getLastFormId)) {
+      const formIdIdentifier = [];
+      formIdIdentifier['str'] = getLastFormId.match(/[a-zA-Z]+/g);
+      formIdIdentifier['num'] =
+        parseInt(getLastFormId.match(/[0-9]+/g).toString()) + 1;
+      formIdResult = formIdIdentifier['str'] + formIdIdentifier['num'];
     } else {
-      const number = resultLastFormId;
-      if (number.length != parseInt(number).toString().length) {
-        formIdResult = '0' + (parseInt(number) + 1).toString();
-      } else {
-        formIdResult = `${parseInt(resultLastFormId.match(/\d+/g)) + 1}`;
-      }
+      const number = getLastFormId;
+      formIdResult = (parseInt(number) + 1).toString();
     }
 
     return formIdResult;
@@ -334,12 +336,7 @@ export class CustomersService {
     customer.CustIdType = createNewCustomerDto.identityType;
     customer.CustIdNumber = createNewCustomerDto.identityNumber;
     customer.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    customer.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    customer.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    customer.CustResAdd1 = createNewCustomerDto.identityAddress;
     customer.CustResCity = createNewCustomerDto.identityCity;
     customer.CustResZC = createNewCustomerDto.identityZipCode;
     customer.CustCompany =
@@ -353,12 +350,8 @@ export class CustomersService {
     customer.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     customer.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    customer.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     customer.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
@@ -376,7 +369,6 @@ export class CustomersService {
     customer.CustBillMethodEmail = CUSTOMER_BILLING_METHOD.email;
     customer.CustBillCPEmail = createNewCustomerDto.billingEmail;
     customer.CustRegDate = new Date();
-    customer.CustNotes = createNewCustomerDto.extendNote;
     customer.InsertEmpId = createNewCustomerDto.approvalEmpId;
     customer.EmpApproval = createNewCustomerDto.approvalEmpId;
     customer.CustStatus = CUSTOMER_DEFAULT_STATUS;
@@ -436,12 +428,7 @@ export class CustomersService {
     customerFix.CustIdType = createNewCustomerDto.identityType;
     customerFix.CustIdNumber = createNewCustomerDto.identityNumber;
     customerFix.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    customerFix.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    customerFix.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    customerFix.CustResAdd1 = createNewCustomerDto.identityAddress;
     customerFix.CustResCity = createNewCustomerDto.identityCity;
     customerFix.CustResZC = createNewCustomerDto.identityZipCode;
     customerFix.CustCompany =
@@ -455,12 +442,8 @@ export class CustomersService {
     customerFix.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     customerFix.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    customerFix.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     customerFix.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
@@ -495,8 +478,8 @@ export class CustomersService {
   ): Promise<any> {
     const npwpCust = new NPWPCustomer();
 
-    npwpCust.Name = createNewCustomerDto.fullName;
-    npwpCust.Address = createNewCustomerDto.identityAddress;
+    npwpCust.Name = createNewCustomerDto.companyName;
+    npwpCust.Address = createNewCustomerDto.companyAddress;
     npwpCust.NPWP = createNewCustomerDto.npwpNumber
       ? createNewCustomerDto.npwpNumber
       : '';
@@ -580,12 +563,7 @@ export class CustomersService {
     custProfileHistory.CustIdType = createNewCustomerDto.identityType;
     custProfileHistory.CustIdNumber = createNewCustomerDto.identityNumber;
     custProfileHistory.CustJobTitle = createNewCustomerDto.jobTitlePersonal;
-    custProfileHistory.CustResAdd1 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[0];
-    custProfileHistory.CustResAdd2 = addressSplitter(
-      createNewCustomerDto.identityAddress,
-    )[1];
+    custProfileHistory.CustResAdd1 = createNewCustomerDto.identityAddress;
     custProfileHistory.CustResCity = createNewCustomerDto.identityCity;
     custProfileHistory.CustResZC = createNewCustomerDto.identityZipCode;
     custProfileHistory.CustCompany =
@@ -599,12 +577,8 @@ export class CustomersService {
     custProfileHistory.BusId = CUSTOMER_DEFAULT_BUSINESS_TYPE_ID; // BusId adalah Bussiness Id Type di IS dan defaultnya adalah others
     custProfileHistory.CustOfficeAdd1 =
       createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[0]
-        : addressSplitter(createNewCustomerDto.installationAddress)[0];
-    custProfileHistory.CustOfficeAdd2 =
-      createNewCustomerDto.companyAddress != null
-        ? addressSplitter(createNewCustomerDto.companyAddress)[1]
-        : addressSplitter(createNewCustomerDto.installationAddress)[1];
+        ? createNewCustomerDto.companyAddress
+        : createNewCustomerDto.installationAddress;
     custProfileHistory.CustOfficeCity =
       createNewCustomerDto.companyAddressCity != null
         ? createNewCustomerDto.companyAddressCity
@@ -734,6 +708,7 @@ export class CustomersService {
     services.Tampil = SERVICE_DEFAULT_SHOW_STATUS;
     services.TglHarga = new Date();
     services.Subscription = createNewServiceCustomerDto.packagePrice;
+
     services.InvoiceType = (
       await InvoiceTypeMonth.findOne({
         where: {
@@ -741,17 +716,16 @@ export class CustomersService {
         },
       })
     ).InvoiceType.toString();
-    services.InvoicePeriod = `${
-      ('0' + (new Date().getMonth() + 1)).slice(-2) +
-      new Date().getFullYear().toString().slice(-2)
-    }`;
+    services.InvoicePeriod = createNewServiceCustomerDto.firstInvoicePeriod;
+    services.ContractUntil = new Date(createNewServiceCustomerDto.contractEnd);
+
     services.InvoiceDate1 = SERVICE_DEFAULT_INVOICE_DATE_STATUS;
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
     services.Description = createNewServiceCustomerDto.extendNote;
+    services.Surveyor = createNewServiceCustomerDto.surveyorId;
     services.installation_address =
       createNewServiceCustomerDto.installationAddress;
-    services.ContractUntil = new Date();
     services.Type = SERVICE_DEFAULT_INSTALLATION_TYPE;
     services.promo_id = createNewServiceCustomerDto.promoId;
     services.BlockTypeId = SERVICE_DEFAULT_BLOCK_TYPE_STATUS;
