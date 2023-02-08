@@ -64,6 +64,10 @@ import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { CustomerSalutation } from './entities/salutation.entity';
+import {
+  SERVICE_INVOICE_TYPE_OTC,
+  SERVICE_CONTRACT_END_OTC,
+} from './repositories/customer-subsription.repository';
 
 @Injectable()
 export class CustomersService {
@@ -708,17 +712,25 @@ export class CustomersService {
     services.Tampil = SERVICE_DEFAULT_SHOW_STATUS;
     services.TglHarga = new Date();
     services.Subscription = createNewServiceCustomerDto.packagePrice;
-
-    services.InvoiceType = (
-      await InvoiceTypeMonth.findOne({
-        where: {
-          Month: parseInt(createNewServiceCustomerDto.packageTop),
-        },
-      })
-    ).InvoiceType.toString();
+    if (
+      createNewServiceCustomerDto.packageTop == 'OTC' &&
+      createNewServiceCustomerDto.contractEnd == 'OTC'
+    ) {
+      services.InvoiceType = SERVICE_INVOICE_TYPE_OTC;
+      services.ContractUntil = SERVICE_CONTRACT_END_OTC;
+    } else {
+      services.InvoiceType = (
+        await InvoiceTypeMonth.findOne({
+          where: {
+            Month: parseInt(createNewServiceCustomerDto.packageTop),
+          },
+        })
+      ).InvoiceType.toString();
+      services.ContractUntil = new Date(
+        createNewServiceCustomerDto.contractEnd,
+      );
+    }
     services.InvoicePeriod = createNewServiceCustomerDto.firstInvoicePeriod;
-    services.ContractUntil = new Date(createNewServiceCustomerDto.contractEnd);
-
     services.InvoiceDate1 = SERVICE_DEFAULT_INVOICE_DATE_STATUS;
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
