@@ -5,6 +5,7 @@ import { CustomerServiceTechnicalCustom } from '../entities/customer-service-tec
 import { NOCFiber } from '../entities/noc-fiber.entity';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
+import { CustomerSysConf } from '../entities/sysconf.entity';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -109,15 +110,11 @@ export class CustomerRepository extends Repository<Customer> {
   async getNewCustomerId(): Promise<any> {
     let custIdResult = null;
 
-    const fetchCustomerTemp = await CustomerTemp.createQueryBuilder('ct')
-      .select('ct.CustId customer_id')
-      .leftJoin('Customer', 'c', 'ct.CustId = c.CustId')
-      .where('ct.Taken = 0 AND c.CustId <=> NULL')
-      .orderBy('ct.CustId', 'ASC')
-      .limit(1)
-      .getRawMany();
-
-    custIdResult = fetchCustomerTemp[0].customer_id;
+    custIdResult = await CustomerTemp.findOne({
+      where: {
+        Taken: 0,
+      },
+    });
 
     return custIdResult;
   }

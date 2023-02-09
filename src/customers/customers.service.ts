@@ -64,6 +64,7 @@ import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { CustomerSalutation } from './entities/salutation.entity';
+import { CustomerSysConf } from './entities/sysconf.entity';
 import {
   SERVICE_INVOICE_TYPE_OTC,
   SERVICE_CONTRACT_END_OTC,
@@ -108,7 +109,12 @@ export class CustomersService {
 
     // Step 1 : Init CustID
     let custId = null;
-    custId = await this.customerRepository.getNewCustomerId();
+    const fetchNewCustomerId = await this.customerRepository.getNewCustomerId();
+    if (!fetchNewCustomerId) {
+      custId = await this.generateCustomerId(createNewCustomerDto.branchId);
+    } else {
+      custId = fetchNewCustomerId;
+    }
 
     // Step 2 : Init FormID
     let formId = null;
@@ -763,5 +769,54 @@ export class CustomersService {
     customerServiceHistoryNew.description = SERVICE_DEFAULT_HISTORY_DESCRIPTION;
 
     return await transaction.manager.save(customerServiceHistoryNew);
+  }
+
+  async generateCustomerId(branchId): Promise<any> {
+    const fetchLastInsertedId = await CustomerSysConf.findOne({
+      where: {
+        BranchId: branchId,
+      },
+    });
+
+    const lastCustId = await this.concatenateTwoNum(
+      branchId,
+      fetchLastInsertedId.LastRec,
+      7,
+    );
+
+    const fetchCustTempById = await CustomerTemp.findOne({
+      where: {
+        CustId: lastCustId,
+      },
+    });
+
+    if (fetchCustTempById) {
+      const newLastInsertedId = parseInt(fetchLastInsertedId.LastRec) + 1;
+      await CustomerSysConf.update(
+        { LastRec: fetchLastInsertedId.LastRec },
+        { LastRec: newLastInsertedId.toString() },
+      );
+
+      await this.generateCustomerId(branchId);
+    } else {
+      const custTempNew = CustomerTemp.create({
+        CustId: lastCustId,
+        Taken: 0,
+        InsertBy: 'SYSTEM',
+      });
+      await CustomerTemp.insert(custTempNew);
+
+      const newLastInsertedId = parseInt(fetchLastInsertedId.LastRec) + 1;
+      await CustomerSysConf.update(
+        { LastRec: fetchLastInsertedId.LastRec },
+        { LastRec: newLastInsertedId.toString() },
+      );
+
+      return lastCustId;
+    }
+  }
+
+  async concatenateTwoNum(firstNum, lastNum, digit): Promise<any> {
+    return '0' + (firstNum * Math.pow(10, digit) + lastNum);
   }
 }
