@@ -80,7 +80,7 @@ export const JOURNAL_AI_DEFAULT = 0;
 export const JOURNAL_SUMBER = 'IS5Legacy';
 export const JOURNAL_SOURCE = 'AutoDepreciation';
 
-export const DEPRECIATION_PERSENTAGE = 50;
+export const DEPRECIATION_PERSENTAGE = 0.5;
 export const MAX_YEAR = 4;
 
 export const PENYUSUTAN_TEXT = 'By.penyusutan peralatan/perlengkapan';

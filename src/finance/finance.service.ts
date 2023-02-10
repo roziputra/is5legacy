@@ -10,7 +10,7 @@ import { DataSource } from 'typeorm';
 import {
   DEPRECIATION_PERSENTAGE,
   GeneralJournalRepository,
-} from './repositories/general-journal-repository';
+} from './repositories/general-journal.repository';
 
 @Injectable()
 export class FinanceService {

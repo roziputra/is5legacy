@@ -1,9 +1,19 @@
-import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  Column,
+  OneToOne,
+  JoinColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { Customer } from './customer.entity';
+import { Services } from 'src/services/entities/service.entity';
+import { InvoiceTypeMonth } from './invoice-type-month.entity';
 
 @Entity({ name: 'CustomerServices', synchronize: false })
 export class Subscription extends BaseEntity {
-  @PrimaryColumn()
-  CustServId: string;
+  @PrimaryGeneratedColumn({ name: 'CustServId' })
+  id: number;
 
   @Column()
   CustId: string;
@@ -38,6 +48,9 @@ export class Subscription extends BaseEntity {
   @Column()
   CustBlockFrom: boolean;
 
+  @Column({ name: 'Discount' })
+  discount: number;
+
   @Column()
   CustAccName: string;
 
@@ -65,7 +78,7 @@ export class Subscription extends BaseEntity {
   @Column()
   TglHarga: Date;
 
-  @Column()
+  @Column({ default: 0 })
   Subscription: string;
 
   @Column()
@@ -76,6 +89,9 @@ export class Subscription extends BaseEntity {
 
   @Column()
   InvoiceDate1: boolean;
+
+  @Column()
+  AddEmail: string;
 
   @Column()
   AddEmailCharge: boolean;
@@ -115,4 +131,15 @@ export class Subscription extends BaseEntity {
 
   @Column()
   Surveyor: string;
+  @OneToOne(() => Customer)
+  @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
+  customer: Customer;
+
+  @OneToOne(() => Services)
+  @JoinColumn({ name: 'ServiceId' })
+  service: Services;
+
+  @OneToOne(() => InvoiceTypeMonth)
+  @JoinColumn({ name: 'InvoiceType', referencedColumnName: 'InvoiceType' })
+  typeMonth: InvoiceTypeMonth;
 }

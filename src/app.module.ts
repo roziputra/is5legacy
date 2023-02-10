@@ -37,6 +37,10 @@ import { CustomerGlobalSearch } from './customers/entities/customer-global-searc
 import { CustomerServicesHistoryNew } from './customers/entities/customer-service-history-new.entity';
 import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
 import { CustomerSalutation } from './customers/entities/salutation.entity';
+import { InvoiceModule } from './invoice/invoice.module';
+import { CustomerService } from './customers/entities/customer-service.entity';
+import { CustomerInvoice } from './customers/entities/customer-invoice.entity';
+import { CustomerInvoicePDF } from './customers/entities/customer-invoice-pdf.entity';
 
 @Module({
   imports: [
@@ -78,6 +82,9 @@ import { CustomerSalutation } from './customers/entities/salutation.entity';
         CustomerServicesHistoryNew,
         InvoiceTypeMonth,
         CustomerSalutation,
+        CustomerInvoice,
+        CustomerService,
+        CustomerInvoicePDF,
       ],
       synchronize: false,
     }),
@@ -91,6 +98,7 @@ import { CustomerSalutation } from './customers/entities/salutation.entity';
     CronModule,
     FinanceModule,
     StockModule,
+    InvoiceModule,
   ],
   controllers: [],
   providers: [],
