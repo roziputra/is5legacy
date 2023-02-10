@@ -47,6 +47,7 @@ import {
   CUSTOMER_DEFAULT_BUSINESS_TYPE_ID,
   CUSTOMER_DEFAULT_STATUS,
   CustomerRepository,
+  DEFAULT_FACTOR_GENERATE_CUSTOMER_ID,
 } from './repositories/customer.repository';
 
 import { Customer } from './entities/customer.entity';
@@ -766,53 +767,61 @@ export class CustomersService {
   }
 
   async generateCustomerId(branchId): Promise<any> {
-    const fetchLastInsertedId = await CustomerSysConf.findOne({
-      where: {
-        BranchId: branchId,
-      },
-    });
+    try {
+      const fetchLastInsertedId = await CustomerSysConf.findOne({
+        where: {
+          BranchId: branchId,
+        },
+      });
 
-    let baseNumber = fetchLastInsertedId.LastRec;
-    const lastRecordID = branchId + baseNumber;
-    const factor = '298765432';
+      let baseNumber = fetchLastInsertedId.LastRec;
+      const lastRecordID = branchId + baseNumber;
+      const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
 
-    const lastRec = [];
-    const factorRec = [];
-    const step = [];
-    let total = 0;
+      const lastRec = [];
+      const factorRec = [];
+      const step = [];
+      let total = 0;
 
-    for (let i = 0; i < 9; i++) {
-      lastRec[i] = lastRecordID[i];
-      factorRec[i] = factor[i];
-      step[i] = parseInt(lastRecordID[i]) * parseInt(factor[i]);
-      total += step[i];
+      for (let i = 0; i < 9; i++) {
+        lastRec[i] = lastRecordID[i];
+        factorRec[i] = factor[i];
+        step[i] = parseInt(lastRecordID[i]) * parseInt(factor[i]);
+        total += step[i];
+      }
+
+      const reminder = total % 11;
+      let validation = null;
+      if (reminder == 0 || reminder == 1) {
+        validation = reminder;
+      } else {
+        validation = 11 - reminder;
+      }
+
+      const newCustId = lastRecordID + validation;
+      baseNumber += 1;
+
+      await CustomerSysConf.update(
+        { LastRec: fetchLastInsertedId.LastRec },
+        { LastRec: baseNumber },
+      );
+
+      await this.insertCustomerTemp(newCustId);
+
+      return true;
+    } catch (error) {
+      return false;
     }
+  }
 
-    const reminder = total % 11;
-    let validation = null;
-    if (reminder == 0 || reminder == 1) {
-      validation = reminder;
-    } else {
-      validation = 11 - reminder;
-    }
-
-    const newCustId = lastRecordID + validation;
-    baseNumber += 1;
-
-    await CustomerSysConf.update(
-      { LastRec: fetchLastInsertedId.LastRec },
-      { LastRec: baseNumber },
-    );
-
+  async insertCustomerTemp(newCustId): Promise<any> {
     const custTempNew = CustomerTemp.create({
       CustId: newCustId,
       Taken: 0,
       InsertBy: 'SYSTEM',
       InsertTime: new Date(),
     });
-    await CustomerTemp.insert(custTempNew);
-
-    return true;
+    return await CustomerTemp.insert(custTempNew);
   }
 
   async getNewCustomerId(branchId): Promise<any> {
@@ -822,6 +831,8 @@ export class CustomersService {
 
       if (isGenerated) {
         return await this.getNewCustomerId(branchId);
+      } else {
+        return null;
       }
     } else {
       return fetchNewCustomerId.CustId;

@@ -5,7 +5,6 @@ import { CustomerServiceTechnicalCustom } from '../entities/customer-service-tec
 import { NOCFiber } from '../entities/noc-fiber.entity';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
-import { CustomerSysConf } from '../entities/sysconf.entity';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -178,6 +177,7 @@ export class CustomerRepository extends Repository<Customer> {
 }
 
 export const CUSTOMER_DEFAULT_BUSINESS_TYPE_ID = '090';
+export const DEFAULT_FACTOR_GENERATE_CUSTOMER_ID = '298765432';
 export const CUSTOMER_BILLING_ADD = true;
 export const CUSTOMER_BILLING_METHOD = {
   letter: false,
