@@ -3,13 +3,11 @@ import {
   Controller,
   Get,
   HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
   UseGuards,
   UseInterceptors,
-  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,17 +18,11 @@ import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
-import { CustomersInvoiceService } from './customer-invoice.service';
-import { MailerService } from '@nestjs-modules/mailer';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
 export class CustomersController {
-  constructor(
-    private readonly customersService: CustomersService,
-    private readonly customerInvoiceService: CustomersInvoiceService,
-    private readonly mailer: MailerService,
-  ) {}
+  constructor(private readonly customersService: CustomersService) {}
 
   @Get('salutations')
   async getListSalutation(): Promise<any> {
@@ -91,7 +83,8 @@ export class CustomersController {
       throw new Is5LegacyException(
         {
           title: 'Error',
-          message: 'Pendaftaran pelanggan tidak dapat diproses',
+          message:
+            'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
         },
         500,
       );
@@ -123,49 +116,5 @@ export class CustomersController {
         404,
       );
     }
-  }
-
-  @Post(':customerId/subscription/:subscriptionId/invoice')
-  @HttpCode(HttpStatus.CREATED)
-  async createCustomerInvoiceExtend(
-    @Param('customerId') customerId: string,
-    @Param('subscriptionId') subscriptionId: number,
-  ): Promise<any> {
-    const invoice =
-      await this.customerInvoiceService.createCustomerInvoiceExtend(
-        customerId,
-        subscriptionId,
-      );
-
-    return {
-      title: 'Success',
-      message: `invoice ${invoice.id} created successfully`,
-    };
-  }
-
-  /**
-   * for test email
-   * @returns response
-   */
-  @Post('test-send')
-  async sendEmail() {
-    this.mailer
-      .sendMail({
-        to: 'rozi@nusa.net.id',
-        subject: 'Invoice layanan internet',
-        text: 'Pelanggan nusanet Yth.',
-        html: 'Pelanggan Nusanet Yth.',
-      })
-      .then(() => {
-        console.log('berhasil');
-      })
-      .catch((error) => {
-        throw error;
-      });
-
-    return {
-      title: 'Success',
-      message: 'berhasil kirim email',
-    };
   }
 }
