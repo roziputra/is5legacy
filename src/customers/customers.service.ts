@@ -64,6 +64,7 @@ import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { CustomerSalutation } from './entities/salutation.entity';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 import {
   SERVICE_INVOICE_TYPE_OTC,
   SERVICE_CONTRACT_END_OTC,
@@ -108,7 +109,18 @@ export class CustomersService {
 
     // Step 1 : Init CustID
     let custId = null;
-    custId = await this.customerRepository.getNewCustomerId();
+    const fetchNewCustomerId = await this.customerRepository.getNewCustomerId();
+    if (fetchNewCustomerId) {
+      custId = fetchNewCustomerId.CustId;
+    } else {
+      throw new Is5LegacyException(
+        {
+          title: 'Error',
+          message: 'Pendaftaran pelanggan tidak dapat diproses',
+        },
+        500,
+      );
+    }
 
     // Step 2 : Init FormID
     let formId = null;
@@ -764,4 +776,72 @@ export class CustomersService {
 
     return await transaction.manager.save(customerServiceHistoryNew);
   }
+
+  // async generateCustomerId(branchId): Promise<any> {
+  //   let newCustomerId = null;
+
+  //   const fetchNewCustomerId = await this.customerRepository.getNewCustomerId();
+  //   if (fetchNewCustomerId != null) {
+  //     newCustomerId = fetchNewCustomerId.CustId;
+  //   } else {
+  //     try {
+  //       const fetchLastInsertedId = await CustomerSysConf.findOne({
+  //         where: {
+  //           BranchId: branchId,
+  //         },
+  //       });
+
+  //       let baseNumber = fetchLastInsertedId.LastRec;
+  //       const lastRecordID = branchId + baseNumber;
+  //       const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
+
+  //       const lastRec = [];
+  //       const factorRec = [];
+  //       const step = [];
+  //       let total = 0;
+
+  //       for (let i = 0; i < 9; i++) {
+  //         lastRec[i] = lastRecordID[i];
+  //         factorRec[i] = factor[i];
+  //         step[i] = parseInt(lastRecordID[i]) * parseInt(factor[i]);
+  //         total += step[i];
+  //       }
+
+  //       const reminder = total % 11;
+  //       let validation = null;
+  //       if (reminder == 0 || reminder == 1) {
+  //         validation = reminder;
+  //       } else {
+  //         validation = 11 - reminder;
+  //       }
+
+  //       const newCustId = lastRecordID + validation;
+  //       baseNumber += 1;
+
+  //       await CustomerSysConf.update(
+  //         { LastRec: fetchLastInsertedId.LastRec },
+  //         { LastRec: baseNumber },
+  //       );
+  //       await this.insertCustomerTemp(newCustId);
+
+  //       newCustomerId = newCustId;
+
+  //       return await this.generateCustomerId(branchId);
+  //     } catch (error) {
+  //       newCustomerId = null;
+  //     }
+  //   }
+
+  //   return newCustomerId;
+  // }
+
+  // async insertCustomerTemp(newCustId): Promise<any> {
+  //   const custTempNew = CustomerTemp.create({
+  //     CustId: newCustId,
+  //     Taken: 0,
+  //     InsertBy: 'SYSTEM',
+  //     InsertTime: new Date(),
+  //   });
+  //   return await CustomerTemp.insert(custTempNew);
+  // }
 }
