@@ -6,6 +6,7 @@ import {
   DEPRECIATION_PERSENTAGE,
   GeneralJournalRepository,
 } from './repositories/general-journal.repository';
+import { depreciation } from './data/depreciation-store';
 
 @Injectable()
 export class FinanceService {

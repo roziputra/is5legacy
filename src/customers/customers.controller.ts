@@ -21,6 +21,7 @@ import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 import { CustomersInvoiceService } from './customer-invoice.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -28,6 +29,7 @@ export class CustomersController {
   constructor(
     private readonly customersService: CustomersService,
     private readonly customerInvoiceService: CustomersInvoiceService,
+    private readonly mailer: MailerService,
   ) {}
 
   @Get('salutations')
@@ -138,6 +140,32 @@ export class CustomersController {
     return {
       title: 'Success',
       message: `invoice ${invoice.id} created successfully`,
+    };
+  }
+
+  /**
+   * for test email
+   * @returns response
+   */
+  @Post('test-send')
+  async sendEmail() {
+    this.mailer
+      .sendMail({
+        to: 'rozi@nusa.net.id',
+        subject: 'Invoice layanan internet',
+        text: 'Pelanggan nusanet Yth.',
+        html: 'Pelanggan Nusanet Yth.',
+      })
+      .then(() => {
+        console.log('berhasil');
+      })
+      .catch((error) => {
+        throw error;
+      });
+
+    return {
+      title: 'Success',
+      message: 'berhasil kirim email',
     };
   }
 }
