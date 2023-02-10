@@ -1,11 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GetDepreciationFilterDto } from './dto/get-depreciation-filter.dto';
-import {
-  BRANCH_MEDAN,
-  StockInvoiceRepository,
-} from './repositories/stock-invoice-repository';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { StockInvoiceRepository } from './repositories/stock-invoice-repository';
 import { DataSource } from 'typeorm';
 import {
   DEPRECIATION_PERSENTAGE,
@@ -132,16 +127,14 @@ export class FinanceService {
   }
 
   async getMonthlyDepreciationUntil(branchId, year) {
-    if (branchId != BRANCH_MEDAN) {
+    const depreciationPerYear = depreciation.find((i) => {
+      return i.branchId == branchId && i.year == year;
+    });
+
+    if (depreciationPerYear == undefined) {
       return null;
     }
-    const jsonString = await readFileSync(
-      join(process.cwd(), 'src/finance', './depreciation-store.json'),
-      'utf-8',
-    );
 
-    const depreciationPerYear = JSON.parse(jsonString);
-
-    return depreciationPerYear[year];
+    return depreciationPerYear;
   }
 }
