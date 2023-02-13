@@ -1,4 +1,10 @@
-import { BaseEntity, Entity, PrimaryColumn, Column } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  PrimaryColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity({ name: 'CustomerTemp', synchronize: false })
 export class CustomerTemp extends BaseEntity {
@@ -7,4 +13,10 @@ export class CustomerTemp extends BaseEntity {
 
   @Column()
   Taken: number;
+
+  @Column()
+  InsertBy: string;
+
+  @CreateDateColumn()
+  InsertTime: Date;
 }
