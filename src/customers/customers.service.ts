@@ -546,7 +546,7 @@ export class CustomersService {
       smsPhoneBook1.name = createNewCustomerDto.billingName;
       smsPhoneBook1.custId = custId;
       smsPhoneBook1.billing = DEFAULT_BILLING_SMS_PHONEBOOK_1;
-      smsPhoneBook1.technical = DEFAULT_TECHNICAL_SMS_PHONEBOOK_1;
+      smsPhoneBook1.technical = DEFAULT_TECHNICAL_SMS_PHONEBOOK_2;
       smsPhoneBook1.salutationid = createNewCustomerDto.billingSalutation;
       smsPhoneBook1.insertTime = new Date();
       smsPhoneBook1.insertBy = createNewCustomerDto.approvalEmpId;

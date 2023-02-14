@@ -1,7 +1,7 @@
-import { BaseEntity, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'iso_document', synchronize: false })
 export class IsoDocument extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   document_id: number;
 }
