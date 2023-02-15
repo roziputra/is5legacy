@@ -9,7 +9,6 @@ import {
   Post,
   UseGuards,
   UseInterceptors,
-  UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -91,7 +90,8 @@ export class CustomersController {
       throw new Is5LegacyException(
         {
           title: 'Error',
-          message: 'Pendaftaran pelanggan tidak dapat diproses',
+          message:
+            'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
         },
         500,
       );

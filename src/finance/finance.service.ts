@@ -6,7 +6,11 @@ import {
   DEPRECIATION_PERSENTAGE,
   GeneralJournalRepository,
 } from './repositories/general-journal.repository';
-import { depreciation } from './data/depreciation-store';
+import {
+  PERALATAN_CUSTOMER,
+  PERALATAN_INVENTARIS,
+  depreciation,
+} from './data/depreciation-store';
 
 @Injectable()
 export class FinanceService {
@@ -116,14 +120,18 @@ export class FinanceService {
     return await this.stockInvoiceRepository
       .getDepreciationStockStatus(period.fromDate, period.toDate, branchId)
       .then((data) => {
-        return data.reduce((total, item) => {
+        const depreciation = data.reduce((total, item) => {
           const amount = Math.round(item.Price);
           const depreciation =
             ((amount * DEPRECIATION_PERSENTAGE) / 100) * (1 - month / 12); // rumus penyusutan
           const depreciationPerMonth = Math.round(depreciation / 12); // div 12 month
-          total = total + depreciationPerMonth + depreciationUntil[item.Status];
+          total = total + depreciationPerMonth;
           return total;
         }, 0);
+
+        const pop = depreciationUntil[PERALATAN_INVENTARIS] ?? 0;
+        const cust = depreciationUntil[PERALATAN_CUSTOMER] ?? 0;
+        return depreciation + pop + cust;
       });
   }
 

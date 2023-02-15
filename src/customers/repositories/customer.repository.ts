@@ -109,15 +109,11 @@ export class CustomerRepository extends Repository<Customer> {
   async getNewCustomerId(): Promise<any> {
     let custIdResult = null;
 
-    const fetchCustomerTemp = await CustomerTemp.createQueryBuilder('ct')
-      .select('ct.CustId customer_id')
-      .leftJoin('Customer', 'c', 'ct.CustId = c.CustId')
-      .where('ct.Taken = 0 AND c.CustId <=> NULL')
-      .orderBy('ct.CustId', 'ASC')
-      .limit(1)
-      .getRawMany();
-
-    custIdResult = fetchCustomerTemp[0].customer_id;
+    custIdResult = await CustomerTemp.findOne({
+      where: {
+        Taken: 0,
+      },
+    });
 
     return custIdResult;
   }
@@ -181,6 +177,7 @@ export class CustomerRepository extends Repository<Customer> {
 }
 
 export const CUSTOMER_DEFAULT_BUSINESS_TYPE_ID = '090';
+export const DEFAULT_FACTOR_GENERATE_CUSTOMER_ID = '298765432';
 export const CUSTOMER_BILLING_ADD = true;
 export const CUSTOMER_BILLING_METHOD = {
   letter: false,
