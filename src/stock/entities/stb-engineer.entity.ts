@@ -44,9 +44,8 @@ export class StbEngineer extends BaseEntity {
   barangs: StbEngineerBarang[]
 
   @BeforeInsert()
-  createDates(@CurrentUser() user) {
+  createDates() {
     const nowDate = new Date();
-    this.createdBy = user;
     this.createdAt = nowDate;
     this.updatedAt = nowDate;
   }

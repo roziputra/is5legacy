@@ -76,8 +76,13 @@ export class StbEngineerService {
   }
 
   async findStbEngineer(stbEngineerId: number): Promise<StbEngineer> {
-    const stbEngineer = await this.stbEngineerRepository.findOneBy({
-        id: stbEngineerId
+    const stbEngineer = await this.stbEngineerRepository.findOne({
+      where: {
+        id: stbEngineerId,
+      },
+      relations: {
+        barangs: true,
+      },
     });
     
     if (!stbEngineer) {
@@ -88,12 +93,29 @@ export class StbEngineerService {
   }
 
   async remove(stbEngineerId: number): Promise<any> {
-    const stbEngineer = await this.stbEngineerRepository.findOneBy({
-      id: stbEngineerId
-    })
+    const stbEngineer = await this.stbEngineerRepository.findOne({
+      where: {
+        id: stbEngineerId,
+      },
+      relations: {
+        barangs: true,
+      },
+    });
     if (!stbEngineer) {
       throw new Is5LegacyException('STB engineer not found', HttpStatus.NOT_FOUND);
     }
-    return this.stbEngineerRepository.remove(stbEngineer);
+    const transaction = this.dataSource.createQueryRunner();
+    await transaction.connect();
+    await transaction.startTransaction()
+    try {
+      await transaction.manager.remove(stbEngineer.barangs);
+      await transaction.manager.remove(stbEngineer);
+      await transaction.commitTransaction();
+    } catch (error) {
+      await transaction.rollbackTransaction();
+      throw new Is5LegacyException('Failed delete STB engineer');
+    } finally {
+      await transaction.release();
+    }
   }
 }
