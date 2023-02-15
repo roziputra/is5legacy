@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -18,11 +19,15 @@ import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import { CustomersInvoiceService } from './customer-invoice.service';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
 export class CustomersController {
-  constructor(private readonly customersService: CustomersService) {}
+  constructor(
+    private readonly customersService: CustomersService,
+    private readonly customerInvoiceService: CustomersInvoiceService,
+  ) {}
 
   @Get('salutations')
   async getListSalutation(): Promise<any> {
@@ -116,5 +121,23 @@ export class CustomersController {
         404,
       );
     }
+  }
+
+  @Post(':customerId/subscription/:subscriptionId/invoice')
+  @HttpCode(HttpStatus.CREATED)
+  async createCustomerInvoiceExtend(
+    @Param('customerId') customerId: string,
+    @Param('subscriptionId') subscriptionId: number,
+  ): Promise<any> {
+    const invoice =
+      await this.customerInvoiceService.createCustomerInvoiceExtend(
+        customerId,
+        subscriptionId,
+      );
+
+    return {
+      title: 'Success',
+      message: `invoice ${invoice.id} created successfully`,
+    };
   }
 }

@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import {
   DEPRECIATION_PERSENTAGE,
   GeneralJournalRepository,
-} from './repositories/general-journal-repository';
+} from './repositories/general-journal.repository';
 import {
   PERALATAN_CUSTOMER,
   PERALATAN_INVENTARIS,
@@ -86,7 +86,7 @@ export class FinanceService {
     return this.stockInvoiceRepository
       .getDepreciationStock(period.fromDate, period.toDate, branchId)
       .then((data) => {
-        return data.reduce((data, stock, index) => {
+        return data.reduce((data, stock) => {
           const total = data[stock.Status]?.total ?? 0;
           const totalDepreciation = data[stock.Status]?.depreciation ?? 0;
           const totalBook = data[stock.Status]?.book ?? 0;
