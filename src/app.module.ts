@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -44,6 +45,26 @@ import { CustomerSysConf } from './customers/entities/sysconf.entity';
 
 @Module({
   imports: [
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        secure: false, // upgrade later with STARTTLS
+        auth: {
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.MAIL_USERNAME,
+      },
+      template: {
+        dir: __dirname + '/templates/mails',
+        options: {
+          strict: true,
+        },
+      },
+    }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({

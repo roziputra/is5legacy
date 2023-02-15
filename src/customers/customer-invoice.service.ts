@@ -1,5 +1,4 @@
 import { HttpService } from '@nestjs/axios';
-import { Subscription } from './entities/subscriber.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { SubscriptionRepository } from './repositories/subscription.repository';
 import {
@@ -24,7 +23,6 @@ import {
 } from './utils/service-divider';
 import process from 'process';
 import { CustomerInvoicePDF } from './entities/customer-invoice-pdf.entity';
-import { CustomerInvoicePDFRepository } from './repositories/customer-invoice-pdf.repository';
 import { DataSource, QueryRunner } from 'typeorm';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { Services } from 'src/services/entities/service.entity';
@@ -34,7 +32,6 @@ export class CustomersInvoiceService {
   constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
     private readonly customerInvoiceRepository: CustomerInvoiceRepository,
-    private readonly customerInvoicePDFRepository: CustomerInvoicePDFRepository,
     private readonly httpService: HttpService,
     private readonly dataSource: DataSource,
   ) {}
@@ -142,7 +139,7 @@ export class CustomersInvoiceService {
       await transaction.commitTransaction();
     } catch (error) {
       await transaction.rollbackTransaction();
-      throw new Is5LegacyException('failed to create invoice');
+      throw new Is5LegacyException(error);
     } finally {
       await transaction.release();
     }
