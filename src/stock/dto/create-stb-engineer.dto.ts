@@ -1,5 +1,17 @@
-import { IsArray, IsDate, IsIn, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
-import { RequestType, TYPE_MOVED, TYPE_REQUESTED, TYPE_RETURNED } from '../entities/stb-engineer.entity';
+import {
+  IsArray,
+  IsDate,
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
+import {
+  RequestType,
+  TYPE_MOVED,
+  TYPE_REQUESTED,
+  TYPE_RETURNED,
+} from '../entities/stb-engineer.entity';
 import { CreateStbEngineerBarangDto } from './create-stb-engineer-barang.dto';
 import { Expose, Type } from 'class-transformer';
 
@@ -10,7 +22,7 @@ export class CreateStbEngineerDto {
   @IsNotEmpty()
   @IsIn([TYPE_REQUESTED, TYPE_RETURNED, TYPE_MOVED])
   @Expose({ name: 'request_type' })
-  requestType: RequestType
+  requestType: RequestType;
 
   @IsNotEmpty()
   @Type(() => Date)

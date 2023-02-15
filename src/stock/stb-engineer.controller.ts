@@ -27,14 +27,14 @@ export class StbEngineerController {
   @HttpCode(HttpStatus.CREATED)
   async create(
     @Body() createStbEngineerDto: CreateStbEngineerDto,
-    @CurrentUser() user
+    @CurrentUser() user,
   ): Promise<any> {
     const userId = user.user;
     await this.stbEngineerService.create(createStbEngineerDto, userId);
     return {
-        title: 'Success',
-        message: 'STB created successfully',
-    }
+      title: 'Success',
+      message: 'STB created successfully',
+    };
   }
 
   @Put(':stbEngineerId')
@@ -45,16 +45,16 @@ export class StbEngineerController {
   ): Promise<any> {
     await this.stbEngineerService.update(updateStbEngineerDto, stbEngineerId);
     return {
-        title: 'Success',
-        message: 'STB updated successfully',
-    }
+      title: 'Success',
+      message: 'STB updated successfully',
+    };
   }
 
   @Get(':stbEngineerId')
   @HttpCode(HttpStatus.OK)
   async show(
     @Param('stbEngineerId') stbEngineerId: number,
-    @Req() request: Request
+    @Req() request: Request,
   ): Promise<StbEngineer> {
     const userId = request['user'].user;
     return await this.stbEngineerService.findStbEngineer(stbEngineerId);
@@ -62,13 +62,11 @@ export class StbEngineerController {
 
   @Delete(':stbEngineerId')
   @HttpCode(HttpStatus.OK)
-  async remove(
-    @Param('stbEngineerId') stbEngineerId: number,
-  ): Promise<any> {
+  async remove(@Param('stbEngineerId') stbEngineerId: number): Promise<any> {
     await this.stbEngineerService.remove(stbEngineerId);
     return {
       title: 'Success',
       message: 'STB delete successfully',
-    }
+    };
   }
 }
