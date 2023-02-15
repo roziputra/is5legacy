@@ -47,6 +47,7 @@ import {
   CUSTOMER_DEFAULT_BUSINESS_TYPE_ID,
   CUSTOMER_DEFAULT_STATUS,
   CustomerRepository,
+  DEFAULT_FACTOR_GENERATE_CUSTOMER_ID,
 } from './repositories/customer.repository';
 
 import { Customer } from './entities/customer.entity';
@@ -69,6 +70,7 @@ import {
   SERVICE_INVOICE_TYPE_OTC,
   SERVICE_CONTRACT_END_OTC,
 } from './repositories/customer-subsription.repository';
+import { CustomerSysConf } from './entities/sysconf.entity';
 
 @Injectable()
 export class CustomersService {
@@ -113,13 +115,7 @@ export class CustomersService {
     if (fetchNewCustomerId) {
       custId = fetchNewCustomerId.CustId;
     } else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message: 'Pendaftaran pelanggan tidak dapat diproses',
-        },
-        500,
-      );
+      custId = await this.generateCustomerId(createNewCustomerDto.branchId);
     }
 
     // Step 2 : Init FormID
@@ -777,71 +773,71 @@ export class CustomersService {
     return await transaction.manager.save(customerServiceHistoryNew);
   }
 
-  // async generateCustomerId(branchId): Promise<any> {
-  //   let newCustomerId = null;
+  async generateCustomerId(branchId): Promise<any> {
+    let newCustomerId = null;
 
-  //   const fetchNewCustomerId = await this.customerRepository.getNewCustomerId();
-  //   if (fetchNewCustomerId != null) {
-  //     newCustomerId = fetchNewCustomerId.CustId;
-  //   } else {
-  //     try {
-  //       const fetchLastInsertedId = await CustomerSysConf.findOne({
-  //         where: {
-  //           BranchId: branchId,
-  //         },
-  //       });
+    const fetchNewCustomerId = await this.customerRepository.getNewCustomerId();
+    if (fetchNewCustomerId != null) {
+      newCustomerId = fetchNewCustomerId.CustId;
+    } else {
+      try {
+        const fetchLastInsertedId = await CustomerSysConf.findOne({
+          where: {
+            BranchId: branchId,
+          },
+        });
 
-  //       let baseNumber = fetchLastInsertedId.LastRec;
-  //       const lastRecordID = branchId + baseNumber;
-  //       const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
+        let baseNumber = fetchLastInsertedId.LastRec;
+        const lastRecordID = branchId + baseNumber;
+        const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
 
-  //       const lastRec = [];
-  //       const factorRec = [];
-  //       const step = [];
-  //       let total = 0;
+        const lastRec = [];
+        const factorRec = [];
+        const step = [];
+        let total = 0;
 
-  //       for (let i = 0; i < 9; i++) {
-  //         lastRec[i] = lastRecordID[i];
-  //         factorRec[i] = factor[i];
-  //         step[i] = parseInt(lastRecordID[i]) * parseInt(factor[i]);
-  //         total += step[i];
-  //       }
+        for (let i = 0; i < 9; i++) {
+          lastRec[i] = lastRecordID[i];
+          factorRec[i] = factor[i];
+          step[i] = parseInt(lastRecordID[i]) * parseInt(factor[i]);
+          total += step[i];
+        }
 
-  //       const reminder = total % 11;
-  //       let validation = null;
-  //       if (reminder == 0 || reminder == 1) {
-  //         validation = reminder;
-  //       } else {
-  //         validation = 11 - reminder;
-  //       }
+        const reminder = total % 11;
+        let validation = null;
+        if (reminder == 0 || reminder == 1) {
+          validation = reminder;
+        } else {
+          validation = 11 - reminder;
+        }
 
-  //       const newCustId = lastRecordID + validation;
-  //       baseNumber += 1;
+        const newCustId = lastRecordID + validation;
+        baseNumber += 1;
 
-  //       await CustomerSysConf.update(
-  //         { LastRec: fetchLastInsertedId.LastRec },
-  //         { LastRec: baseNumber },
-  //       );
-  //       await this.insertCustomerTemp(newCustId);
+        await CustomerSysConf.update(
+          { LastRec: fetchLastInsertedId.LastRec },
+          { LastRec: baseNumber },
+        );
+        await this.insertCustomerTemp(newCustId);
 
-  //       newCustomerId = newCustId;
+        newCustomerId = newCustId;
 
-  //       return await this.generateCustomerId(branchId);
-  //     } catch (error) {
-  //       newCustomerId = null;
-  //     }
-  //   }
+        return await this.generateCustomerId(branchId);
+      } catch (error) {
+        newCustomerId = null;
+      }
+    }
 
-  //   return newCustomerId;
-  // }
+    return newCustomerId;
+  }
 
-  // async insertCustomerTemp(newCustId): Promise<any> {
-  //   const custTempNew = CustomerTemp.create({
-  //     CustId: newCustId,
-  //     Taken: 0,
-  //     InsertBy: 'SYSTEM',
-  //     InsertTime: new Date(),
-  //   });
-  //   return await CustomerTemp.insert(custTempNew);
-  // }
+  async insertCustomerTemp(newCustId): Promise<any> {
+    const custTempNew = CustomerTemp.create({
+      CustId: newCustId,
+      Taken: 0,
+      InsertBy: 'SYSTEM',
+      InsertTime: new Date(),
+    });
+    return await CustomerTemp.insert(custTempNew);
+  }
 }
