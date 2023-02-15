@@ -38,6 +38,8 @@ import { CustomerServicesHistoryNew } from './customers/entities/customer-servic
 import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
 import { CustomerSalutation } from './customers/entities/salutation.entity';
 import { CustomerSysConf } from './customers/entities/sysconf.entity';
+import { StbEngineer } from './stock/entities/stb-engineer.entity';
+import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
 
 @Module({
   imports: [
@@ -80,6 +82,8 @@ import { CustomerSysConf } from './customers/entities/sysconf.entity';
         InvoiceTypeMonth,
         CustomerSalutation,
         CustomerSysConf,
+        StbEngineer,
+        StbEngineerBarang,
       ],
       synchronize: false,
     }),

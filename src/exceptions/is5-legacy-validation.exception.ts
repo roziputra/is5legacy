@@ -3,7 +3,6 @@ import { ValidationError } from 'class-validator';
 import { Is5LegacyException } from './is5-legacy.exception';
 
 export class Is5LegacyValidationException extends Is5LegacyException {
-  title: string;
   constructor(
     response?: string | Record<string, any> | Array<ValidationError>,
     description = 'Unprocessable Entity',
@@ -19,7 +18,16 @@ export class Is5LegacyValidationException extends Is5LegacyException {
 
     if (response instanceof Array<ValidationError>) {
       responseBody['errors'] = response.reduce((data, i) => {
-        data[i.property] = Object.values(i.constraints);
+        const dataValidations = Is5LegacyValidationException.getErrorMessage(i);
+        if (Array.isArray(dataValidations)) {
+          for (const dataValidation of dataValidations) {
+            dataValidation.map((i) => {
+              data[i['property']] = i['message'];
+            });
+          }
+        } else {
+          data[dataValidations['property']] = dataValidations['message'];
+        }
         return data;
       }, {});
     } else {
@@ -30,5 +38,20 @@ export class Is5LegacyValidationException extends Is5LegacyException {
       }
     }
     super(responseBody, HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  static getErrorMessage(error: ValidationError) {
+    const child = error.children;
+    const lastProp = error['lastProp'] ?? error.property;
+    if (child.length > 0) {
+      return child.map((i) => {
+        i['lastProp'] = `${lastProp}.${i.property}`;
+        return Is5LegacyValidationException.getErrorMessage(i);
+      });
+    }
+    return {
+      property: lastProp,
+      message: Object.values(error.constraints)[0],
+    };
   }
 }
