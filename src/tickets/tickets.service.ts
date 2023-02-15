@@ -19,7 +19,7 @@ import {
 } from './repositories/general-ticket-repository';
 import { GeneralTicket } from './entities/general-ticket.entity';
 import { TicketPic } from './entities/ticket-pic.entity';
-import { TicketPicRepository } from './repositories/ticket-pic-repository';
+import { DateFormat } from 'src/utils/date-format';
 
 @Injectable()
 export class TtsService {
@@ -50,7 +50,6 @@ export class TtsService {
     private readonly employeeServices: EmployeesService,
     private isoDocumentRepository: IsoDocumentRepository,
     private generalTicketRepository: GeneralTicketRepository,
-    private ticketPicRepository: TicketPicRepository,
     private dataSource: DataSource,
   ) {
     this.setEmpMap();
@@ -319,14 +318,6 @@ export class TtsService {
     return this.data;
   }
 
-  createGeneralTicket(data: GeneralTicket) {
-    return this.generalTicketRepository.create(data).save();
-  }
-
-  addTicketPic(data: TicketPic) {
-    return this.ticketPicRepository.create(data).save();
-  }
-
   async generateGeneralTicketExpiredDoc(date: Date, forwardPic = []) {
     const y = date.getFullYear();
     const m = date.getMonth();
@@ -335,15 +326,17 @@ export class TtsService {
     const i = date.getMinutes();
     const s = date.getSeconds();
 
-    const nowDate = this.toDateFormat(date);
-    const effectiveUntilDate = this.toDateFormat(
+    const nowDate = new DateFormat(date);
+    const effectiveUntilDate = new DateFormat(
       new Date(y, m + 2, d, h, i, s),
-    );
-    const effectiveUntilFromDate = this.toDateFormat(
+    ).toDateFormat();
+    const effectiveUntilFromDate = new DateFormat(
       new Date(y, m - 2, d, h, i, s),
-    );
-    const timeCreated = this.toDateTimeFormat(date);
-    const timeExpired = this.toDateTimeFormat(new Date(y, m, d + 7, h, i, s));
+    ).toDateFormat();
+    const timeCreated = nowDate.toDateTimeFormat();
+    const timeExpired = new DateFormat(
+      new Date(y, m, d + 7, h, i, s),
+    ).toDateTimeFormat();
 
     const checkFirst =
       this.generalTicketRepository.checkFirstReminderExpiredDocumentTicket();
@@ -357,18 +350,21 @@ export class TtsService {
       expiredIsoDoc =
         await this.isoDocumentRepository.getWhenEffectiveUntilBetween(
           effectiveUntilFromDate,
-          nowDate,
+          nowDate.toDateFormat(),
         );
     }
+
     const transaction = this.dataSource.createQueryRunner();
     await transaction.connect();
     await transaction.startTransaction();
     console.info('run');
-
     try {
       for (const object of expiredIsoDoc) {
-        const desc = `Document ${object.document_nam} akan expired pada tanggal ${object.effective_until}
-                      <a href="/v2/general/maintained-document/detail/${object.document_id}"> Document </a>`;
+        const date = new DateFormat(object.effective_until).toLongDateFormat();
+        const documentName = object.document_name;
+        const documentId = object.document_id;
+        const desc = `Document ${documentName} akan expired pada tanggal ${date}
+                      <a href="/v2/general/maintained-document/detail/${documentId}"> Document </a>`;
 
         const ticket = new GeneralTicket();
         ticket.pid = DEFAULT_PID;
@@ -407,32 +403,14 @@ export class TtsService {
         console.info(`General ticket created #${ticketSaved.id}`);
       }
 
-      await transaction.commitTransaction();
+      // await transaction.commitTransaction();
     } catch (error) {
       await transaction.rollbackTransaction();
       console.error(error);
     } finally {
-      await transaction.release();
+      // await transaction.release();
     }
-  }
-
-  toDateTimeFormat(date: Date): string {
-    return `${this.toDateFormat(date)} ${this.toTimeFormat(date)}`;
-  }
-
-  toDateFormat(date: Date): string {
-    const y = date.getFullYear().toString();
-    const m = (date.getMonth() + 1).toString();
-    const d = date.getDate().toString();
-    return `${y}-${('0' + m).slice(-2)}-${('0' + d).slice(-2)}`;
-  }
-
-  toTimeFormat(date: Date): string {
-    const h = date.getHours().toString();
-    const i = date.getMinutes().toString();
-    const s = date.getSeconds().toString();
-    return `${('0' + h).slice(-2)}:${('0' + i).slice(-2)}:${('0' + s).slice(
-      -2,
-    )}`;
+    await transaction.rollbackTransaction();
+    await transaction.release();
   }
 }
