@@ -20,10 +20,11 @@ import { SubscriptionRepository } from './repositories/subscription.repository';
 import { CustomerInvoiceRepository } from './repositories/customer-invoice.repository';
 import { CustomersInvoiceService } from './customer-invoice.service';
 import { CustomerInvoicePDFRepository } from './repositories/customer-invoice-pdf.repository';
+import { CustomerSubscriptionController } from './customer-subscription.controller';
 
 @Module({
   imports: [HttpModule],
-  controllers: [CustomersController],
+  controllers: [CustomersController, CustomerSubscriptionController],
   exports: [CustomersService],
   providers: [
     CustomersService,
