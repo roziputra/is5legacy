@@ -42,6 +42,8 @@ import { CustomerService } from './customers/entities/customer-service.entity';
 import { CustomerInvoice } from './customers/entities/customer-invoice.entity';
 import { CustomerInvoicePDF } from './customers/entities/customer-invoice-pdf.entity';
 import { CustomerSysConf } from './customers/entities/sysconf.entity';
+import { StbEngineer } from './stock/entities/stb-engineer.entity';
+import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
 
 @Module({
   imports: [
@@ -107,6 +109,8 @@ import { CustomerSysConf } from './customers/entities/sysconf.entity';
         CustomerService,
         CustomerInvoicePDF,
         CustomerSysConf,
+        StbEngineer,
+        StbEngineerBarang,
       ],
       synchronize: false,
     }),

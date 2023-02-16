@@ -11,7 +11,13 @@ export class Is5LegacyValidationPipe implements PipeTransform<any> {
     }
     const object = plainToInstance(metatype, value);
 
-    const errors = await validate(object);
+    const errors = await validate(object, {
+      validationError: {
+        target: false,
+        value: false,
+      },
+      stopAtFirstError: true,
+    });
     if (errors.length > 0) {
       throw new Is5LegacyValidationException(errors);
     }
