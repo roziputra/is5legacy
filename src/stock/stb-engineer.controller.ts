@@ -8,7 +8,6 @@ import {
   Param,
   Post,
   Put,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { StbEngineerService } from './stb-engineer.service';
@@ -29,8 +28,7 @@ export class StbEngineerController {
     @Body() createStbEngineerDto: CreateStbEngineerDto,
     @CurrentUser() user,
   ): Promise<any> {
-    const userId = user.user;
-    await this.stbEngineerService.create(createStbEngineerDto, userId);
+    await this.stbEngineerService.create(createStbEngineerDto, user);
     return {
       title: 'Success',
       message: 'STB created successfully',
@@ -54,10 +52,21 @@ export class StbEngineerController {
   @HttpCode(HttpStatus.OK)
   async show(
     @Param('stbEngineerId') stbEngineerId: number,
-    @Req() request,
   ): Promise<StbEngineer> {
-    const userId = request['user'].user;
-    return await this.stbEngineerService.findStbEngineer(stbEngineerId);
+    return this.stbEngineerService.findStbEngineer(stbEngineerId);
+  }
+
+  @Get(':stbEngineerId/details')
+  @HttpCode(HttpStatus.OK)
+  async getInventoryByStbId(
+    @Param('stbEngineerId') stbEngineerId: number,
+  ): Promise<any> {
+    const details = await this.stbEngineerService.getInventoryByStbId(
+      stbEngineerId,
+    );
+    return {
+      data: details,
+    };
   }
 
   @Delete(':stbEngineerId')

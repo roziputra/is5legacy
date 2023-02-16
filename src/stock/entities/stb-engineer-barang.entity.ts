@@ -25,7 +25,7 @@ export class StbEngineerBarang extends BaseEntity {
   @Column()
   qty: number;
 
-  @ManyToOne((type) => StbEngineer)
+  @ManyToOne(() => StbEngineer)
   @JoinColumn({ name: 'stb_engineer_id' })
   stbEngineer: StbEngineer;
 }

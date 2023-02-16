@@ -12,13 +12,12 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async validateUser(username: string, password: string): Promise<any> {
-    const user = await this.employeesService.authenticate(username, password);
-    return user;
+  validateUser(username: string, password: string): Promise<any> {
+    return this.employeesService.authenticate(username, password);
   }
 
   async loginUser(user: any) {
-    const payload = { user: user.id };
+    const payload = { user: user };
     const now = new Date();
     const period = +this.configService.get('JWT_EXPIRES');
     const expired = new Date(now);
