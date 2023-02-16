@@ -14,10 +14,10 @@ export class Is5LegacyExceptionFilter implements ExceptionFilter {
     const responseBody = {
       title: exceptionResponse['title'],
       message: exception.message,
-    }
+    };
 
     if (exception instanceof Is5LegacyValidationException) {
-      responseBody['errors'] = exceptionResponse['errors']
+      responseBody['errors'] = exceptionResponse['errors'];
     }
     response.status(status).json(responseBody);
   }
