@@ -1,5 +1,12 @@
-import { CurrentUser } from 'src/employees/current-user.decorator';
-import { BaseEntity, BeforeInsert, BeforeUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { StbEngineerBarang } from './stb-engineer-barang.entity';
 
 @Entity({ name: 'stb_engineer', synchronize: false })
@@ -40,8 +47,8 @@ export class StbEngineer extends BaseEntity {
   @Column({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(type => StbEngineerBarang, (stb) => stb.stbEngineer)
-  barangs: StbEngineerBarang[]
+  @OneToMany((type) => StbEngineerBarang, (stb) => stb.stbEngineer)
+  barangs: StbEngineerBarang[];
 
   @BeforeInsert()
   createDates() {
@@ -52,7 +59,7 @@ export class StbEngineer extends BaseEntity {
 
   @BeforeUpdate()
   updateDates() {
-    this.updatedAt = new Date()
+    this.updatedAt = new Date();
   }
 }
 

@@ -1,4 +1,11 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { StbEngineer } from './stb-engineer.entity';
 
 @Entity({ name: 'stb_engineer_barang', synchronize: false })
@@ -18,7 +25,7 @@ export class StbEngineerBarang extends BaseEntity {
   @Column()
   qty: number;
 
-  @ManyToOne(type => StbEngineer)
+  @ManyToOne((type) => StbEngineer)
   @JoinColumn({ name: 'stb_engineer_id' })
-  stbEngineer: StbEngineer
+  stbEngineer: StbEngineer;
 }
