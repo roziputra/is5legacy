@@ -6,6 +6,7 @@ import { StbEngineerBarangRepository } from './repositories/stb-engineer-barang.
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { StbEngineer } from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
+import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
 
 @Injectable()
 export class StbEngineerService {
@@ -136,5 +137,16 @@ export class StbEngineerService {
     } finally {
       await transaction.release();
     }
+  }
+
+  async findEngineerInventory(
+    filterEngineerInventoryDto: FilterEngineerInventoryDto,
+  ): Promise<any> {
+    const { branch, engineer, search } = filterEngineerInventoryDto;
+    return this.stbEngineerBarangRepository.findEngineerInventory(
+      branch,
+      engineer,
+      search,
+    );
   }
 }
