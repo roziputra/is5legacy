@@ -54,7 +54,7 @@ export class StbEngineerController {
   @HttpCode(HttpStatus.OK)
   async show(
     @Param('stbEngineerId') stbEngineerId: number,
-    @Req() request: Request,
+    @Req() request,
   ): Promise<StbEngineer> {
     const userId = request['user'].user;
     return await this.stbEngineerService.findStbEngineer(stbEngineerId);
