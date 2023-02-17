@@ -336,9 +336,7 @@ export class CustomersService {
 
     customer.CustId = custId;
     customer.CustPass = hashPasswordMd5();
-    customer.BranchId = createNewCustomerDto.displayBranchId
-      ? createNewCustomerDto.displayBranchId
-      : createNewCustomerDto.branchId;
+    customer.BranchId = createNewCustomerDto.branchId;
     customer.DisplayBranchId = createNewCustomerDto.displayBranchId;
     customer.FormId = formId;
     customer.CustName = createNewCustomerDto.fullName;
