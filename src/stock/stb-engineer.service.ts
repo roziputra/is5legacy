@@ -7,6 +7,7 @@ import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { StbEngineer } from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
+import { BRANCH_MEDAN } from './entities/master.entity';
 
 @Injectable()
 export class StbEngineerService {
@@ -23,18 +24,19 @@ export class StbEngineerService {
     try {
       const stbEngineer =
         this.stbEngineerRepository.create(createStbEngineerDto);
-      stbEngineer.createdBy = user;
+      stbEngineer.createdBy = user['EmpId'];
+      console.log(user['EmpId']);
+      stbEngineer.branchId = this.getMasterBranch(user);
       const stbEngineerSaved = await transaction.manager.save(stbEngineer);
       const barang = this.stbEngineerBarangRepository.create(
         createStbEngineerDto.barangs,
       );
-      const barangSaved = await transaction.manager.save(
+      await transaction.manager.save(
         barang.map((i) => {
           i.stbEngineerId = stbEngineerSaved.id;
           return i;
         }),
       );
-
       await transaction.commitTransaction();
       return stbEngineerSaved;
     } catch (e) {
@@ -78,7 +80,6 @@ export class StbEngineerService {
           return i;
         }),
       );
-
       await transaction.commitTransaction();
       return stbEngineerSaved;
     } catch (e) {
@@ -94,18 +95,13 @@ export class StbEngineerService {
       where: {
         id: stbEngineerId,
       },
-      relations: {
-        barangs: true,
-      },
     });
-
     if (!stbEngineer) {
       throw new Is5LegacyException(
         'STB enggineer not found',
         HttpStatus.NOT_FOUND,
       );
     }
-
     return stbEngineer;
   }
 
@@ -139,14 +135,42 @@ export class StbEngineerService {
     }
   }
 
-  async findEngineerInventory(
+  findEngineerInventory(
     filterEngineerInventoryDto: FilterEngineerInventoryDto,
   ): Promise<any> {
     const { branch, engineer, search } = filterEngineerInventoryDto;
+
     return this.stbEngineerBarangRepository.findEngineerInventory(
       branch,
       engineer,
       search,
     );
+  }
+
+  async getInventoryByStbId(stbEngineerId: number) {
+    const stbEngineer = await this.stbEngineerRepository.findOne({
+      where: {
+        id: stbEngineerId,
+      },
+    });
+    if (!stbEngineer) {
+      throw new Is5LegacyException(
+        'STB engineer not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return this.stbEngineerBarangRepository.getInventoryByStbId(stbEngineerId);
+  }
+
+  getMasterBranch(user): string {
+    console.log(user);
+    console.log(user['BranchId'], user['DisplayBranchId']);
+    const branchId = user['BranchId'];
+    const displayBranchId = user['DisplayBranchId'];
+    if (!displayBranchId) {
+      return branchId;
+    }
+
+    return branchId == BRANCH_MEDAN ? displayBranchId : branchId;
   }
 }
