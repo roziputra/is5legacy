@@ -17,6 +17,7 @@ import {
   paginate,
 } from 'nestjs-typeorm-paginate';
 import { BRANCH_MEDAN } from './entities/master.entity';
+import { RequestStbPackageRepository } from './repositories/request-stb-package.repository';
 
 @Injectable()
 export class StbEngineerService {
@@ -24,6 +25,7 @@ export class StbEngineerService {
     private readonly stbEngineerRepository: StbEngineerRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerBarangRepository: StbEngineerBarangRepository,
+    private readonly requestStbPackageRepository: RequestStbPackageRepository,
   ) {}
 
   async create(createStbEngineerDto: CreateStbEngineerDto, user) {
@@ -194,5 +196,12 @@ export class StbEngineerService {
     }
 
     return branchId == BRANCH_MEDAN ? displayBranchId : branchId;
+  }
+  getPackages(): Promise<any> {
+    return this.requestStbPackageRepository.find({
+      relations: {
+        details: true,
+      },
+    });
   }
 }
