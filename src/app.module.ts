@@ -46,6 +46,7 @@ import { StbEngineer } from './stock/entities/stb-engineer.entity';
 import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
 import { RequestStbPackage } from './stock/entities/request-stb-package.entity';
 import { RequestStbPackageDetail } from './stock/entities/request-stb-package-detail.entity';
+import { Master } from './stock/entities/master.entity';
 
 @Module({
   imports: [
@@ -114,7 +115,8 @@ import { RequestStbPackageDetail } from './stock/entities/request-stb-package-de
         StbEngineer,
         StbEngineerBarang,
         RequestStbPackage,
-        RequestStbPackageDetail
+        RequestStbPackageDetail,
+        Master,
       ],
       synchronize: false,
     }),
