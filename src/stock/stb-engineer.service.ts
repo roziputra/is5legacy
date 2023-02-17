@@ -4,10 +4,20 @@ import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
 import { DataSource } from 'typeorm';
 import { StbEngineerBarangRepository } from './repositories/stb-engineer-barang.repository';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
-import { StbEngineer } from './entities/stb-engineer.entity';
+import {
+  RequestType,
+  Status,
+  StbEngineer,
+} from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 import { BRANCH_MEDAN } from './entities/master.entity';
+import { RequestStbPackageRepository } from './repositories/request-stb-package.repository';
 
 @Injectable()
 export class StbEngineerService {
@@ -15,6 +25,7 @@ export class StbEngineerService {
     private readonly stbEngineerRepository: StbEngineerRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerBarangRepository: StbEngineerBarangRepository,
+    private readonly requestStbPackageRepository: RequestStbPackageRepository,
   ) {}
 
   async create(createStbEngineerDto: CreateStbEngineerDto, user) {
@@ -147,6 +158,19 @@ export class StbEngineerService {
     );
   }
 
+  async findAllStbEnginer(
+    options: IPaginationOptions,
+    requestType: RequestType,
+    status: Status,
+  ): Promise<Pagination<StbEngineer>> {
+    return paginate<StbEngineer>(this.stbEngineerRepository, options, {
+      where: {
+        requestType: requestType,
+        status: status,
+      },
+    });
+  }
+
   async getInventoryByStbId(stbEngineerId: number) {
     const stbEngineer = await this.stbEngineerRepository.findOne({
       where: {
@@ -172,5 +196,12 @@ export class StbEngineerService {
     }
 
     return branchId == BRANCH_MEDAN ? displayBranchId : branchId;
+  }
+  getPackages(): Promise<any> {
+    return this.requestStbPackageRepository.find({
+      relations: {
+        details: true,
+      },
+    });
   }
 }

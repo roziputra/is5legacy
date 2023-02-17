@@ -1,19 +1,26 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Param,
+  ParseIntPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { StbEngineerService } from './stb-engineer.service';
 import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { StbEngineer } from './entities/stb-engineer.entity';
+import {
+  RequestType,
+  Status,
+  StbEngineer,
+} from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 
@@ -77,5 +84,23 @@ export class StbEngineerController {
       title: 'Success',
       message: 'STB delete successfully',
     };
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findAllStbEnginer(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
+    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,
+    @Query('request_type') requestType: RequestType,
+    @Query('status') status: Status,
+  ) {
+    return this.stbEngineerService.findAllStbEnginer(
+      {
+        page: page,
+        limit: limit,
+      },
+      requestType,
+      status,
+    );
   }
 }
