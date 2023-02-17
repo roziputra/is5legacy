@@ -20,6 +20,9 @@ export class StbEngineer extends BaseEntity {
   @Column()
   engineer: string;
 
+  @Column({ name: 'branch_id' })
+  branchId: string;
+
   @Column({ name: 'request_type' })
   requestType: RequestType;
 
@@ -47,7 +50,7 @@ export class StbEngineer extends BaseEntity {
   @Column({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany((type) => StbEngineerBarang, (stb) => stb.stbEngineer)
+  @OneToMany(() => StbEngineerBarang, (stb) => stb.stbEngineer)
   barangs: StbEngineerBarang[];
 
   @BeforeInsert()
