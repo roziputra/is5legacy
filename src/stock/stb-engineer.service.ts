@@ -7,6 +7,7 @@ import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { StbEngineer } from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
+import { RequestStbPackageRepository } from './repositories/request-stb-package.repository';
 
 @Injectable()
 export class StbEngineerService {
@@ -14,6 +15,7 @@ export class StbEngineerService {
     private readonly stbEngineerRepository: StbEngineerRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerBarangRepository: StbEngineerBarangRepository,
+    private readonly requestStbPackageRepository: RequestStbPackageRepository,
   ) {}
 
   async create(createStbEngineerDto: CreateStbEngineerDto, user) {
@@ -148,5 +150,13 @@ export class StbEngineerService {
       engineer,
       search,
     );
+  }
+
+  getPackages(): Promise<any> {
+    return this.requestStbPackageRepository.find({
+      relations: {
+        details: true,
+      },
+    });
   }
 }
