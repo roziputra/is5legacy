@@ -8,13 +8,7 @@ export class StbEngineerBarangRepository extends Repository<StbEngineerBarang> {
   constructor(private dataSource: DataSource) {
     super(StbEngineerBarang, dataSource.createEntityManager());
   }
-
-  findEngineerInventory(
-    branch: string,
-    engineer: string | null,
-    search: string | null,
-  ) {
-    console.log(STATUS_ACCEPTED);
+  findEngineerInventory(branch, engineer, search) {
     const query = this.createQueryBuilder('barang')
       .select([
         'stb.id id',
@@ -24,17 +18,18 @@ export class StbEngineerBarangRepository extends Repository<StbEngineerBarang> {
         'm.Name name',
       ])
       .leftJoin('stb_engineer', 'stb', 'stb.id = barang.stb_engineer_id')
-      .leftJoin('Employee', 'emp', 'emp.EmpId = stb.created_by')
-      .leftJoin('Master', 'm', 'm.Code = barang.code and Branch = :branch', {
-        branch: branch,
-      })
-      .andWhere('stb.status = :status', { status: STATUS_ACCEPTED })
-      .andWhere('m.Branch = :branch', { branch: branch });
-
+      .leftJoin(
+        'Master',
+        'm',
+        'm.Code = barang.code and m.Branch = stb.branch_id',
+      )
+      .where('stb.status = :status', { status: STATUS_ACCEPTED });
+    if (branch) {
+      query.andWhere('stb.branch_id = :branch', { branch: branch });
+    }
     if (engineer) {
       query.andWhere('stb.engineer = :engineer', { engineer: engineer });
     }
-
     if (search) {
       query.andWhere(
         new Brackets((qb) => {
@@ -46,7 +41,25 @@ export class StbEngineerBarangRepository extends Repository<StbEngineerBarang> {
         }),
       );
     }
-
     return query.getRawMany();
+  }
+
+  getInventoryByStbId(stbEngineerId: number): Promise<any> {
+    return this.createQueryBuilder('barang')
+      .select([
+        'stb.id id',
+        'barang.code code',
+        'barang.serial serial',
+        'barang.qty qty',
+        'm.Name name',
+      ])
+      .leftJoin('stb_engineer', 'stb', 'stb.id = barang.stb_engineer_id')
+      .leftJoin(
+        'Master',
+        'm',
+        'm.Code = barang.code and m.Branch = stb.branch_id',
+      )
+      .where('stb_engineer_id = :stbId', { stbId: stbEngineerId })
+      .getRawMany();
   }
 }

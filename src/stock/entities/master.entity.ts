@@ -14,3 +14,5 @@ export class Master extends BaseEntity {
   @Column({ name: 'Name' })
   name: string;
 }
+
+export const BRANCH_MEDAN = '020';
