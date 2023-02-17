@@ -78,6 +78,7 @@ export class StbEngineerController {
   }
 
   @Get()
+  @HttpCode(HttpStatus.OK)
   async findAllStbEnginer(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
     @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,
