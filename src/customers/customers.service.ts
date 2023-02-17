@@ -65,7 +65,6 @@ import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { CustomerSalutation } from './entities/salutation.entity';
-import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 import {
   SERVICE_INVOICE_TYPE_OTC,
   SERVICE_CONTRACT_END_OTC,
@@ -230,7 +229,19 @@ export class CustomersService {
         );
 
         await queryRunner.commitTransaction();
-        resultSaveDataCustomer = custId;
+        resultSaveDataCustomer = {
+          customerId: custId,
+          customerServiceId: (
+            await Subscription.findOne({
+              select: {
+                id: true,
+              },
+              where: {
+                CustId: custId,
+              },
+            })
+          ).id.toString(),
+        };
       } catch (error) {
         resultSaveDataCustomer = null;
         await queryRunner.rollbackTransaction();
@@ -336,9 +347,7 @@ export class CustomersService {
 
     customer.CustId = custId;
     customer.CustPass = hashPasswordMd5();
-    customer.BranchId = createNewCustomerDto.displayBranchId
-      ? createNewCustomerDto.displayBranchId
-      : createNewCustomerDto.branchId;
+    customer.BranchId = createNewCustomerDto.branchId;
     customer.DisplayBranchId = createNewCustomerDto.displayBranchId;
     customer.FormId = formId;
     customer.CustName = createNewCustomerDto.fullName;

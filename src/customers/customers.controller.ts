@@ -71,12 +71,14 @@ export class CustomersController {
     const saveNewCustomer = await this.customersService.saveNewCustomerServices(
       createNewCustomerDto,
     );
+
     if (saveNewCustomer)
       return {
         title: 'Berhasil',
         message: 'Berhasil menyimpan data pelanggan',
         data: {
-          id: saveNewCustomer,
+          customer_id: saveNewCustomer.customerId,
+          customer_service_id: saveNewCustomer.customerServiceId,
         },
       };
     else {
