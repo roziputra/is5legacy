@@ -1,13 +1,25 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { StbEngineerRepository } from './repositories/stb-engineer.repository';
 import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
-import { DataSource } from 'typeorm';
+import { DataSource, Like } from 'typeorm';
 import { StbEngineerBarangRepository } from './repositories/stb-engineer-barang.repository';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
-import { StbEngineer } from './entities/stb-engineer.entity';
+import {
+  RequestType,
+  Status,
+  StbEngineer,
+} from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 import { BRANCH_MEDAN } from './entities/master.entity';
+import { RequestStbPackageRepository } from './repositories/request-stb-package.repository';
+import { Master } from './entities/master.entity';
+import { MasterRepository } from './repositories/master.repository';
 
 @Injectable()
 export class StbEngineerService {
@@ -15,6 +27,8 @@ export class StbEngineerService {
     private readonly stbEngineerRepository: StbEngineerRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerBarangRepository: StbEngineerBarangRepository,
+    private readonly requestStbPackageRepository: RequestStbPackageRepository,
+    private readonly masterRepository: MasterRepository,
   ) {}
 
   async create(createStbEngineerDto: CreateStbEngineerDto, user) {
@@ -147,6 +161,19 @@ export class StbEngineerService {
     );
   }
 
+  async findAllStbEnginer(
+    options: IPaginationOptions,
+    requestType: RequestType,
+    status: Status,
+  ): Promise<Pagination<StbEngineer>> {
+    return paginate<StbEngineer>(this.stbEngineerRepository, options, {
+      where: {
+        requestType: requestType,
+        status: status,
+      },
+    });
+  }
+
   async getInventoryByStbId(stbEngineerId: number) {
     const stbEngineer = await this.stbEngineerRepository.findOne({
       where: {
@@ -163,8 +190,6 @@ export class StbEngineerService {
   }
 
   getMasterBranch(user): string {
-    console.log(user);
-    console.log(user['BranchId'], user['DisplayBranchId']);
     const branchId = user['BranchId'];
     const displayBranchId = user['DisplayBranchId'];
     if (!displayBranchId) {
@@ -172,5 +197,21 @@ export class StbEngineerService {
     }
 
     return branchId == BRANCH_MEDAN ? displayBranchId : branchId;
+  }
+  getPackages(): Promise<any> {
+    return this.requestStbPackageRepository.find({
+      relations: {
+        details: true,
+      },
+    });
+  }
+
+  async findAllWarehouseInventory(
+    options: IPaginationOptions,
+    search: string,
+  ): Promise<Pagination<Master>> {
+    return paginate<Master>(this.masterRepository, options, {
+      where: [{ name: Like(`%${search}%`) }, { code: Like(`%${search}%`) }],
+    });
   }
 }

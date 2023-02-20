@@ -13,6 +13,12 @@ export class Master extends BaseEntity {
 
   @Column({ name: 'Name' })
   name: string;
+
+  @Column()
+  isActive: string;
+
+  @Column({ name: 'InsertDate' })
+  insertDate: Date;
 }
 
 export const BRANCH_MEDAN = '020';
