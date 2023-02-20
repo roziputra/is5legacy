@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
 import { CustomersService } from './customers.service';
 import { CustomersController } from './customers.controller';
 import { CustomerRepository } from './repositories/customer.repository';
@@ -15,12 +16,20 @@ import { CustomerInvoiceSignatureRepository } from './repositories/customer-invo
 import { CustomerGlobalSearchRepository } from './repositories/customer-global-search.repository';
 import { CustomerFixRepository } from './repositories/customer-fix.repository';
 import { InvoiceTypeMonthRepository } from './repositories/invoice-type-month.repository';
+import { SubscriptionRepository } from './repositories/subscription.repository';
+import { CustomerInvoiceRepository } from './repositories/customer-invoice.repository';
+import { CustomersInvoiceService } from './customer-invoice.service';
+import { CustomerInvoicePDFRepository } from './repositories/customer-invoice-pdf.repository';
+import { CustomerSubscriptionController } from './customer-subscription.controller';
 
 @Module({
-  controllers: [CustomersController],
+  imports: [HttpModule],
+  controllers: [CustomersController, CustomerSubscriptionController],
   exports: [CustomersService],
   providers: [
     CustomersService,
+    CustomersInvoiceService,
+    CustomerInvoicePDFRepository,
     CustomerRepository,
     CustomerVerifiedEmailRepository,
     CustomerTempRepository,
@@ -33,6 +42,8 @@ import { InvoiceTypeMonthRepository } from './repositories/invoice-type-month.re
     CustomerGlobalSearchRepository,
     CustomerFixRepository,
     InvoiceTypeMonthRepository,
+    CustomerInvoiceRepository,
+    SubscriptionRepository,
     OperatorSubscriptionRepository,
     NOCFiberRepository,
   ],

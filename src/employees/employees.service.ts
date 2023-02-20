@@ -24,17 +24,22 @@ export class EmployeesService {
   }
 
   async authenticate(username: string, password: string) {
-    const query = `
-      SELECT EmpId, EmpFName, EmpLName, EmpEmail
-      FROM Employee
-      WHERE EmpId = '${username}' AND PASSWORD('${password}') = EmpPassword`;
-    const queryResult = await this.dataSource.query(query);
+    const user = this.dataSource
+      .getRepository(Employee)
+      .createQueryBuilder()
+      .select([
+        'EmpId',
+        'EmpFName',
+        'EmpLName',
+        'EmpEmail',
+        'BranchId',
+        'DisplayBranchId',
+      ])
+      .where('EmpId = :username', { username: username })
+      .andWhere('EmpPassword = PASSWORD(:password)', { password: password })
+      .getRawOne();
 
-    if (queryResult.length === 0) {
-      return null;
-    }
-
-    return this.transformEmployee(queryResult[0]);
+    return user;
   }
 
   // employee mapping dari divisi helpdesk '01' -> 'Helpdesk Shift', '17' -> 'Helpdesk Reguler'

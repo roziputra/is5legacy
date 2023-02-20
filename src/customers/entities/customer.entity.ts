@@ -90,6 +90,24 @@ export class Customer extends BaseEntity {
   CustBillCPEmail: string;
 
   @Column()
+  CustPPn: number;
+
+  @Column({ default: 0 })
+  CustDiscount: number;
+
+  @Column({ default: 0 })
+  CustBalance: number;
+
+  @Column({ default: 0 })
+  CustBalanceVB: number;
+
+  @Column({ default: 0 })
+  CustBalanceWireless: number;
+
+  @Column({ default: 0 })
+  CustBalanceCB: number;
+
+  @Column()
   CustRegDate: Date;
 
   @Column()
@@ -112,6 +130,9 @@ export class Customer extends BaseEntity {
 
   @Column()
   TaxType: boolean;
+
+  @Column({ default: 0 })
+  RekType: number;
 
   @Column()
   CetakDuluan: boolean;

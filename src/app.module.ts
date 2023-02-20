@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
@@ -37,10 +38,38 @@ import { CustomerGlobalSearch } from './customers/entities/customer-global-searc
 import { CustomerServicesHistoryNew } from './customers/entities/customer-service-history-new.entity';
 import { InvoiceTypeMonth } from './customers/entities/invoice-type-month.entity';
 import { CustomerSalutation } from './customers/entities/salutation.entity';
+import { CustomerService } from './customers/entities/customer-service.entity';
+import { CustomerInvoice } from './customers/entities/customer-invoice.entity';
+import { CustomerInvoicePDF } from './customers/entities/customer-invoice-pdf.entity';
 import { CustomerSysConf } from './customers/entities/sysconf.entity';
+import { StbEngineer } from './stock/entities/stb-engineer.entity';
+import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
+import { RequestStbPackage } from './stock/entities/request-stb-package.entity';
+import { RequestStbPackageDetail } from './stock/entities/request-stb-package-detail.entity';
+import { Master } from './stock/entities/master.entity';
 
 @Module({
   imports: [
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_PORT,
+        secure: false, // upgrade later with STARTTLS
+        auth: {
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
+        },
+      },
+      defaults: {
+        from: process.env.MAIL_USERNAME,
+      },
+      template: {
+        dir: __dirname + '/templates/mails',
+        options: {
+          strict: true,
+        },
+      },
+    }),
     ScheduleModule.forRoot(),
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
@@ -79,7 +108,15 @@ import { CustomerSysConf } from './customers/entities/sysconf.entity';
         CustomerServicesHistoryNew,
         InvoiceTypeMonth,
         CustomerSalutation,
+        CustomerInvoice,
+        CustomerService,
+        CustomerInvoicePDF,
         CustomerSysConf,
+        StbEngineer,
+        StbEngineerBarang,
+        RequestStbPackage,
+        RequestStbPackageDetail,
+        Master,
       ],
       synchronize: false,
     }),
