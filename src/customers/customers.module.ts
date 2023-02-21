@@ -21,13 +21,22 @@ import { CustomerInvoiceRepository } from './repositories/customer-invoice.repos
 import { CustomersInvoiceService } from './customer-invoice.service';
 import { CustomerInvoicePDFRepository } from './repositories/customer-invoice-pdf.repository';
 import { CustomerSubscriptionController } from './customer-subscription.controller';
+import { FiberVendorServicesRepository } from './repositories/fiber-vendor-services.repository';
+import { OperatorSubscriptionController } from './operator-subscription.controller';
+import { OperatorSubscriptionService } from './operator-subscription.service';
 
 @Module({
   imports: [HttpModule],
-  controllers: [CustomersController, CustomerSubscriptionController],
+  controllers: [
+    OperatorSubscriptionController,
+    CustomersController,
+    CustomerSubscriptionController,
+  ],
   exports: [CustomersService],
   providers: [
     CustomersService,
+    OperatorSubscriptionService,
+    FiberVendorServicesRepository,
     CustomersInvoiceService,
     CustomerInvoicePDFRepository,
     CustomerRepository,
