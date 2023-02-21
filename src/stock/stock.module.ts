@@ -5,12 +5,12 @@ import { FinanceModule } from 'src/finance/finance.module';
 import { StbEngineerController } from './stb-engineer.controller';
 import { StbEngineerService } from './stb-engineer.service';
 import { StbEngineerRepository } from './repositories/stb-engineer.repository';
-import { StbEngineerBarangRepository } from './repositories/stb-engineer-barang.repository';
 import { EngineerInventoryController } from './engineer-inventory.controller';
 import { RequestStbPackageRepository } from './repositories/request-stb-package.repository';
 import { PackageController } from './package.controller';
 import { MasterRepository } from './repositories/master.repository';
 import { WarehouseInventoryController } from './warehouse-inventory.controller';
+import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.repository';
 
 @Module({
   imports: [FinanceModule],
@@ -25,7 +25,7 @@ import { WarehouseInventoryController } from './warehouse-inventory.controller';
     StockService,
     StbEngineerService,
     StbEngineerRepository,
-    StbEngineerBarangRepository,
+    StbEngineerDetailRepository,
     RequestStbPackageRepository,
     MasterRepository,
   ],

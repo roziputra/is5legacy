@@ -4,73 +4,48 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StbEngineerDetail } from './stb-engineer-detail.entity';
-import { StbRequest } from './stb-request.entity';
-import { Expose } from 'class-transformer';
 
-@Entity({ name: 'stb_engineer', synchronize: false })
-export class StbEngineer extends BaseEntity {
+@Entity({ name: 'stb_request', synchronize: false })
+export class StbRequest extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ name: 'related_id' })
-  @Expose({ name: 'related_id' })
   relatedId: number;
-
-  @Column({ name: 'request_id' })
-  @Expose({ name: 'request_id' })
-  requestId: number;
-
-  @Column({ name: 'no_surat' })
-  @Expose({ name: 'no_surat' })
-  noSurat: string;
 
   @Column()
   engineer: string;
 
   @Column({ name: 'branch_id' })
-  @Expose({ name: 'branch_id' })
   branchId: string;
 
   @Column({ name: 'request_type' })
-  @Expose({ name: 'request_type' })
   requestType: RequestType;
 
-  @Column({ name: 'is_draft' })
-  @Expose({ name: 'is_draft' })
-  isDraft: boolean;
+  @Column({ name: 'request_date' })
+  requestDate: Date;
 
-  @Column({ name: 'approved_by' })
-  @Expose({ name: 'approved_by' })
-  approvedBy: string;
+  @Column()
+  status: string;
 
-  @Column({ name: 'approved_date' })
-  @Expose({ name: 'approved_date' })
-  approvedDate: Date;
+  @Column({ name: 'rejected_reason' })
+  rejectedReason: string;
 
   @Column()
   description: string;
 
   @Column({ name: 'created_by' })
-  @Expose({ name: 'created_by' })
   createdBy: string;
 
   @Column({ name: 'created_at' })
-  @Expose({ name: 'created_at' })
   createdAt: Date;
 
   @Column({ name: 'updated_at' })
-  @Expose({ name: 'updated_at' })
   updatedAt: Date;
-
-  @OneToOne(() => StbRequest)
-  @JoinColumn({ name: 'request_id' })
-  stbRequest: StbRequest;
 
   @OneToMany(() => StbEngineerDetail, (stb) => stb.stbEngineer)
   details: StbEngineerDetail[];
