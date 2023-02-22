@@ -47,6 +47,7 @@ import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
 import { RequestStbPackage } from './stock/entities/request-stb-package.entity';
 import { RequestStbPackageDetail } from './stock/entities/request-stb-package-detail.entity';
 import { Master } from './stock/entities/master.entity';
+import { FiberVendorServices } from './customers/entities/fiber-vendor-services.entity';
 
 @Module({
   imports: [
@@ -117,6 +118,7 @@ import { Master } from './stock/entities/master.entity';
         RequestStbPackage,
         RequestStbPackageDetail,
         Master,
+        FiberVendorServices,
       ],
       synchronize: false,
     }),
