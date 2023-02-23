@@ -8,7 +8,7 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
   constructor(private dataSource: DataSource) {
     super(StbEngineerDetail, dataSource.createEntityManager());
   }
-  findEngineerInventory(branch, engineer, search) {
+  findEngineerInventory(engineerId: string, search: string) {
     const query = this.createQueryBuilder('detail')
       .select([
         'stb.id id',
@@ -25,11 +25,9 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
         'm.Code = detail.code and m.Branch = stb.branch_id',
       )
       .where('stb.status = :status', { status: STATUS_ACCEPTED });
-    if (branch) {
-      query.andWhere('stb.branch_id = :branch', { branch: branch });
-    }
-    if (engineer) {
-      query.andWhere('stb.engineer = :engineer', { engineer: engineer });
+
+    if (engineerId) {
+      query.andWhere('stb.engineer = :engineer', { engineer: engineerId });
     }
     if (search) {
       query.andWhere(

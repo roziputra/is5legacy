@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { StbEngineerRepository } from './repositories/stb-engineer.repository';
 import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
-import { DataSource, Like } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import {
   RequestType,
@@ -9,7 +9,6 @@ import {
   StbEngineer,
 } from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
-import { FilterEngineerInventoryDto } from './dto/filter-engineer-inventory.dto';
 import {
   IPaginationOptions,
   Pagination,
@@ -154,14 +153,9 @@ export class StbEngineerService {
     }
   }
 
-  findEngineerInventory(
-    filterEngineerInventoryDto: FilterEngineerInventoryDto,
-  ): Promise<any> {
-    const { branch, engineer, search } = filterEngineerInventoryDto;
-
+  findEngineerInventory(engineerId: string, search: string): Promise<any> {
     return this.stbEngineerDetailRepository.findEngineerInventory(
-      branch,
-      engineer,
+      engineerId,
       search,
     );
   }
@@ -213,12 +207,20 @@ export class StbEngineerService {
     });
   }
 
-  async findAllWarehouseInventory(
-    options: IPaginationOptions,
+  async findAllWarehouseInventories(
+    page: number,
+    limit: number,
     search: string,
+    user: any,
   ): Promise<Pagination<Master>> {
-    return paginate<Master>(this.masterRepository, options, {
-      where: [{ name: Like(`%${search}%`) }, { code: Like(`%${search}%`) }],
-    });
+    const branch = this.getMasterBranch(user);
+    return this.masterRepository.findAllWarehouseInventories(
+      {
+        page: page,
+        limit: limit,
+      },
+      search,
+      branch,
+    );
   }
 }
