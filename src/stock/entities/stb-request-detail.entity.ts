@@ -19,9 +19,6 @@ export class StbRequestDetail extends BaseEntity {
   stbRequestId: number;
 
   @Column()
-  serial: string;
-
-  @Column()
   code: string;
 
   @Column()

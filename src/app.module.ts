@@ -50,6 +50,7 @@ import { StbEngineerDetail } from './stock/entities/stb-engineer-detail.entity';
 import { StbRequest } from './stock/entities/stb-request.entity';
 import { StbRequestDetail } from './stock/entities/stb-request-detail.entity';
 import { FiberVendorServices } from './customers/entities/fiber-vendor-services.entity';
+import { Box } from './stock/entities/box.entity';
 
 @Module({
   imports: [
@@ -123,6 +124,7 @@ import { FiberVendorServices } from './customers/entities/fiber-vendor-services.
         RequestStbPackageDetail,
         Master,
         FiberVendorServices,
+        Box,
       ],
       synchronize: false,
     }),

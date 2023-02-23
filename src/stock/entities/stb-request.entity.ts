@@ -7,7 +7,8 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { StbEngineerDetail } from './stb-engineer-detail.entity';
+import { StbRequestDetail } from './stb-request-detail.entity';
+import { Expose } from 'class-transformer';
 
 @Entity({ name: 'stb_request', synchronize: false })
 export class StbRequest extends BaseEntity {
@@ -15,40 +16,48 @@ export class StbRequest extends BaseEntity {
   id: number;
 
   @Column({ name: 'related_id' })
+  @Expose({ name: 'related_id' })
   relatedId: number;
 
   @Column()
   engineer: string;
 
   @Column({ name: 'branch_id' })
+  @Expose({ name: 'branch_id' })
   branchId: string;
 
   @Column({ name: 'request_type' })
+  @Expose({ name: 'request_type' })
   requestType: RequestType;
 
   @Column({ name: 'request_date' })
+  @Expose({ name: 'request_type' })
   requestDate: Date;
 
   @Column()
   status: string;
 
   @Column({ name: 'rejected_reason' })
+  @Expose({ name: 'rejected_reason' })
   rejectedReason: string;
 
   @Column()
   description: string;
 
   @Column({ name: 'created_by' })
+  @Expose({ name: 'created_by' })
   createdBy: string;
 
   @Column({ name: 'created_at' })
+  @Expose({ name: 'created_at' })
   createdAt: Date;
 
   @Column({ name: 'updated_at' })
+  @Expose({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => StbEngineerDetail, (stb) => stb.stbEngineer)
-  details: StbEngineerDetail[];
+  @OneToMany(() => StbRequestDetail, (stb) => stb.stbRequest)
+  details: StbRequestDetail[];
 
   @BeforeInsert()
   createDates() {

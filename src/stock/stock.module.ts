@@ -11,11 +11,16 @@ import { PackageController } from './package.controller';
 import { MasterRepository } from './repositories/master.repository';
 import { WarehouseInventoryController } from './warehouse-inventory.controller';
 import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.repository';
+import { StbRequestController } from './stb-request.controller';
+import { StbRequestRepository } from './repositories/stb-request.repository';
+import { StbRequestDetailRepository } from './repositories/stb-request-detail.repository';
+import { StbRequestService } from './stb-request.service';
 
 @Module({
   imports: [FinanceModule],
   controllers: [
     PackageController,
+    StbRequestController,
     StbEngineerController,
     WarehouseInventoryController,
     EngineerInventoryController,
@@ -23,7 +28,10 @@ import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.
   ],
   providers: [
     StockService,
+    StbRequestService,
     StbEngineerService,
+    StbRequestRepository,
+    StbRequestDetailRepository,
     StbEngineerRepository,
     StbEngineerDetailRepository,
     RequestStbPackageRepository,
