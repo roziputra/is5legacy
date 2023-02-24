@@ -15,9 +15,11 @@ import { StbRequestController } from './stb-request.controller';
 import { StbRequestRepository } from './repositories/stb-request.repository';
 import { StbRequestDetailRepository } from './repositories/stb-request-detail.repository';
 import { StbRequestService } from './stb-request.service';
+import { Employee } from 'src/employees/employee.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-  imports: [FinanceModule],
+  imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
     PackageController,
     StbRequestController,

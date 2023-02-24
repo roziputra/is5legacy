@@ -1,7 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { StbEngineerRepository } from './repositories/stb-engineer.repository';
 import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
-import { DataSource } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import {
   RequestType,
@@ -19,6 +19,12 @@ import { RequestStbPackageRepository } from './repositories/request-stb-package.
 import { Master } from './entities/master.entity';
 import { MasterRepository } from './repositories/master.repository';
 import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.repository';
+import {
+  EMP_JOIN_STATUS_QUIT,
+  Employee,
+  JOB_TITLE_CUSTOMER_ENGINEER,
+} from 'src/employees/employee.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class StbEngineerService {
@@ -28,6 +34,8 @@ export class StbEngineerService {
     private readonly stbEngineerDetailRepository: StbEngineerDetailRepository,
     private readonly requestStbPackageRepository: RequestStbPackageRepository,
     private readonly masterRepository: MasterRepository,
+    @InjectRepository(Employee)
+    private readonly employeeRepository: Repository<Employee>,
   ) {}
 
   async create(createStbEngineerDto: CreateStbEngineerDto, user) {
@@ -199,6 +207,7 @@ export class StbEngineerService {
 
     return branchId == BRANCH_MEDAN ? displayBranchId : branchId;
   }
+
   getPackages(): Promise<any> {
     return this.requestStbPackageRepository.find({
       relations: {
@@ -222,5 +231,12 @@ export class StbEngineerService {
       search,
       branch,
     );
+  }
+
+  async findAllEngineer(): Promise<Employee[]> {
+    return this.employeeRepository.findBy({
+      JobTitle: JOB_TITLE_CUSTOMER_ENGINEER,
+      EmpJoinStatus: Not(EMP_JOIN_STATUS_QUIT),
+    });
   }
 }
