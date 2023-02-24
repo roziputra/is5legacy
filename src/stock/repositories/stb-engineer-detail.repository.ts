@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import { STATUS_ACCEPTED } from '../entities/stb-engineer.entity';
+import { TYPE_REQUESTED } from '../entities/stb-engineer.entity';
 import { StbEngineerDetail } from '../entities/stb-engineer-detail.entity';
 
 @Injectable()
@@ -24,7 +24,7 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
         'm',
         'm.Code = detail.code and m.Branch = stb.branch_id',
       )
-      .where('stb.status = :status', { status: STATUS_ACCEPTED });
+      .where('stb.request_type = :type', { type: TYPE_REQUESTED });
 
     if (engineerId) {
       query.andWhere('stb.engineer = :engineer', { engineer: engineerId });
