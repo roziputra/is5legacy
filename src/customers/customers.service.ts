@@ -796,15 +796,14 @@ export class CustomersService {
           },
         });
 
-        let baseNumber = fetchLastInsertedId.LastRec;
-        const lastRecordID = branchId + baseNumber;
+        let baseNumber = parseInt(fetchLastInsertedId.LastRec);
+        const lastRecordID = branchId + '0' + baseNumber.toString();
         const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
 
         const lastRec = [];
         const factorRec = [];
         const step = [];
         let total = 0;
-
         for (let i = 0; i < 9; i++) {
           lastRec[i] = lastRecordID[i];
           factorRec[i] = factor[i];
@@ -819,13 +818,14 @@ export class CustomersService {
         } else {
           validation = 11 - reminder;
         }
+        baseNumber = baseNumber + 1;
 
         const newCustId = lastRecordID + validation;
-        baseNumber += 1;
+        const newBaseNumber = '0' + baseNumber;
 
         await CustomerSysConf.update(
           { LastRec: fetchLastInsertedId.LastRec },
-          { LastRec: baseNumber },
+          { LastRec: newBaseNumber },
         );
         await this.insertCustomerTemp(newCustId);
 
