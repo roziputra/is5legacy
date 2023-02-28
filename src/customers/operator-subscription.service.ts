@@ -4,7 +4,10 @@ import { DataSource } from 'typeorm';
 import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { OperatorSubscriptionRepository } from './repositories/operator-subscription.repository';
 import { NOCFiberRepository } from './repositories/noc-fiber.repository';
-import { FiberVendorServices } from './entities/fiber-vendor-services.entity';
+import {
+  FiberVendorServices,
+  TYPE_CUSTOMER_SERVICES,
+} from './entities/fiber-vendor-services.entity';
 import { CreateOperatorSubscriptionDto } from './dtos/create-operator-subscription.dto';
 
 @Injectable()
@@ -19,8 +22,7 @@ export class OperatorSubscriptionService {
   async saveDataFromGoogleSheet(
     createOperatorSubscriptionDto: CreateOperatorSubscriptionDto,
   ): Promise<any> {
-    const { nsn, vendorCid, type, vendorId, tagihan } =
-      createOperatorSubscriptionDto;
+    const { nsn, vendorCid, vendorId, tagihan } = createOperatorSubscriptionDto;
 
     let dataVendorServices: any;
     if (nsn) {
@@ -29,7 +31,6 @@ export class OperatorSubscriptionService {
           nsn,
           vendorId,
         );
-
       if (dataVendorServices) {
         dataVendorServices.vendorCid = vendorCid;
         dataVendorServices.tagihan = tagihan;
@@ -54,23 +55,26 @@ export class OperatorSubscriptionService {
       }
     }
 
-    if (!dataVendorServices) {
-      const insertData = new FiberVendorServices();
-      insertData.vendorId = vendorId;
-      insertData.vendorCid = vendorCid;
-      insertData.tagihan = tagihan;
-      insertData.type = type;
-      insertData.typeId = 0;
-      insertData.name = '';
-      insertData.capacity = '';
-      const saved = await this.fiberVendorServiceRepository.save(insertData);
-      return `data ${saved.id} created`;
-    } else {
-      const saved = await this.fiberVendorServiceRepository.save(
-        dataVendorServices,
-      );
-      return `data ${saved.id} updated`;
+    if (dataVendorServices) {
+      const cstcData =
+        this.operatorSubscriptionRepository.findCustomerFiberVendorServices(
+          dataVendorServices.vendorCid,
+          dataVendorServices.vendorId,
+        );
+
+      if (cstcData) {
+        dataVendorServices.type = TYPE_CUSTOMER_SERVICES;
+        dataVendorServices.typeId = cstcData['custServId'];
+        dataVendorServices.vendorId = vendorId;
+        dataVendorServices.name = cstcData['custAccName'];
+        const saved = await this.fiberVendorServiceRepository.save(
+          dataVendorServices,
+        );
+        return `data ${saved.id} updated`;
+      }
     }
+
+    return 'cid not found';
   }
 
   create(data: FiberVendorServices): Promise<FiberVendorServices> {

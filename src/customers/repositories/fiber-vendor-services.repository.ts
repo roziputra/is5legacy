@@ -49,6 +49,9 @@ export class FiberVendorServicesRepository extends Repository<FiberVendorService
       .andWhere('vendor_id = :vendorId', {
         vendorId: vendorId,
       })
+      .andWhere('fvs.type = :type', {
+        type: TYPE_CUSTOMER_SERVICES,
+      })
       .getRawOne();
   }
 
