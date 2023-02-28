@@ -35,7 +35,7 @@ export class DateFormat extends Date {
   }
 
   toTimeFormat(): string {
-    return `${('0' + this.$H).slice(-2)}:${('0' + this.$i).slice(-2)} ${(
+    return `${('0' + this.$H).slice(-2)}:${('0' + this.$i).slice(-2)}:${(
       '0' + this.$s
     ).slice(-2)}`;
   }

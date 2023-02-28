@@ -65,16 +65,6 @@ export class CustomersController {
           customer_service_id: saveNewCustomer.customerServiceId,
         },
       };
-    else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message:
-            'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
-        },
-        500,
-      );
-    }
   }
 
   @Post(':customer_id/services')
