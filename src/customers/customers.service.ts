@@ -3,10 +3,7 @@ import { DataSource, QueryRunner } from 'typeorm';
 
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
-import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 
-import { NOCFiberRepository } from 'src/customers/repositories/noc-fiber.repository';
-import { OperatorSubscriptionRepository } from './repositories/operator-subscription.repository';
 import {
   DEFAULT_EMAIL_TYPE_1,
   DEFAULT_EMAIL_TYPE_2,
@@ -76,28 +73,11 @@ import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 export class CustomersService {
   constructor(
     private customerRepository: CustomerRepository,
-    private operatorSubscription: OperatorSubscriptionRepository,
-    private nocFiberRepository: NOCFiberRepository,
     private dataSource: DataSource,
   ) {}
 
   async getListSalutationService(): Promise<any> {
     return await CustomerSalutation.find();
-  }
-
-  async getOperatorSubscriptions(
-    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
-  ): Promise<any> {
-    const { branchIds, status, vendorIds } = getOperatorSubscriptionDto;
-    const NocFiberIds = await this.nocFiberRepository.getNocFiberId(
-      branchIds,
-      vendorIds,
-    );
-    const ArrayNocFiberIds = NocFiberIds.map((item) => item.id);
-    return this.operatorSubscription.getOperatorSubscription(
-      ArrayNocFiberIds,
-      status,
-    );
   }
 
   async getCustomerServices(customerId) {

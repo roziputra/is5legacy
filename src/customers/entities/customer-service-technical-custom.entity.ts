@@ -11,3 +11,5 @@ export class CustomerServiceTechnicalCustom extends BaseEntity {
   @Column()
   technicalTypeId: number;
 }
+
+export const ATTRIBUTE_VENDOR_CID = 'Vendor CID';
