@@ -1,8 +1,11 @@
-import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'Customer', synchronize: false })
 export class Customer extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
+  AI: number;
+
+  @Column({ unique: true })
   CustId: string;
 
   @Column()

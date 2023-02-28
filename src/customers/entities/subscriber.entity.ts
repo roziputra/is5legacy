@@ -103,6 +103,12 @@ export class Subscription extends BaseEntity {
   Description: string;
 
   @Column()
+  CustNotes: string;
+
+  @Column()
+  Notes: string;
+
+  @Column()
   installation_address: string;
 
   @Column()
@@ -128,6 +134,9 @@ export class Subscription extends BaseEntity {
 
   @Column()
   PPN: string;
+
+  @Column()
+  CustCloseReason: string;
 
   @Column()
   Surveyor: string;
