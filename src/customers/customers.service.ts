@@ -291,8 +291,10 @@ export class CustomersService {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
+      let serviceData = null;
+      let serviceHistory = null;
       try {
-        let serviceData = null;
         serviceData = await this.saveCustomerService(
           queryRunner,
           createNewServiceCustDto,
@@ -300,7 +302,6 @@ export class CustomersService {
           accName,
         );
 
-        let serviceHistory = null;
         serviceHistory = await this.saveCustomerServiceHistoryNew(
           queryRunner,
           createNewServiceCustDto,
@@ -308,12 +309,27 @@ export class CustomersService {
         );
         await queryRunner.commitTransaction();
 
-        resultUpdateCustService = 'Success';
+        resultUpdateCustService = {
+          customerServiceId: serviceData.id,
+        };
       } catch (error) {
+        if (serviceData) {
+          await queryRunner.manager.remove(serviceData);
+        }
+        if (serviceHistory) {
+          await queryRunner.manager.remove(serviceHistory);
+        }
+        await queryRunner.rollbackTransaction();
+
         resultUpdateCustService = null;
+        throw new Is5LegacyException(
+          'Pendaftaran layanan pelanggan gagal diproses. Silahkan coba lagi!',
+          500,
+        );
       }
     } else {
       resultUpdateCustService = null;
+      throw new Is5LegacyException('Data pelanggan tidak dapat ditemukan', 404);
     }
 
     return resultUpdateCustService;
