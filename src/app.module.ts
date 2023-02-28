@@ -43,10 +43,14 @@ import { CustomerInvoice } from './customers/entities/customer-invoice.entity';
 import { CustomerInvoicePDF } from './customers/entities/customer-invoice-pdf.entity';
 import { CustomerSysConf } from './customers/entities/sysconf.entity';
 import { StbEngineer } from './stock/entities/stb-engineer.entity';
-import { StbEngineerBarang } from './stock/entities/stb-engineer-barang.entity';
 import { RequestStbPackage } from './stock/entities/request-stb-package.entity';
 import { RequestStbPackageDetail } from './stock/entities/request-stb-package-detail.entity';
 import { Master } from './stock/entities/master.entity';
+import { StbEngineerDetail } from './stock/entities/stb-engineer-detail.entity';
+import { StbRequest } from './stock/entities/stb-request.entity';
+import { StbRequestDetail } from './stock/entities/stb-request-detail.entity';
+import { FiberVendorServices } from './customers/entities/fiber-vendor-services.entity';
+import { Box } from './stock/entities/box.entity';
 
 @Module({
   imports: [
@@ -113,10 +117,14 @@ import { Master } from './stock/entities/master.entity';
         CustomerInvoicePDF,
         CustomerSysConf,
         StbEngineer,
-        StbEngineerBarang,
+        StbEngineerDetail,
+        StbRequest,
+        StbRequestDetail,
         RequestStbPackage,
         RequestStbPackageDetail,
         Master,
+        FiberVendorServices,
+        Box,
       ],
       synchronize: false,
     }),
