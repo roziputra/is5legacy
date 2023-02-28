@@ -7,17 +7,11 @@ import {
   Param,
   Post,
   UseGuards,
-  UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CustomersService } from './customers.service';
-import { Query } from '@nestjs/common';
-import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscription.interceptor';
-import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
-import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -35,17 +29,6 @@ export class CustomersController {
     else {
       throw new NotFoundException('Data salutation tidak ditemukan');
     }
-  }
-
-  @Get('operator-subscriptions')
-  @UseInterceptors(OperatorSubscriptionInterceptor)
-  async getOperatorSubscription(
-    @Query(new ValidationPipe({ transform: true }))
-    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
-  ): Promise<any> {
-    return this.customersService.getOperatorSubscriptions(
-      getOperatorSubscriptionDto,
-    );
   }
 
   @Get(':customer_id')
@@ -81,16 +64,6 @@ export class CustomersController {
           customer_service_id: saveNewCustomer.customerServiceId,
         },
       };
-    else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message:
-            'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
-        },
-        500,
-      );
-    }
   }
 
   @Post(':customer_id/services')
@@ -104,19 +77,16 @@ export class CustomersController {
         createNewServiceCustomersDto,
         customer_id,
       );
-    if (saveNewServiceCustomer)
+    if (saveNewServiceCustomer) {
       return {
         title: 'Berhasil',
         message: 'Berhasil menambahkan data layanan pelanggan',
-      };
-    else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message: 'Data pelanggan tidak dapat ditemukan',
+        data: {
+          customer_id: customer_id,
+          customer_service_id:
+            saveNewServiceCustomer.customerServiceId.toString(),
         },
-        404,
-      );
+      };
     }
   }
 }

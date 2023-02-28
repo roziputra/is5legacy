@@ -72,6 +72,9 @@ export class CustomerFix extends BaseEntity {
   CustTechCPPosition: string;
 
   @Column()
+  CustTechCPEmail: string;
+
+  @Column()
   CustBillCP: string;
 
   @Column()
