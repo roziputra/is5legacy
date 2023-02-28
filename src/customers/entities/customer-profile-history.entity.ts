@@ -6,6 +6,9 @@ export class CustomerProfileHistory extends BaseEntity {
   CustId: string;
 
   @Column()
+  AI: number;
+
+  @Column()
   BranchId: string;
 
   @Column()
@@ -99,6 +102,9 @@ export class CustomerProfileHistory extends BaseEntity {
   EmpApproval: string;
 
   @Column()
+  HistoryInsertEmpId: string;
+
+  @Column()
   CustStatus: string;
 
   @Column()
@@ -109,6 +115,9 @@ export class CustomerProfileHistory extends BaseEntity {
 
   @Column()
   InsertDateTime: Date;
+
+  @Column()
+  HistoryInsertTime: Date;
 
   @Column()
   UpdateDateTime: Date;
