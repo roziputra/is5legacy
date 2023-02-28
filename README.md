@@ -70,7 +70,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 
 ## API Reference
 
-<a href="https://documenter.getpostman.com/view/13532443/2s8Z6x3u3M#auth-info-da988b37-472f-4cf2-8aef-44e1f4f08a18" target="_blank">API Docs</a>
+<a href="https://documenter.getpostman.com/view/21941646/2s93CNLXwR" target="_blank">API Docs</a>
 
 ## License
 
