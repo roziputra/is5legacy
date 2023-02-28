@@ -112,6 +112,7 @@ export class StbRequestService {
       },
       relations: {
         details: true,
+        stb: true,
       },
     });
     if (!stbRequest) {
@@ -172,6 +173,7 @@ export class StbRequestService {
       },
       relations: {
         details: true,
+        stb: true,
       },
     });
   }

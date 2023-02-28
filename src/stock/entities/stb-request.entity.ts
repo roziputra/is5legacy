@@ -5,19 +5,17 @@ import {
   Column,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StbRequestDetail } from './stb-request-detail.entity';
 import { Expose } from 'class-transformer';
+import { StbEngineer } from './stb-engineer.entity';
 
 @Entity({ name: 'stb_request', synchronize: false })
 export class StbRequest extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Column({ name: 'related_id' })
-  @Expose({ name: 'related_id' })
-  relatedId: number;
 
   @Column()
   engineer: string;
@@ -31,11 +29,15 @@ export class StbRequest extends BaseEntity {
   requestType: RequestType;
 
   @Column({ name: 'request_date' })
-  @Expose({ name: 'request_type' })
+  @Expose({ name: 'request_date' })
   requestDate: Date;
 
   @Column()
   status: string;
+
+  @Column({ name: 'rejected_by' })
+  @Expose({ name: 'rejected_by' })
+  rejectedBy: string;
 
   @Column({ name: 'rejected_reason' })
   @Expose({ name: 'rejected_reason' })
@@ -55,6 +57,9 @@ export class StbRequest extends BaseEntity {
   @Column({ name: 'updated_at' })
   @Expose({ name: 'updated_at' })
   updatedAt: Date;
+
+  @OneToOne(() => StbEngineer, (stb) => stb.stbRequest)
+  stb: StbEngineer;
 
   @OneToMany(() => StbRequestDetail, (stb) => stb.stbRequest)
   details: StbRequestDetail[];
