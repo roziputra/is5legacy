@@ -5,10 +5,10 @@ export class FiberVendorServices extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ enum: ['POP', 'CustomerServices'] })
+  @Column({ enum: ['POP', 'CustomerServices'], default: null })
   type: ServiceType;
 
-  @Column()
+  @Column({ default: null })
   typeId: number;
 
   @Column({ name: 'vendor_id' })
@@ -20,26 +20,11 @@ export class FiberVendorServices extends BaseEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ default: null })
   capacity: string;
-
-  @Column({ name: 'periode_tagihan' })
-  periodeTagihan: string;
-
-  @Column({ name: 'tanggal_aktivasi' })
-  tanggalAktivasi: Date;
-
-  @Column({ name: 'tagihan_otc' })
-  tagihanOtc: number;
 
   @Column()
   tagihan: number;
-
-  @Column()
-  show: boolean;
-
-  @Column()
-  hide_date: Date;
 }
 
 export const TYPE_POP = 'POP';

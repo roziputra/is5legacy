@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, Raw, SelectQueryBuilder } from 'typeorm';
 import {
   FiberVendorServices,
   TYPE_CUSTOMER_SERVICES,
@@ -11,19 +11,51 @@ export class FiberVendorServicesRepository extends Repository<FiberVendorService
     super(FiberVendorServices, dataSource.createEntityManager());
   }
 
-  findAllFiberVendorService(): Promise<any> {
-    return this.createQueryBuilder('f')
+  customerFiberVendorServicesQuery(): SelectQueryBuilder<FiberVendorServices> {
+    return this.createQueryBuilder('fvs')
       .select([
-        'c.custServId id',
-        'c.CustAccName acc',
-        'vendor_cid vendorCid',
-        'name',
-        'periode_tagihan periodeTagihan',
-        'tagihan',
-        'c.CustStatus status',
+        'fvs.id id',
+        'fvs.type type',
+        'fvs.typeId typeId',
+        'fvs.vendor_id vendorId',
+        'fvs.vendor_cid vendorCid',
+        'fvs.name name',
+        'cs.CustStatus status',
       ])
-      .leftJoin('CustomerServices', 'c', 'c.custServId = f.typeId')
-      .where('f.type = :type', { type: TYPE_CUSTOMER_SERVICES })
+      .leftJoin('CustomerServices', 'cs', 'cs.CustServId = fvs.typeId')
+      .where('fvs.type = :type', { type: TYPE_CUSTOMER_SERVICES });
+  }
+
+  findAllCustomerFiberVendorServices(): Promise<any> {
+    return this.customerFiberVendorServicesQuery().getRawMany();
+  }
+
+  findCustomerFiberVendorServicesById(id: number): Promise<any> {
+    return this.customerFiberVendorServicesQuery()
+      .where('id = :id', {
+        id: id,
+      })
+      .getRawOne();
+  }
+
+  findCustomerFiberVendorServices(
+    vendorCid: string,
+    vendorId: number,
+  ): Promise<FiberVendorServices> {
+    return this.customerFiberVendorServicesQuery()
+      .where('vendor_cid = :vendorCid', {
+        vendorCid: vendorCid,
+      })
+      .andWhere('vendor_id = :vendorId', {
+        vendorId: vendorId,
+      })
+      .getRawOne();
+  }
+
+  findCustomerFiberVendorServicesByCID(vendorCid: string[]): Promise<any> {
+    return this.customerFiberVendorServicesQuery()
+      .where('vendor_cid in (:...vendorCid)', { vendorCid: vendorCid })
+      .orderBy('vendor_cid', 'ASC')
       .getRawMany();
   }
 }

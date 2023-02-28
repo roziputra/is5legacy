@@ -7,14 +7,9 @@ import {
   Param,
   Post,
   UseGuards,
-  UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CustomersService } from './customers.service';
-import { Query } from '@nestjs/common';
-import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscription.interceptor';
-import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
@@ -35,17 +30,6 @@ export class CustomersController {
     else {
       throw new NotFoundException('Data salutation tidak ditemukan');
     }
-  }
-
-  @Get('operator-subscriptions')
-  @UseInterceptors(OperatorSubscriptionInterceptor)
-  async getOperatorSubscription(
-    @Query(new ValidationPipe({ transform: true }))
-    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
-  ): Promise<any> {
-    return this.customersService.getOperatorSubscriptions(
-      getOperatorSubscriptionDto,
-    );
   }
 
   @Get(':customer_id')
