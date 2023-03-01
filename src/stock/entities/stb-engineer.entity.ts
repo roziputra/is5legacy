@@ -18,10 +18,6 @@ export class StbEngineer extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'related_id' })
-  @Expose({ name: 'related_id' })
-  relatedId: number;
-
   @Column({ name: 'request_id' })
   @Expose({ name: 'request_id' })
   requestId: number;
