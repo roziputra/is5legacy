@@ -116,12 +116,8 @@ export class StbEngineerService {
     }
   }
 
-  async findStbEngineer(stbEngineerId: number): Promise<StbEngineer> {
-    const stbEngineer = await this.stbEngineerRepository.findOne({
-      where: {
-        id: stbEngineerId,
-      },
-    });
+  async findStbEngineer(id: number): Promise<StbEngineer> {
+    const stbEngineer = await this.stbEngineerRepository.findOneStbEngineer(id);
     if (!stbEngineer) {
       throw new Is5LegacyException(
         'STB enggineer not found',

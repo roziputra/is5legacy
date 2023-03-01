@@ -106,15 +106,7 @@ export class StbRequestService {
   }
 
   async findStbRequest(id: number): Promise<StbRequest> {
-    const stbRequest = await this.stbRequestRepository.findOne({
-      where: {
-        id: id,
-      },
-      relations: {
-        details: true,
-        stb: true,
-      },
-    });
+    const stbRequest = await this.stbRequestRepository.findOneStbRequest(id);
     if (!stbRequest) {
       throw new Is5LegacyException(
         'Permintaan STB tidak ditemukan',
