@@ -81,11 +81,14 @@ export type RequestType =
   | typeof TYPE_REQUESTED
   | typeof TYPE_RETURNED
   | typeof TYPE_MOVED;
-
 export const TYPE_REQUESTED = 'permintaan';
 export const TYPE_RETURNED = 'pengembalian';
 export const TYPE_MOVED = 'pindah';
 
-export type Status = typeof STATUS_ACCEPTED | typeof STATUS_REJECTED;
+export type Status =
+  | typeof STATUS_ACCEPTED
+  | typeof STATUS_REJECTED
+  | typeof STATUS_PENDING;
 export const STATUS_ACCEPTED = 'diterima';
 export const STATUS_REJECTED = 'ditolak';
+export const STATUS_PENDING = 'menunggu';
