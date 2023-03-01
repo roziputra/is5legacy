@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { GetPromoFilterDto } from './dto/get-promo-filter.dto';
 import { SalesPromoRepository } from './sales-promo.repository';
-import { SalesPromo } from './sales-promo.entity';
 
 @Injectable()
 export class SalesPromoService {
   constructor(private salesPromoRepository: SalesPromoRepository) {}
 
-  async getAllPromoService(
-    filterPromoDto: GetPromoFilterDto,
-  ): Promise<SalesPromo[]> {
-    return await this.salesPromoRepository.getAllPromoRepository(
-      filterPromoDto,
-    );
-  }
+  async getListPromoService(filterPromoDto: GetPromoFilterDto): Promise<any> {
+    const { promoIds } = filterPromoDto;
 
-  async getPromoByIDService(promo_id: string) {
-    return await this.salesPromoRepository.getPromoByIDRepository(promo_id);
+    if (typeof promoIds !== 'undefined' && promoIds.length > 0) {
+      return await this.salesPromoRepository.getListPromoByIdRepository(
+        promoIds,
+      );
+    } else {
+      return await this.salesPromoRepository.getListPromoRepository(
+        filterPromoDto,
+      );
+    }
   }
 }
