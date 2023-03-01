@@ -1,9 +1,13 @@
+// List Of Common NestJS Package
 import { Injectable } from '@nestjs/common';
 import { DataSource, QueryRunner } from 'typeorm';
 
+// List of Dto
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
+import { GetCustomerSalutationDto } from './dtos/get-customer-salutation.dto';
 
+// List of Repository
 import {
   DEFAULT_EMAIL_TYPE_1,
   DEFAULT_EMAIL_TYPE_2,
@@ -46,7 +50,12 @@ import {
   CustomerRepository,
   DEFAULT_FACTOR_GENERATE_CUSTOMER_ID,
 } from './repositories/customer.repository';
+import {
+  SERVICE_INVOICE_TYPE_OTC,
+  SERVICE_CONTRACT_END_OTC,
+} from './repositories/customer-subsription.repository';
 
+// List of Entity
 import { Customer } from './entities/customer.entity';
 import { CustomerTemp } from './entities/customer-temp.entity';
 import { CustomerInvoiceSignature } from './entities/customer-invoice-signature.entity';
@@ -59,14 +68,11 @@ import { CustomerProfileHistory } from './entities/customer-profile-history.enti
 import { CustomerServicesHistoryNew } from './entities/customer-service-history-new.entity';
 import { CustomerVerifiedEmail } from './entities/customer-verified-email.entity';
 import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
-
-import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { CustomerSalutation } from './entities/salutation.entity';
-import {
-  SERVICE_INVOICE_TYPE_OTC,
-  SERVICE_CONTRACT_END_OTC,
-} from './repositories/customer-subsription.repository';
 import { CustomerSysConf } from './entities/sysconf.entity';
+
+// List of Another Package
+import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @Injectable()
@@ -76,8 +82,17 @@ export class CustomersService {
     private dataSource: DataSource,
   ) {}
 
-  async getListSalutationService(): Promise<any> {
-    return await CustomerSalutation.find();
+  async getListSalutationService(
+    getCustomerSalutationDto: GetCustomerSalutationDto,
+  ): Promise<any> {
+    const { salutationIds } = getCustomerSalutationDto;
+    if (salutationIds) {
+      return await this.customerRepository.getCustomerSalutationRepository(
+        salutationIds,
+      );
+    } else {
+      return await CustomerSalutation.find();
+    }
   }
 
   async getCustomerServices(customerId) {

@@ -5,11 +5,30 @@ import { CustomerServiceTechnicalCustom } from '../entities/customer-service-tec
 import { NOCFiber } from '../entities/noc-fiber.entity';
 import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
+import { Is5LegacyException } from '../../exceptions/is5-legacy.exception';
+import { CustomerSalutation } from '../entities/salutation.entity';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
   constructor(private dataSource: DataSource) {
     super(Customer, dataSource.createEntityManager());
+  }
+
+  async getCustomerSalutationRepository(salutationIds: string[]): Promise<any> {
+    const querySalutationList = await CustomerSalutation.createQueryBuilder(
+      'tcs',
+    )
+      .select(['tcs.id id', 'tcs.salutation salutation', 'tcs.status status'])
+      .where('tcs.id IN (:...salutationIds)', {
+        salutationIds: salutationIds,
+      })
+      .getRawMany();
+
+    if (querySalutationList.length == 0) {
+      throw new Is5LegacyException('Data salutation tidak ditemukan', 404);
+    }
+
+    return querySalutationList;
   }
 
   async getCustomerRepository(cid): Promise<any> {
