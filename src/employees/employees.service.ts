@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, In } from 'typeorm';
 
 import { Employee } from './employee.entity';
+import { GetEmployeeListDto } from './dto/get-employee-list.dto';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @Injectable()
 export class EmployeesService {
@@ -13,9 +15,24 @@ export class EmployeesService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async findOne(id: string) {
-    const employee = await this.employeeRepository.findOneBy({ EmpId: id });
-    return this.transformEmployee(employee);
+  async getEmployeeListByIdService(getEmployeeListDto: GetEmployeeListDto) {
+    const { employeeIds } = getEmployeeListDto;
+
+    const employee = await this.employeeRepository
+      .createQueryBuilder('emp')
+      .select([
+        'emp.EmpId id',
+        "concat(emp.EmpFName, ' ', emp.EmpLName) name",
+        'emp.EmpEmail email',
+      ])
+      .where('emp.EmpId IN (:...employeeIds)', { employeeIds: employeeIds })
+      .getRawMany();
+
+    if (employee.length == 0) {
+      throw new Is5LegacyException('Data karyawan tidak ditemukan', 404);
+    }
+
+    return employee;
   }
 
   async findAll() {

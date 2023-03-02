@@ -1,8 +1,8 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { EmployeesService } from './employees.service';
+import { GetEmployeeListDto } from './dto/get-employee-list.dto';
 
 @Controller('employees')
 export class EmployeesController {
@@ -15,8 +15,15 @@ export class EmployeesController {
   }
 
   @UseGuards(AuthGuard('api-key'))
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.employeesService.findOne(id);
+  @Get('lists')
+  async getEmployeeListById(@Query() getEmployeeListDto: GetEmployeeListDto) {
+    const resultEmployee =
+      await this.employeesService.getEmployeeListByIdService(
+        getEmployeeListDto,
+      );
+
+    return {
+      data: resultEmployee,
+    };
   }
 }
