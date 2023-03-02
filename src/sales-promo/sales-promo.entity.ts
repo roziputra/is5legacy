@@ -15,10 +15,10 @@ export class SalesPromo extends BaseEntity {
   nama_promo: string;
 
   @Column({ type: 'date' })
-  from: string;
+  from: Date;
 
   @Column({ type: 'date' })
-  to: string;
+  to: Date;
 
   @Column({
     type: 'longtext',

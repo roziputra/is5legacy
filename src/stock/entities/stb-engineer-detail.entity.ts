@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StbEngineer } from './stb-engineer.entity';
+import { Expose } from 'class-transformer';
 
 @Entity({ name: 'stb_engineer_detail', synchronize: false })
 export class StbEngineerDetail extends BaseEntity {
@@ -14,6 +15,7 @@ export class StbEngineerDetail extends BaseEntity {
   id: number;
 
   @Column({ name: 'stb_engineer_id' })
+  @Expose({ name: 'stb_engineer_id' })
   stbEngineerId: number;
 
   @Column()
