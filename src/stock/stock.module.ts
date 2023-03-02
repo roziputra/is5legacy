@@ -17,14 +17,14 @@ import { StbRequestDetailRepository } from './repositories/stb-request-detail.re
 import { StbRequestService } from './stb-request.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { StbPindahController } from './stb-pindah.controller';
-import { StbPindahService } from './stb-pindah.service';
+import { StbTransferService } from './stb-transfer.service';
+import { StbTransferController } from './stb-transfer.controller';
 
 @Module({
   imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
     PackageController,
-    StbPindahController,
+    StbTransferController,
     StbRequestController,
     StbEngineerController,
     WarehouseInventoryController,
@@ -33,7 +33,7 @@ import { StbPindahService } from './stb-pindah.service';
   ],
   providers: [
     StockService,
-    StbPindahService,
+    StbTransferService,
     StbRequestService,
     StbEngineerService,
     StbRequestRepository,

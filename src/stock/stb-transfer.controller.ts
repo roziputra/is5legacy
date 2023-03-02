@@ -11,12 +11,12 @@ import {
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
-import { StbPindahService } from './stb-pindah.service';
+import { StbTransferService } from './stb-transfer.service';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/pindah')
-export class StbPindahController {
-  constructor(private readonly stbPindahService: StbPindahService) {}
+export class StbTransferController {
+  constructor(private readonly stbTransferService: StbTransferService) {}
 
   @Put(':id/confirm')
   @HttpCode(HttpStatus.OK)
@@ -24,7 +24,7 @@ export class StbPindahController {
     new Is5LegacyResponseInterceptor('Berhasil konfirmasi permintaan pindah'),
   )
   confirm(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    return this.stbPindahService.confirm(id, user);
+    return this.stbTransferService.confirm(id, user);
   }
 
   @Put(':id/reject')
@@ -33,7 +33,7 @@ export class StbPindahController {
     new Is5LegacyResponseInterceptor('Berhasil tolak permintaan pindah'),
   )
   reject(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    return this.stbPindahService.reject(id, user);
+    return this.stbTransferService.reject(id, user);
   }
 
   @Delete(':id')
@@ -42,7 +42,7 @@ export class StbPindahController {
     new Is5LegacyResponseInterceptor('Berhasil hapus permintaan pindah'),
   )
   async remove(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    await this.stbPindahService.remove(id, user);
+    await this.stbTransferService.remove(id, user);
     return {};
   }
 }

@@ -12,7 +12,7 @@ import {
 import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.repository';
 
 @Injectable()
-export class StbPindahService {
+export class StbTransferService {
   constructor(
     private readonly stbRequestRepository: StbRequestRepository,
     private readonly stbEngineerDetailRepository: StbEngineerDetailRepository,
