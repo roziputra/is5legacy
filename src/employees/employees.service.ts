@@ -42,6 +42,12 @@ export class EmployeesService {
     return user;
   }
 
+  getProfile(user): Promise<Employee> {
+    return this.employeeRepository.findOneBy({
+      EmpId: user.EmpId,
+    });
+  }
+
   // employee mapping dari divisi helpdesk '01' -> 'Helpdesk Shift', '17' -> 'Helpdesk Reguler'
   // '020' -> Cabang Medan
   async empMap() {
