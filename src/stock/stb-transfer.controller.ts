@@ -14,7 +14,7 @@ import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-respon
 import { StbTransferService } from './stb-transfer.service';
 
 @UseGuards(JwtAuthGuard)
-@Controller('api/v1/stocks/stbs/pindah')
+@Controller('api/v1/stocks/stbs/transfer')
 export class StbTransferController {
   constructor(private readonly stbTransferService: StbTransferService) {}
 
