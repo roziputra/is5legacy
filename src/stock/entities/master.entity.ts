@@ -3,7 +3,6 @@ import {
   BaseEntity,
   Column,
   Entity,
-  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryColumn,
@@ -35,8 +34,7 @@ export class Master extends BaseEntity {
   @Expose({ name: 'insert_date' })
   insertDate: Date;
 
-  @OneToOne(() => StbRequestDetail)
-  @JoinColumn([{ name: 'code', referencedColumnName: 'code' }])
+  @OneToOne(() => StbRequestDetail, (detail) => detail.master) // specify inverse side as a second parameter
   detail: StbRequestDetail;
 
   @OneToMany(() => Box, (b) => b.master)

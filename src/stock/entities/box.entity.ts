@@ -7,10 +7,12 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { Master } from './master.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity({ name: 'Box', synchronize: false })
 export class Box extends BaseEntity {
   @PrimaryColumn({ name: 'Code' })
+  @Exclude()
   code: string;
 
   @Column({ name: 'Name' })
