@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import { IS_ACTIVE_TRUE, Master } from '../entities/master.entity';
 import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { Box } from '../entities/box.entity';
@@ -18,21 +18,26 @@ export class MasterRepository extends Repository<Master> {
     const searchLike = {
       search: `%${search}%`,
     };
-    const query = this.createQueryBuilder('m')
+
+    let query = this.createQueryBuilder('m')
+      .select(['m.code', 'm.name'])
       .where('m.Branch = :branch', {
         branch: branch,
       })
-      .andWhere('isActive = :isActive', { isActive: IS_ACTIVE_TRUE });
+      .andWhere('m.isActive = :isActive', { isActive: IS_ACTIVE_TRUE });
 
     if (search) {
-      query.andWhere((q) => {
-        q.where('m.name like :search', searchLike).orWhere(
-          'm.code like :search',
-          searchLike,
-        );
-      });
+      query = query.andWhere(
+        new Brackets((q) => {
+          q.where('m.name like :search', searchLike).orWhere(
+            'm.code like :search',
+            searchLike,
+          );
+        }),
+      );
     }
-    query.leftJoinAndMapMany('m.units', 'm.units', 'u', 'm.Code = u.Code');
+
+    query.leftJoinAndMapMany('m.units', Box, 'b', 'b.Code = m.Code');
     return paginate<Master>(query, options);
   }
 }
