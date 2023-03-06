@@ -22,7 +22,7 @@ import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-respon
 import { StbRequestService } from './stb-request.service';
 import { CreateStbRequestDto } from './dto/create-stb-request.dto';
 import { UpdateStbRequestDto } from './dto/update-stb-request.dto';
-import { StbRequest } from './entities/stb-request.entity';
+import { Employee } from 'src/employees/employee.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/requests')
@@ -46,18 +46,19 @@ export class StbRequestController {
   @UseInterceptors(
     new Is5LegacyResponseInterceptor('Berhasil update permintaan STB'),
   )
-  update(
+  async update(
     @Param('id') id: number,
     @Body() updateStbRequestDto: UpdateStbRequestDto,
+    @CurrentUser() user: Employee,
   ): Promise<any> {
-    return this.stbRequestService.update(updateStbRequestDto, id);
+    return this.stbRequestService.update(updateStbRequestDto, id, user);
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
-  show(@Param('id') id: number): Promise<StbRequest> {
-    return this.stbRequestService.findStbRequest(id);
+  show(@Param('id') id: number, @CurrentUser() user: Employee): Promise<any> {
+    return this.stbRequestService.findStbRequest(id, user);
   }
 
   @Delete(':id')
@@ -65,9 +66,11 @@ export class StbRequestController {
   @UseInterceptors(
     new Is5LegacyResponseInterceptor('Berhasil hapus permintaan STB'),
   )
-  async remove(@Param('id') id: number): Promise<any> {
-    await this.stbRequestService.remove(id);
-    return {};
+  async remove(
+    @Param('id') id: number,
+    @CurrentUser() user: Employee,
+  ): Promise<any> {
+    return this.stbRequestService.remove(id, user);
   }
 
   @Get()
@@ -87,5 +90,11 @@ export class StbRequestController {
       requestType,
       status?.split(',').map((i) => i.trim()),
     );
+  }
+
+  @Get(':id/details')
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Param('id') id: number) {
+    return this.stbRequestService.findAllRequestDetails(id);
   }
 }

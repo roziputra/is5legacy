@@ -1,10 +1,11 @@
 import {
+  Body,
   Controller,
-  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
-  Put,
+  Patch,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -13,36 +14,35 @@ import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
 import { StbTransferService } from './stb-transfer.service';
 
+import { ConfirmStbTransferDto } from './dto/confirm-stb-transfer.dto';
+import { StbTransferApiResourceInterceptor } from './resources/stb-transfer-api-resource.interceptor';
+
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/transfer')
 export class StbTransferController {
   constructor(private readonly stbTransferService: StbTransferService) {}
 
-  @Put(':id/confirm')
+  @Patch(':id/confirm')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
     new Is5LegacyResponseInterceptor('Berhasil konfirmasi permintaan pindah'),
   )
-  confirm(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    return this.stbTransferService.confirm(id, user);
+  confirm(
+    @Param('id') id: number,
+    @Body() confirmStbTransferDto: ConfirmStbTransferDto,
+    @CurrentUser() user,
+  ): Promise<any> {
+    return this.stbTransferService.confirm(
+      id,
+      confirmStbTransferDto.status,
+      user,
+    );
   }
 
-  @Put(':id/reject')
+  @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(
-    new Is5LegacyResponseInterceptor('Berhasil tolak permintaan pindah'),
-  )
-  reject(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    return this.stbTransferService.reject(id, user);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptors(
-    new Is5LegacyResponseInterceptor('Berhasil hapus permintaan pindah'),
-  )
-  async remove(@Param('id') id: number, @CurrentUser() user): Promise<any> {
-    await this.stbTransferService.remove(id, user);
-    return {};
+  @UseInterceptors(StbTransferApiResourceInterceptor)
+  async show(@Param('id') id: number) {
+    return this.stbTransferService.findOne(id);
   }
 }

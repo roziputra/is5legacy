@@ -29,4 +29,16 @@ export class StbRequestRepository extends Repository<StbRequest> {
       .leftJoinAndMapOne('detail.master', Master, 'm', 'm.Code = detail.code')
       .getOne();
   }
+
+  findOneStbTransfer(id: number): Promise<any> {
+    return this.createQueryBuilder('stbr')
+      .where('stbr.id = :id', { id: id })
+      .leftJoinAndMapOne(
+        'stbr.stb',
+        StbEngineer,
+        'stb',
+        'stb.requestId = stbr.id',
+      )
+      .getOne();
+  }
 }
