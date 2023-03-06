@@ -14,7 +14,7 @@ export class CronService {
     this.generalTicketExpiredDocService.runCron();
   }
 
-  @Cron('* 2 1 * *')
+  @Cron('0 2 1 * *')
   depreciationJournal() {
     this.depreciationJournalService.runCron();
   }
