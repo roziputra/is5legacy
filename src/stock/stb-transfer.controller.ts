@@ -22,7 +22,7 @@ import { StbTransferApiResourceInterceptor } from './resources/stb-transfer-api-
 export class StbTransferController {
   constructor(private readonly stbTransferService: StbTransferService) {}
 
-  @Patch(':id/confirm')
+  @Patch(':id')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(
     new Is5LegacyResponseInterceptor('Berhasil konfirmasi permintaan pindah'),
