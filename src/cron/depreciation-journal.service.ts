@@ -11,13 +11,14 @@ export class DepreciationJournalService {
     }
 
     const d = new Date();
-    const month = d.getMonth();
-    const lastDate = new Date(d.getFullYear(), month, 0);
+    const lastDate = new Date(d.getFullYear(), d.getMonth() + 1, 0);
     const year = lastDate.getFullYear();
+    const month = lastDate.getMonth();
+    const date = lastDate.getDate();
 
     const period = {
       fromDate: `${year}-01-01`,
-      toDate: `${year}-${('0' + month).slice(-2)}-${lastDate.getDate()}`,
+      toDate: `${year}-${('0' + (month + 1)).slice(-2)}-${date}`,
     };
 
     const branches = process.env.DEPRECIATION_BRANCHES || false;
