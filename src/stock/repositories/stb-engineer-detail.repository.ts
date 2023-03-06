@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Brackets, DataSource, Repository } from 'typeorm';
-import { TYPE_REQUESTED } from '../entities/stb-engineer.entity';
+import { StbEngineer, TYPE_REQUESTED } from '../entities/stb-engineer.entity';
 import { StbEngineerDetail } from '../entities/stb-engineer-detail.entity';
+import { Master } from '../entities/master.entity';
 
 @Injectable()
 export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
@@ -43,6 +44,9 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
     return query.getRawMany();
   }
 
+  /**
+   *  deprecated
+   */
   getInventoryByStbId(stbEngineerId: number): Promise<any> {
     return this.createQueryBuilder('detail')
       .select([
@@ -59,6 +63,24 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
         'm.Code = detail.code and m.Branch = stb.branch_id',
       )
       .where('stb_engineer_id = :stbId', { stbId: stbEngineerId })
+      .getRawMany();
+  }
+
+  findAllDetails(stbEngineerId: number): Promise<any> {
+    return this.createQueryBuilder('d')
+      .select([
+        'd.id ida',
+        'm.name name',
+        'd.serial serial',
+        'd.code code',
+        'd.qty qty',
+        'd.unit unit',
+      ])
+      .leftJoin(StbEngineer, 'stb', 'stb.id = d.stbEngineerId')
+      .leftJoin(Master, 'm', 'm.code = d.code and m.branchId = stb.branchId')
+      .where('d.stbEngineerId = :stbEngineerId', {
+        stbEngineerId: stbEngineerId,
+      })
       .getRawMany();
   }
 }

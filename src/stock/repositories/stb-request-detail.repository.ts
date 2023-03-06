@@ -10,7 +10,7 @@ export class StbRequestDetailRepository extends Repository<StbRequestDetail> {
     super(StbRequestDetail, dataSource.createEntityManager());
   }
 
-  findAllDetails(id: number) {
+  findAllDetails(stbRequestId: number): Promise<any> {
     return this.createQueryBuilder('d')
       .select([
         'd.id id',
@@ -20,11 +20,9 @@ export class StbRequestDetailRepository extends Repository<StbRequestDetail> {
         'd.qty qty',
         'd.unit unit',
       ])
-      .where('d.stbRequestId = :id', {
-        id: id,
-      })
       .leftJoin(StbRequest, 'r', 'r.id = d.stbRequestId')
       .leftJoin(Master, 'm', 'm.code = d.code and m.branchId = r.branchId')
+      .where('d.stbRequestId = :stbRequestId', { stbRequestId: stbRequestId })
       .getRawMany();
   }
 }

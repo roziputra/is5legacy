@@ -19,13 +19,17 @@ import { Employee } from 'src/employees/employee.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StbTransferService } from './stb-transfer.service';
 import { StbTransferController } from './stb-transfer.controller';
+import { StbRequestDetailController } from './stb-request-detail.controller';
+import { StbEngineerDetailController } from './stb-engineer-detail.controller';
 
 @Module({
   imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
     PackageController,
     StbTransferController,
+    StbRequestDetailController,
     StbRequestController,
+    StbEngineerDetailController,
     StbEngineerController,
     WarehouseInventoryController,
     EngineerInventoryController,

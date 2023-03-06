@@ -179,6 +179,10 @@ export class StbEngineerService {
     });
   }
 
+  /**
+   *  deprecated
+   *  pakai findAllStbDetails agar endpoint lama tetap bisa di pakai
+   */
   async getInventoryByStbId(stbEngineerId: number) {
     const stbEngineer = await this.stbEngineerRepository.findOne({
       where: {
@@ -192,6 +196,21 @@ export class StbEngineerService {
       );
     }
     return this.stbEngineerDetailRepository.getInventoryByStbId(stbEngineerId);
+  }
+
+  async findAllStbDetails(stbEngineerId: number) {
+    const stbEngineer = await this.stbEngineerRepository.findOne({
+      where: {
+        id: stbEngineerId,
+      },
+    });
+    if (!stbEngineer) {
+      throw new Is5LegacyException(
+        'STB engineer not found',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return this.stbEngineerDetailRepository.findAllDetails(stbEngineerId);
   }
 
   getMasterBranch(user): string {

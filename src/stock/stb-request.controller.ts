@@ -91,10 +91,4 @@ export class StbRequestController {
       status?.split(',').map((i) => i.trim()),
     );
   }
-
-  @Get(':id/details')
-  @HttpCode(HttpStatus.OK)
-  async findAll(@Param('id') id: number) {
-    return this.stbRequestService.findAllRequestDetails(id);
-  }
 }
