@@ -12,7 +12,7 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
   findEngineerInventory(engineerId: string, search: string) {
     const query = this.createQueryBuilder('detail')
       .select([
-        'stb.id id',
+        'detail.id id',
         'detail.code code',
         'detail.serial serial',
         'detail.qty qty',
