@@ -14,6 +14,7 @@ import {
 } from '../entities/stb-engineer.entity';
 import { Expose, Type } from 'class-transformer';
 import { CreateStbRequestDetailDto } from './create-stb-request-detail.dto';
+import { CreateStbEngineerDetailDto } from './create-stb-engineer-detail.dto';
 
 export class CreateStbRequestDto {
   @IsNotEmpty()
@@ -36,6 +37,11 @@ export class CreateStbRequestDto {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested()
-  @Type(() => CreateStbRequestDetailDto)
-  details: CreateStbRequestDetailDto[];
+  @Type(({ newObject }) => {
+    if ([TYPE_RETURNED, TYPE_MOVED].includes(newObject.requestType)) {
+      return CreateStbEngineerDetailDto;
+    }
+    return CreateStbRequestDetailDto;
+  })
+  details: CreateStbEngineerDetailDto[] | CreateStbRequestDetailDto[];
 }
