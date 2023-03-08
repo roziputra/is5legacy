@@ -96,3 +96,10 @@ export const TYPE_MOVED = 'pindah';
 export type Status = typeof STATUS_ACCEPTED | typeof STATUS_REJECTED;
 export const STATUS_ACCEPTED = 'diterima';
 export const STATUS_REJECTED = 'ditolak';
+
+export type TransferType =
+  | typeof TRANSFER_TYPE_ACCEPT
+  | typeof TRANSFER_TYPE_REQUEST;
+
+export const TRANSFER_TYPE_REQUEST = 'permintaan';
+export const TRANSFER_TYPE_ACCEPT = 'penerimaan';

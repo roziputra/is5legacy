@@ -7,6 +7,7 @@ import { StbRequestDetailRepository } from './repositories/stb-request-detail.re
 import { Status, TYPE_MOVED } from './entities/stb-request.entity';
 import { StbEngineerDetailRepository } from './repositories/stb-engineer-detail.repository';
 import { Employee } from 'src/employees/employee.entity';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class StbTransferService {
@@ -76,5 +77,19 @@ export class StbTransferService {
 
   findOne(id: number) {
     return this.stbRequestRepository.findOneStbTransfer(id);
+  }
+
+  findAll(
+    user: string,
+    transferType: string[],
+    status: string[],
+    options: IPaginationOptions,
+  ) {
+    return this.stbRequestRepository.findAllStbTransfer(
+      user,
+      transferType,
+      status,
+      options,
+    );
   }
 }
