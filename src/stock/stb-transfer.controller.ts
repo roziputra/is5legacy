@@ -70,4 +70,10 @@ export class StbTransferController {
       { page: page, limit: limit },
     );
   }
+
+  @Get('total-permintaan')
+  @HttpCode(HttpStatus.OK)
+  getTotalPermintaan(@CurrentUser() user: Employee): Promise<any> {
+    return this.stbTransferService.getTotalPermintaan(user.EmpId);
+  }
 }
