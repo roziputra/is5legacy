@@ -21,9 +21,11 @@ import { StbTransferService } from './stb-transfer.service';
 import { StbTransferController } from './stb-transfer.controller';
 import { StbRequestDetailController } from './stb-request-detail.controller';
 import { StbEngineerDetailController } from './stb-engineer-detail.controller';
+import { EngineerTicketController } from './engineer-ticket.controller';
+import { TtsModule } from 'src/tickets/tickets.module';
 
 @Module({
-  imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
+  imports: [FinanceModule, TtsModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
     PackageController,
     StbTransferController,
@@ -32,6 +34,7 @@ import { StbEngineerDetailController } from './stb-engineer-detail.controller';
     StbEngineerDetailController,
     StbEngineerController,
     WarehouseInventoryController,
+    EngineerTicketController,
     EngineerInventoryController,
     StockController,
   ],
