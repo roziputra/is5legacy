@@ -70,6 +70,7 @@ import {
   SERVICE_CONTRACT_END_OTC,
 } from './repositories/customer-subsription.repository';
 import { CustomerSysConf } from './entities/sysconf.entity';
+import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 
 @Injectable()
 export class CustomersService {
@@ -99,8 +100,16 @@ export class CustomersService {
     );
   }
 
-  async getCustomerServices(customerId) {
-    return await this.customerRepository.getCustomerRepository(customerId);
+  async getCustomerServices(
+    getCustomerListDto: GetCustomerListDto,
+  ): Promise<any> {
+    const { customerIds } = getCustomerListDto;
+
+    if (customerIds.length > 0) {
+      return await this.customerRepository.getCustomerRepository(customerIds);
+    } else {
+      return [];
+    }
   }
 
   async saveNewCustomerServices(

@@ -1,4 +1,12 @@
-import { BaseEntity, Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Customer } from './customer.entity';
 
 @Entity({ name: 'NPWP_Customer', synchronize: false })
 export class NPWPCustomer extends BaseEntity {
@@ -19,4 +27,8 @@ export class NPWPCustomer extends BaseEntity {
 
   @Column()
   Selected: boolean;
+
+  @ManyToOne(() => Customer, (customer) => customer.ListNPWP)
+  @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
+  Cust: Customer;
 }

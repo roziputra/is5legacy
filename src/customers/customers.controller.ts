@@ -18,6 +18,7 @@ import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -48,19 +49,18 @@ export class CustomersController {
     );
   }
 
-  @Get(':customer_id')
+  @Get()
   @HttpCode(200)
-  async getCustomerDetail(@Param('customer_id') customerId): Promise<any> {
+  async getCustomerDetail(
+    @Query() getCustomerListDto: GetCustomerListDto,
+  ): Promise<any> {
     const resultAllCustomers = await this.customersService.getCustomerServices(
-      customerId,
+      getCustomerListDto,
     );
-    if (Object.keys(resultAllCustomers).length !== 0)
-      return {
-        data: resultAllCustomers,
-      };
-    else {
-      throw new NotFoundException('Data pelanggan tidak ditemukan');
-    }
+
+    return {
+      data: resultAllCustomers,
+    };
   }
 
   @Post()
