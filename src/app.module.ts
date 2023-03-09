@@ -51,6 +51,8 @@ import { StbRequest } from './stock/entities/stb-request.entity';
 import { StbRequestDetail } from './stock/entities/stb-request-detail.entity';
 import { FiberVendorServices } from './customers/entities/fiber-vendor-services.entity';
 import { Box } from './stock/entities/box.entity';
+import { FollowUpServiceLog } from './customers/entities/follow-up-service-log.entity';
+import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
 
 @Module({
   imports: [
@@ -125,6 +127,8 @@ import { Box } from './stock/entities/box.entity';
         Master,
         FiberVendorServices,
         Box,
+        FollowUpServiceLog,
+        CustomerLogCall,
       ],
       synchronize: false,
     }),

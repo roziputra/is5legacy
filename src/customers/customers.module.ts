@@ -24,16 +24,23 @@ import { CustomerSubscriptionController } from './customer-subscription.controll
 import { FiberVendorServicesRepository } from './repositories/fiber-vendor-services.repository';
 import { OperatorSubscriptionController } from './operator-subscription.controller';
 import { OperatorSubscriptionService } from './operator-subscription.service';
+import { CustomerSubscriptionExtensionController } from './client/customer-subscription-extension.controller';
+import { FollowUpServiceLogRepository } from './repositories/follow-up-service-log.repository';
+import { CustomerLogCallRepository } from './repositories/customer-log-call.repository';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [HttpModule],
+  imports: [ConfigModule.forRoot(), HttpModule],
   controllers: [
     OperatorSubscriptionController,
+    CustomerSubscriptionExtensionController,
     CustomersController,
     CustomerSubscriptionController,
   ],
   exports: [CustomersService],
   providers: [
+    CustomerLogCallRepository,
+    FollowUpServiceLogRepository,
     CustomersService,
     OperatorSubscriptionService,
     FiberVendorServicesRepository,
