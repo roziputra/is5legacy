@@ -3,23 +3,30 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { TtsService } from 'src/tickets/tickets.service';
+import { FilterTicketDto } from './dto/filter-ticket.dto';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Employee } from 'src/employees/employee.entity';
-import { TtsService } from 'src/tickets/tickets.service';
 
 @UseGuards(JwtAuthGuard)
-@Controller('api/v1/stocks/engineers/')
-export class EngineerTicketController {
+@Controller('api/v1/tickets/')
+export class TicketController {
   constructor(private readonly ticketService: TtsService) {}
 
-  @Get(':id/tickets')
+  @Get()
   @HttpCode(HttpStatus.OK)
-  async findAllEngineerTickets(@Param('id') engineer: string): Promise<any> {
-    const data = await this.ticketService.findAllEngineerTickets(engineer);
+  async findAllEngineerTickets(
+    @Query() filterTicketDto: FilterTicketDto,
+    @CurrentUser() user: Employee,
+  ): Promise<any> {
+    const data = await this.ticketService.findAllEngineerTickets(
+      filterTicketDto,
+      user,
+    );
     return {
       data: data,
     };

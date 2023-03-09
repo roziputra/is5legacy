@@ -13,7 +13,7 @@ export class TicketPicRepository extends Repository<TicketPic> {
     super(TicketPic, dataSource.createEntityManager());
   }
 
-  findEnginerTickets(EngineerId: string): Promise<any> {
+  findEnginerTickets(EngineerId: string[]): Promise<any> {
     return this.createQueryBuilder('tp')
       .select([
         't.TtsId ticket_id',
@@ -36,7 +36,7 @@ export class TicketPicRepository extends Repository<TicketPic> {
       .leftJoin(Subscription, 'cs', 'cs.id = t.CustServId')
       .leftJoin(Services, 's', 's.id = cs.ServiceId')
       .leftJoin(Employee, 'sales', 'sales.EmpId = c.SalesId')
-      .where('tp.EmpId = :empId', { empId: EngineerId })
+      .where('tp.EmpId in (:...empId)', { empId: EngineerId })
       .andWhere('t.Status != :status', { status: TICKET_STATUS_CLOSED })
       .getRawMany();
   }

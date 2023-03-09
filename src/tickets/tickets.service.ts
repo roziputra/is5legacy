@@ -24,6 +24,8 @@ import {
 } from './entities/general-ticket-pic.entity';
 import { DateFormat } from 'src/utils/date-format';
 import { TicketPicRepository } from './repositories/ticket-pic.repository';
+import { FilterTicketDto } from './dto/filter-ticket.dto';
+import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class TtsService {
@@ -418,7 +420,15 @@ export class TtsService {
     }
   }
 
-  findAllEngineerTickets(user: string): Promise<any> {
-    return this.ticketPicRepository.findEnginerTickets(user);
+  async findAllEngineerTickets(
+    filterTicketDto: FilterTicketDto,
+    user: Employee,
+  ): Promise<any> {
+    let { engineer } = filterTicketDto;
+
+    if (!engineer) {
+      engineer = [user.EmpId];
+    }
+    return this.ticketPicRepository.findEnginerTickets(engineer);
   }
 }
