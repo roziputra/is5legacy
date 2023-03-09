@@ -1,4 +1,4 @@
-import { Transform, Type } from 'class-transformer';
+import { Expose, Transform, Type } from 'class-transformer';
 import { IsOptional, IsString, IsArray } from 'class-validator';
 
 export class GetServiceFilterDto {
@@ -7,7 +7,18 @@ export class GetServiceFilterDto {
   @IsArray()
   @IsString({ each: true })
   @Transform(({ value }) => {
-    return value.split(',');
+    return typeof value !== 'undefined' ? value.split(',') : [];
   })
-  branch_ids: string[];
+  @Expose({ name: 'branch_id' })
+  branchIds: string[];
+
+  @IsOptional()
+  @Type(() => String)
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) => {
+    return typeof value !== 'undefined' ? value.split(',') : [];
+  })
+  @Expose({ name: 'service_id' })
+  serviceIds: string[];
 }

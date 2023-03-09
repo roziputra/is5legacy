@@ -3,21 +3,17 @@ import {
   Controller,
   Get,
   HttpCode,
-  NotFoundException,
   Param,
   Post,
+  Query,
   UseGuards,
-  UseInterceptors,
-  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { CustomersService } from './customers.service';
-import { Query } from '@nestjs/common';
-import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscription.interceptor';
-import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { GetCustomerListDto } from './dtos/get-customer-list.dto';
+import { GetCustomerSalutationDto } from './dtos/get-customer-salutation.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -25,27 +21,17 @@ export class CustomersController {
   constructor(private readonly customersService: CustomersService) {}
 
   @Get('salutations')
-  async getListSalutation(): Promise<any> {
-    const resultAllSalutations =
-      await this.customersService.getListSalutationService();
-    if (Object.keys(resultAllSalutations).length !== 0)
-      return {
-        data: resultAllSalutations,
-      };
-    else {
-      throw new NotFoundException('Data salutation tidak ditemukan');
-    }
-  }
-
-  @Get('operator-subscriptions')
-  @UseInterceptors(OperatorSubscriptionInterceptor)
-  async getOperatorSubscription(
-    @Query(new ValidationPipe({ transform: true }))
-    getOperatorSubscriptionDto: GetOperatorSubscriptionDto,
+  async getListSalutation(
+    @Query() getCustomerSalutationDto: GetCustomerSalutationDto,
   ): Promise<any> {
-    return this.customersService.getOperatorSubscriptions(
-      getOperatorSubscriptionDto,
-    );
+    const resultOfSalutations =
+      await this.customersService.getListSalutationService(
+        getCustomerSalutationDto,
+      );
+
+    return {
+      data: resultOfSalutations,
+    };
   }
 
   @Get()

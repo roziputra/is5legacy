@@ -1,6 +1,14 @@
 import { Expose } from 'class-transformer';
-import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import {
+  BaseEntity,
+  Column,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+} from 'typeorm';
 import { Box } from './box.entity';
+import { StbRequestDetail } from './stb-request-detail.entity';
 
 @Entity({ name: 'Master', synchronize: false })
 export class Master extends BaseEntity {
@@ -25,6 +33,9 @@ export class Master extends BaseEntity {
   @Column({ name: 'InsertDate' })
   @Expose({ name: 'insert_date' })
   insertDate: Date;
+
+  @OneToOne(() => StbRequestDetail, (detail) => detail.master) // specify inverse side as a second parameter
+  detail: StbRequestDetail;
 
   @OneToMany(() => Box, (b) => b.master)
   units: Box[];

@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { DataSource, In } from 'typeorm';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { RequestType } from './entities/stb-engineer.entity';
@@ -11,8 +11,9 @@ import { StbRequestRepository } from './repositories/stb-request.repository';
 import { StbRequestDetailRepository } from './repositories/stb-request-detail.repository';
 import { CreateStbRequestDto } from './dto/create-stb-request.dto';
 import { UpdateStbRequestDto } from './dto/update-stb-request.dto';
-import { StbRequest } from './entities/stb-request.entity';
+import { STATUS_PENDING, StbRequest } from './entities/stb-request.entity';
 import { StbEngineerService } from './stb-engineer.service';
+import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class StbRequestService {
@@ -30,6 +31,7 @@ export class StbRequestService {
     try {
       const stbRequest = this.stbRequestRepository.create(createStbRequestDto);
       stbRequest.createdBy = user['EmpId'];
+      stbRequest.status = STATUS_PENDING;
       stbRequest.branchId = this.stbEngineerService.getMasterBranch(user);
       const stbRequestSaved = await transaction.manager.save(stbRequest);
       const detail = this.stbRequestDetailRepository.create(
@@ -45,22 +47,27 @@ export class StbRequestService {
       return stbRequestSaved;
     } catch (e) {
       await transaction.rollbackTransaction();
-      throw e;
       throw new Is5LegacyException('Gagal membuat permintaan STB');
     } finally {
       await transaction.release();
     }
   }
 
-  async update(updateStbRequestDto: UpdateStbRequestDto, id: number) {
+  async update(
+    updateStbRequestDto: UpdateStbRequestDto,
+    id: number,
+    user: Employee,
+  ) {
     const stbRequest = await this.stbRequestRepository.findOne({
       where: {
         id: id,
+        createdBy: user.EmpId,
       },
       relations: {
         details: true,
       },
     });
+
     if (!stbRequest) {
       throw new Is5LegacyException(
         'Permintaan STB tidak ditemukan',
@@ -68,7 +75,7 @@ export class StbRequestService {
       );
     }
 
-    if (stbRequest.status) {
+    if (stbRequest.status != STATUS_PENDING) {
       throw new Is5LegacyException(
         'Permintaan STB hanya boleh diupdate saat masih pending',
         HttpStatus.NOT_FOUND,
@@ -105,15 +112,8 @@ export class StbRequestService {
     }
   }
 
-  async findStbRequest(id: number): Promise<StbRequest> {
-    const stbRequest = await this.stbRequestRepository.findOne({
-      where: {
-        id: id,
-      },
-      relations: {
-        details: true,
-      },
-    });
+  async findStbRequest(id: number, user: Employee): Promise<StbRequest> {
+    const stbRequest = await this.stbRequestRepository.findOneStbRequest(id);
     if (!stbRequest) {
       throw new Is5LegacyException(
         'Permintaan STB tidak ditemukan',
@@ -123,10 +123,15 @@ export class StbRequestService {
     return stbRequest;
   }
 
-  async remove(id: number): Promise<any> {
+  findAllRequestDetails(id: number) {
+    return this.stbRequestDetailRepository.findAllDetails(id);
+  }
+
+  async remove(id: number, user: Employee): Promise<any> {
     const stbRequest = await this.stbRequestRepository.findOne({
       where: {
         id: id,
+        createdBy: user.EmpId,
       },
       relations: {
         details: true,
@@ -139,7 +144,7 @@ export class StbRequestService {
       );
     }
 
-    if (stbRequest.status) {
+    if (stbRequest.status != STATUS_PENDING) {
       throw new Is5LegacyException(
         'Permintaan STB hanya boleh dihapus saat masih pending',
         HttpStatus.NOT_FOUND,
@@ -172,6 +177,7 @@ export class StbRequestService {
       },
       relations: {
         details: true,
+        stb: true,
       },
     });
   }

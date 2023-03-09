@@ -4,10 +4,12 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { StbRequest } from './stb-request.entity';
 import { Expose } from 'class-transformer';
+import { Master } from './master.entity';
 
 @Entity({ name: 'stb_request_detail', synchronize: false })
 export class StbRequestDetail extends BaseEntity {
@@ -19,6 +21,9 @@ export class StbRequestDetail extends BaseEntity {
   stbRequestId: number;
 
   @Column()
+  serial: string;
+
+  @Column()
   code: string;
 
   @Column()
@@ -26,6 +31,9 @@ export class StbRequestDetail extends BaseEntity {
 
   @Column()
   unit: string;
+
+  @OneToOne(() => Master, (m) => m.detail) // specify inverse side as a second parameter
+  master: Master;
 
   @ManyToOne(() => StbRequest)
   @JoinColumn({ name: 'stb_request_id' })

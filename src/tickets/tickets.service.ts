@@ -18,9 +18,14 @@ import {
   SYSTEM,
 } from './repositories/general-ticket-repository';
 import { GeneralTicket } from './entities/general-ticket.entity';
-import { TicketPic } from './entities/ticket-pic.entity';
+import {
+  GeneralTicketPic,
+  TICKET_TYPE_EMPLOYEE,
+} from './entities/general-ticket-pic.entity';
 import { DateFormat } from 'src/utils/date-format';
-import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
+import { TicketPicRepository } from './repositories/ticket-pic.repository';
+import { FilterTicketDto } from './dto/filter-ticket.dto';
+import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class TtsService {
@@ -51,6 +56,7 @@ export class TtsService {
     private readonly employeeServices: EmployeesService,
     private isoDocumentRepository: IsoDocumentRepository,
     private generalTicketRepository: GeneralTicketRepository,
+    private readonly ticketPicRepository: TicketPicRepository,
     private dataSource: DataSource,
   ) {
     this.setEmpMap();
@@ -388,7 +394,6 @@ export class TtsService {
         const ticketSaved = await transaction.manager.save(ticket);
 
         console.log(ticketSaved);
-        throw new Is5LegacyException('error');
         let pic = object.created_by;
         const newPic = forwardPic[pic] ?? null;
 
@@ -396,10 +401,10 @@ export class TtsService {
           pic = newPic;
         }
 
-        const ticketPic = new TicketPic();
+        const ticketPic = new GeneralTicketPic();
         ticketPic.ticketId = ticketSaved.id;
-        ticketPic.assignNo = 1;
-        ticketPic.type = 'employee';
+        ticketPic.assignNo = DEFAULT_ASSIGN_NO;
+        ticketPic.type = TICKET_TYPE_EMPLOYEE;
         ticketPic.typeId = pic;
         await transaction.manager.save(ticketPic);
 
@@ -413,5 +418,17 @@ export class TtsService {
     } finally {
       await transaction.release();
     }
+  }
+
+  async findAllEngineerTickets(
+    filterTicketDto: FilterTicketDto,
+    user: Employee,
+  ): Promise<any> {
+    let { engineer } = filterTicketDto;
+
+    if (!engineer) {
+      engineer = [user.EmpId];
+    }
+    return this.ticketPicRepository.findEnginerTickets(engineer);
   }
 }
