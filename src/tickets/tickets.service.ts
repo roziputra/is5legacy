@@ -20,6 +20,7 @@ import {
 import { GeneralTicket } from './entities/general-ticket.entity';
 import { TicketPic } from './entities/ticket-pic.entity';
 import { DateFormat } from 'src/utils/date-format';
+import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 
 @Injectable()
 export class TtsService {
@@ -386,6 +387,8 @@ export class TtsService {
 
         const ticketSaved = await transaction.manager.save(ticket);
 
+        console.log(ticketSaved);
+        throw new Is5LegacyException('error');
         let pic = object.created_by;
         const newPic = forwardPic[pic] ?? null;
 
@@ -403,14 +406,12 @@ export class TtsService {
         console.info(`General ticket created #${ticketSaved.id}`);
       }
 
-      // await transaction.commitTransaction();
+      await transaction.commitTransaction();
     } catch (error) {
       await transaction.rollbackTransaction();
       console.error(error);
     } finally {
-      // await transaction.release();
+      await transaction.release();
     }
-    await transaction.rollbackTransaction();
-    await transaction.release();
   }
 }

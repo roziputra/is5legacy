@@ -1,6 +1,7 @@
 import { QueryRunner, Repository } from 'typeorm';
 import { GeneralJournal } from '../entities/general-journal.entity';
 import { GeneralJournalBatchNo } from '../entities/general-journal-batch-no.entity';
+import { month } from 'src/utils/date-format';
 
 export class GeneralJournalRepository extends Repository<GeneralJournal> {
   async addDepreciationToGeneralJournal(
@@ -30,7 +31,7 @@ export class GeneralJournalRepository extends Repository<GeneralJournal> {
     );
     depreciationJournal.Keterangan = this.getPerkiraanText(
       PENYUSUTAN_TEXT,
-      period.fromDate,
+      period.toDate,
     );
     depreciationJournal.Debet = 0;
     depreciationJournal.Kredit = depreciation;
@@ -53,7 +54,7 @@ export class GeneralJournalRepository extends Repository<GeneralJournal> {
     );
     expenseJournal.Keterangan = this.getPerkiraanText(
       PENYUSUTAN_TEXT,
-      period.fromDate,
+      period.toDate,
     );
     expenseJournal.Debet = depreciation;
     expenseJournal.Kredit = 0;
@@ -71,8 +72,7 @@ export class GeneralJournalRepository extends Repository<GeneralJournal> {
 
   getPerkiraanText(txt: string, date: string): string {
     const d = new Date(date);
-    const month = d.toLocaleString('default', { month: 'long' });
-    return `${txt} ${month} ${d.getFullYear()}`;
+    return `${txt} ${month[d.getMonth()]} ${d.getFullYear()}`;
   }
 }
 

@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsDate,
   IsIn,
   IsNotEmpty,
   IsOptional,
@@ -11,10 +12,10 @@ import {
   TYPE_REQUESTED,
   TYPE_RETURNED,
 } from '../entities/stb-engineer.entity';
-import { CreateStbEngineerDetailDto } from './create-stb-engineer-detail.dto';
 import { Expose, Type } from 'class-transformer';
+import { CreateStbRequestDetailDto } from './create-stb-request-detail.dto';
 
-export class CreateStbEngineerDto {
+export class CreateStbRequestDto {
   @IsNotEmpty()
   engineer: string;
 
@@ -23,12 +24,18 @@ export class CreateStbEngineerDto {
   @Expose({ name: 'request_type' })
   requestType: RequestType;
 
+  @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
+  @Expose({ name: 'request_date' })
+  requestDate: Date;
+
   @IsOptional()
   description: string;
 
   @IsNotEmpty()
   @IsArray()
   @ValidateNested()
-  @Type(() => CreateStbEngineerDetailDto)
-  details: CreateStbEngineerDetailDto[];
+  @Type(() => CreateStbRequestDetailDto)
+  details: CreateStbRequestDetailDto[];
 }

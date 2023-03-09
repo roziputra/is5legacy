@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   DefaultValuePipe,
   Delete,
@@ -12,6 +13,7 @@ import {
   Put,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { StbEngineerService } from './stb-engineer.service';
 import { CreateStbEngineerDto } from './dto/create-stb-engineer.dto';
@@ -23,6 +25,7 @@ import {
 } from './entities/stb-engineer.entity';
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { CurrentUser } from 'src/employees/current-user.decorator';
+import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
 
 @UseGuards(JwtAuthGuard)
 @Controller('stocks/stb-engineers')
@@ -31,40 +34,34 @@ export class StbEngineerController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(
+  @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil simpan STB'))
+  create(
     @Body() createStbEngineerDto: CreateStbEngineerDto,
     @CurrentUser() user,
   ): Promise<any> {
-    await this.stbEngineerService.create(createStbEngineerDto, user);
-    return {
-      title: 'Success',
-      message: 'STB created successfully',
-    };
+    return this.stbEngineerService.create(createStbEngineerDto, user);
   }
 
   @Put(':stbEngineerId')
   @HttpCode(HttpStatus.OK)
-  async update(
+  @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil update STB'))
+  update(
     @Param('stbEngineerId') stbEngineerId: number,
     @Body() updateStbEngineerDto: UpdateStbEngineerDto,
   ): Promise<any> {
-    await this.stbEngineerService.update(updateStbEngineerDto, stbEngineerId);
-    return {
-      title: 'Success',
-      message: 'STB updated successfully',
-    };
+    return this.stbEngineerService.update(updateStbEngineerDto, stbEngineerId);
   }
 
   @Get(':stbEngineerId')
   @HttpCode(HttpStatus.OK)
-  async show(
-    @Param('stbEngineerId') stbEngineerId: number,
-  ): Promise<StbEngineer> {
+  @UseInterceptors(ClassSerializerInterceptor)
+  show(@Param('stbEngineerId') stbEngineerId: number): Promise<StbEngineer> {
     return this.stbEngineerService.findStbEngineer(stbEngineerId);
   }
 
   @Get(':stbEngineerId/details')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async getInventoryByStbId(
     @Param('stbEngineerId') stbEngineerId: number,
   ): Promise<any> {
@@ -78,16 +75,15 @@ export class StbEngineerController {
 
   @Delete(':stbEngineerId')
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil hapus STB'))
   async remove(@Param('stbEngineerId') stbEngineerId: number): Promise<any> {
     await this.stbEngineerService.remove(stbEngineerId);
-    return {
-      title: 'Success',
-      message: 'STB delete successfully',
-    };
+    return {};
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(ClassSerializerInterceptor)
   async findAllStbEnginer(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
     @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,

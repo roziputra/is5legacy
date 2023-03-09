@@ -17,7 +17,6 @@ import { OperatorSubscriptionInterceptor } from './interceptors/operator-subscri
 import { GetOperatorSubscriptionDto } from './dtos/get-operator-subscription.dto';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
-import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 
 @UseGuards(AuthGuard('api-key'))
@@ -81,16 +80,6 @@ export class CustomersController {
           customer_service_id: saveNewCustomer.customerServiceId,
         },
       };
-    else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message:
-            'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
-        },
-        500,
-      );
-    }
   }
 
   @Post(':customer_id/services')
@@ -104,19 +93,16 @@ export class CustomersController {
         createNewServiceCustomersDto,
         customer_id,
       );
-    if (saveNewServiceCustomer)
+    if (saveNewServiceCustomer) {
       return {
         title: 'Berhasil',
         message: 'Berhasil menambahkan data layanan pelanggan',
-      };
-    else {
-      throw new Is5LegacyException(
-        {
-          title: 'Error',
-          message: 'Data pelanggan tidak dapat ditemukan',
+        data: {
+          customer_id: customer_id,
+          customer_service_id:
+            saveNewServiceCustomer.customerServiceId.toString(),
         },
-        404,
-      );
+      };
     }
   }
 }

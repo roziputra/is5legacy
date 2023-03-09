@@ -71,6 +71,7 @@ import {
 } from './repositories/customer-subsription.repository';
 import { CustomerSysConf } from './entities/sysconf.entity';
 import { GetCustomerListDto } from './dtos/get-customer-list.dto';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @Injectable()
 export class CustomersService {
@@ -146,9 +147,16 @@ export class CustomersService {
       await queryRunner.connect();
       await queryRunner.startTransaction();
 
+      let customerData = null;
+      let customerFix = null;
+      let npwpCustomer = null;
+      let smsPhonebook = null;
+      let customerProfileHistory = null;
+      let customerService = null;
+      let customerServiceHistoryNew = null;
+
       try {
         // Step 4 : Assign Data Pelanggan ke Tabel Customer dan Simpan
-        let customerData = null;
         customerData = await this.saveNewCustomer(
           queryRunner,
           createNewCustomerDto,
@@ -168,7 +176,6 @@ export class CustomersService {
         );
 
         // Step 7 : Assign Data Pelanggan ke Tabel CustomerFix dan Simpan
-        let customerFix = null;
         customerFix = await this.saveCustomerFix(
           queryRunner,
           createNewCustomerDto,
@@ -177,7 +184,6 @@ export class CustomersService {
         );
 
         // Step 8 : Assign Data NPWP ke Tabel NPWP dan Simpan
-        let npwpCustomer = null;
         npwpCustomer = await this.saveNpwpCustomer(
           queryRunner,
           createNewCustomerDto,
@@ -185,7 +191,6 @@ export class CustomersService {
         );
 
         // Step 9 : Assign Data SMS Phonebook ke SMS Phonebook dan Simpan
-        let smsPhonebook = null;
         smsPhonebook = await this.saveSmsPhonebook(
           queryRunner,
           createNewCustomerDto,
@@ -193,10 +198,10 @@ export class CustomersService {
         );
 
         // Step 10 : Assign Data Pelanggan ke Tabel CustomerProfileHistory
-        let customerProfileHistory = null;
         customerProfileHistory = await this.saveCustomerProfileHistory(
           queryRunner,
           createNewCustomerDto,
+          customerData.AI,
           custId,
           formId,
         );
@@ -221,7 +226,6 @@ export class CustomersService {
         );
 
         // Step 13 : Assign Data Layanan ke Tabel CustomerService
-        let customerService = null;
         customerService = await this.saveCustomerService(
           queryRunner,
           createNewCustomerDto,
@@ -230,7 +234,6 @@ export class CustomersService {
         );
 
         // Step 14 : Assign Data Pelanggan ke Tabel CustomerServiceHistoryNew
-        let customerServiceHistoryNew = null;
         customerServiceHistoryNew = await this.saveCustomerServiceHistoryNew(
           queryRunner,
           createNewCustomerDto,
@@ -238,6 +241,7 @@ export class CustomersService {
         );
 
         await queryRunner.commitTransaction();
+
         resultSaveDataCustomer = {
           customerId: custId,
           customerServiceId: (
@@ -252,8 +256,42 @@ export class CustomersService {
           ).id.toString(),
         };
       } catch (error) {
-        resultSaveDataCustomer = null;
+        if (customerData) {
+          await queryRunner.manager.remove(customerData);
+        }
+        if (customerFix) {
+          await queryRunner.manager.remove(customerFix);
+        }
+        if (npwpCustomer) {
+          await queryRunner.manager.remove(npwpCustomer);
+        }
+        if (smsPhonebook) {
+          if (
+            createNewCustomerDto.billingPhone !=
+            createNewCustomerDto.technicalPhone
+          ) {
+            await queryRunner.manager.remove(smsPhonebook.saveSmsPhonebook1);
+            await queryRunner.manager.remove(smsPhonebook.saveSmsPhonebook2);
+          } else {
+            await queryRunner.manager.remove(smsPhonebook.saveSmsPhonebook1);
+          }
+        }
+        if (customerProfileHistory) {
+          await queryRunner.manager.remove(customerProfileHistory);
+        }
+        if (customerService) {
+          await queryRunner.manager.remove(customerService);
+        }
+        if (customerServiceHistoryNew) {
+          await queryRunner.manager.remove(customerServiceHistoryNew);
+        }
         await queryRunner.rollbackTransaction();
+        resultSaveDataCustomer = null;
+
+        throw new Is5LegacyException(
+          'Pendaftaran pelanggan tidak dapat diproses, silahkan coba beberapa saat lagi.',
+          500,
+        );
       }
     }
 
@@ -282,8 +320,10 @@ export class CustomersService {
       const queryRunner = this.dataSource.createQueryRunner();
       await queryRunner.connect();
       await queryRunner.startTransaction();
+
+      let serviceData = null;
+      let serviceHistory = null;
       try {
-        let serviceData = null;
         serviceData = await this.saveCustomerService(
           queryRunner,
           createNewServiceCustDto,
@@ -291,7 +331,6 @@ export class CustomersService {
           accName,
         );
 
-        let serviceHistory = null;
         serviceHistory = await this.saveCustomerServiceHistoryNew(
           queryRunner,
           createNewServiceCustDto,
@@ -299,12 +338,27 @@ export class CustomersService {
         );
         await queryRunner.commitTransaction();
 
-        resultUpdateCustService = 'Success';
+        resultUpdateCustService = {
+          customerServiceId: serviceData.id,
+        };
       } catch (error) {
+        if (serviceData) {
+          await queryRunner.manager.remove(serviceData);
+        }
+        if (serviceHistory) {
+          await queryRunner.manager.remove(serviceHistory);
+        }
+        await queryRunner.rollbackTransaction();
+
         resultUpdateCustService = null;
+        throw new Is5LegacyException(
+          'Pendaftaran layanan pelanggan gagal diproses. Silahkan coba lagi!',
+          500,
+        );
       }
     } else {
       resultUpdateCustService = null;
+      throw new Is5LegacyException('Data pelanggan tidak dapat ditemukan', 404);
     }
 
     return resultUpdateCustService;
@@ -485,6 +539,7 @@ export class CustomersService {
     customerFix.CustBillingAdd = CUSTOMER_BILLING_ADD;
     customerFix.CustTechCP = createNewCustomerDto.technicalName;
     customerFix.CustTechCPPosition = createNewCustomerDto.technicalJobTitle;
+    customerFix.CustTechCPEmail = createNewCustomerDto.technicalEmail;
     customerFix.CustBillCP = createNewCustomerDto.billingName;
     customerFix.CustBillCPPosition = createNewCustomerDto.billingJobTitle;
     customerFix.CustBillCPEmail = createNewCustomerDto.billingEmail;
@@ -574,11 +629,13 @@ export class CustomersService {
   async saveCustomerProfileHistory(
     transaction: QueryRunner,
     createNewCustomerDto: CreateNewCustomerDto,
+    custAI: number,
     custId: string,
     formId: string,
   ): Promise<any> {
     const custProfileHistory = new CustomerProfileHistory();
 
+    custProfileHistory.AI = custAI;
     custProfileHistory.CustId = custId;
     custProfileHistory.CustPass = hashPasswordMd5();
     custProfileHistory.BranchId = createNewCustomerDto.displayBranchId
@@ -631,9 +688,11 @@ export class CustomersService {
     custProfileHistory.CustNotes = createNewCustomerDto.extendNote;
     custProfileHistory.InsertEmpId = createNewCustomerDto.approvalEmpId;
     custProfileHistory.EmpApproval = createNewCustomerDto.approvalEmpId;
+    custProfileHistory.HistoryInsertEmpId = createNewCustomerDto.approvalEmpId;
     custProfileHistory.CustStatus = CUSTOMER_DEFAULT_STATUS;
     custProfileHistory.SalesId = createNewCustomerDto.salesId;
     custProfileHistory.InsertDateTime = new Date();
+    custProfileHistory.HistoryInsertTime = new Date();
     custProfileHistory.UpdateDateTime = new Date();
     custProfileHistory.TaxType = createNewCustomerDto.taxType;
     custProfileHistory.CetakDuluan = createNewCustomerDto.cetakDuluan;
@@ -761,6 +820,8 @@ export class CustomersService {
     services.AddEmailCharge = SERVICE_DEFAULT_ADD_EMAIL_CHARGE_STATUS;
     services.AccessLog = SERVICE_DEFAULT_ACCESS_LOG_STATUS;
     services.Description = createNewServiceCustomerDto.extendNote;
+    services.CustNotes = createNewServiceCustomerDto.extendNote;
+    services.Notes = createNewServiceCustomerDto.extendNote;
     services.Surveyor = createNewServiceCustomerDto.surveyorId;
     services.installation_address =
       createNewServiceCustomerDto.installationAddress;
@@ -771,6 +832,7 @@ export class CustomersService {
     services.CustBlockFromMenu = SERVICE_DEFAULT_CUSTOMER_BLOCK_FROM_MENU;
     services.IPServer = SERVICE_DEFAULT_IP_SERVER;
     services.PPN = createNewServiceCustomerDto.ppn;
+    services.CustCloseReason = ' ';
 
     return await transaction.manager.save(services);
   }
@@ -782,7 +844,7 @@ export class CustomersService {
   ): Promise<any> {
     const customerServiceHistoryNew = new CustomerServicesHistoryNew();
 
-    customerServiceHistoryNew.cust_serv_id = customerService.ServiceId;
+    customerServiceHistoryNew.cust_serv_id = customerService.id;
     customerServiceHistoryNew.emp_id =
       createNewServiceCustomerDto.approvalEmpId;
     customerServiceHistoryNew.insert_time = new Date();
@@ -805,15 +867,14 @@ export class CustomersService {
           },
         });
 
-        let baseNumber = fetchLastInsertedId.LastRec;
-        const lastRecordID = branchId + baseNumber;
+        let baseNumber = parseInt(fetchLastInsertedId.LastRec);
+        const lastRecordID = branchId + '0' + baseNumber.toString();
         const factor = DEFAULT_FACTOR_GENERATE_CUSTOMER_ID;
 
         const lastRec = [];
         const factorRec = [];
         const step = [];
         let total = 0;
-
         for (let i = 0; i < 9; i++) {
           lastRec[i] = lastRecordID[i];
           factorRec[i] = factor[i];
@@ -828,13 +889,14 @@ export class CustomersService {
         } else {
           validation = 11 - reminder;
         }
+        baseNumber = baseNumber + 1;
 
         const newCustId = lastRecordID + validation;
-        baseNumber += 1;
+        const newBaseNumber = '0' + baseNumber;
 
         await CustomerSysConf.update(
           { LastRec: fetchLastInsertedId.LastRec },
-          { LastRec: baseNumber },
+          { LastRec: newBaseNumber },
         );
         await this.insertCustomerTemp(newCustId);
 

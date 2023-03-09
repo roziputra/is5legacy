@@ -1,7 +1,6 @@
 import { Subscription } from './subscriber.entity';
 import { SMSPhonebook } from './sms-phonebook.entity';
 import { NPWPCustomer } from './customer-npwp.entity';
-import { PrimaryColumn } from 'typeorm';
 import {
   BaseEntity,
   Entity,
@@ -15,7 +14,7 @@ export class Customer extends BaseEntity {
   @PrimaryGeneratedColumn()
   AI: number;
 
-  @PrimaryColumn()
+  @Column({ unique: true })
   CustId: string;
 
   @Column()
