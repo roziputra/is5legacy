@@ -23,9 +23,16 @@ export class CustomerSubscriptionExtensionController {
   async procesCustomerSubscriptionExtension(
     @Body() customerConfirmationDto: CustomerConfirmationDto,
   ): Promise<any> {
-    await this.customerInvoiceService.createInvoiceFromNis(
+    await this.customerInvoiceService.createFollowUpServiceLog(
       customerConfirmationDto,
     );
+
+    await this.customerInvoiceService.createCustomerLogCall(
+      customerConfirmationDto,
+    );
+
+    // send request create invoice to NIS endpoint;
+
     return {
       title: 'Berhasil',
       message: 'berhasil proses konfirmasi perpanjangan customer',

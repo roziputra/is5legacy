@@ -242,11 +242,10 @@ export class CustomersInvoiceService {
     return hash;
   }
 
-  async createInvoiceFromNis(
+  async createFollowUpServiceLog(
     customerConfirmationDto: CustomerConfirmationDto,
-  ): Promise<any> {
-    const { customerId, customerServiceId, period, confirmation, reason } =
-      customerConfirmationDto;
+  ): Promise<void> {
+    const { customerServiceId, period, confirmation } = customerConfirmationDto;
 
     const year = period.getFullYear();
     const month = ('0' + (period.getMonth() + 1)).slice(-2);
@@ -261,6 +260,20 @@ export class CustomersInvoiceService {
       insertTime: date,
     });
 
+    if (confirmation) {
+      await this.followUpServiceLogRepository.save(followUpServiceLog);
+    } else {
+      followUpServiceLog.confirmationTypeId = CONFIRMATION_TIPE_CLOSE;
+      await this.followUpServiceLogRepository.save(followUpServiceLog);
+    }
+  }
+
+  async createCustomerLogCall(
+    customerConfirmationDto: CustomerConfirmationDto,
+  ): Promise<void> {
+    const { customerId, confirmation, reason } = customerConfirmationDto;
+    const date = new Date();
+
     const customerLogCall = this.customerLogCallRepository.create({
       employeeId: EMPLOYEE_ID_SYSTEM,
       subject: SUBJECT_CUSTOMER_PERPANJANG,
@@ -271,13 +284,9 @@ export class CustomersInvoiceService {
     });
 
     if (confirmation) {
-      await this.followUpServiceLogRepository.save(followUpServiceLog);
       await this.customerLogCallRepository.save(customerLogCall);
-      // send request create invoice to NIS endpoint;
     } else {
-      followUpServiceLog.confirmationTypeId = CONFIRMATION_TIPE_CLOSE;
       customerLogCall.subject = reason;
-      await this.followUpServiceLogRepository.save(followUpServiceLog);
       await this.customerLogCallRepository.save(customerLogCall);
     }
   }
