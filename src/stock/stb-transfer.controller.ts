@@ -45,6 +45,12 @@ export class StbTransferController {
     );
   }
 
+  @Get('total')
+  @HttpCode(HttpStatus.OK)
+  getTotalPermintaan(@CurrentUser() user: Employee): Promise<any> {
+    return this.stbTransferService.getTotalPermintaan(user.EmpId);
+  }
+
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(StbTransferApiResourceInterceptor)
