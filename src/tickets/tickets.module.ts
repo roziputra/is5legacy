@@ -6,7 +6,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmployeesModule } from 'src/employees/employees.module';
 import { GeneralTicketRepository } from './repositories/general-ticket-repository';
 import { IsoDocumentRepository } from './repositories/iso-document-repository';
-import { TicketPicRepository } from './repositories/ticket-pic-repository';
+import { TicketPicRepository } from './repositories/ticket-pic.repository';
+import { GeneralTicketPicRepository } from './repositories/general-ticket-pic.repository';
+import { TicketController } from './ticket.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Tts]), EmployeesModule],
@@ -15,8 +17,9 @@ import { TicketPicRepository } from './repositories/ticket-pic-repository';
     GeneralTicketRepository,
     IsoDocumentRepository,
     TicketPicRepository,
+    GeneralTicketPicRepository,
   ],
-  controllers: [TtsController],
+  controllers: [TtsController, TicketController],
   exports: [TtsService],
 })
 export class TtsModule {}

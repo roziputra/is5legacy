@@ -1,18 +1,12 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
-
-type ticketType = 'employee' | 'group';
-
-@Entity({ name: 'GeneralTicketPIC2', synchronize: false })
+@Entity({ name: 'TtsPIC', synchronize: false })
 export class TicketPic extends BaseEntity {
-  @PrimaryColumn()
+  @PrimaryColumn({ name: 'TtsId' })
   ticketId: number;
 
-  @Column()
-  assignNo: number;
+  @Column({ name: 'EmpId' })
+  employeeId: string;
 
-  @Column()
-  type: ticketType;
-
-  @Column()
-  typeId: string;
+  @Column({ name: 'AssignedNo' })
+  assignedNo: number;
 }

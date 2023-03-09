@@ -92,4 +92,8 @@ export class StbTransferService {
       options,
     );
   }
+
+  getTotalPermintaan(user: string): Promise<any> {
+    return this.stbRequestRepository.getTotalPermintaanPindahBarang(user);
+  }
 }

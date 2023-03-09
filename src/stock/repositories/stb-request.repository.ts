@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { StbRequest, TYPE_MOVED } from '../entities/stb-request.entity';
+import {
+  STATUS_PENDING,
+  StbRequest,
+  TYPE_MOVED,
+} from '../entities/stb-request.entity';
 import { Master } from '../entities/master.entity';
 import { StbRequestDetail } from '../entities/stb-request-detail.entity';
 import { StbEngineer } from '../entities/stb-engineer.entity';
@@ -105,5 +109,19 @@ export class StbRequestRepository extends Repository<StbRequest> {
         status: status,
       });
     return paginateRaw<any>(query, options);
+  }
+
+  getTotalPermintaanPindahBarang(user: string): Promise<any> {
+    return this.createQueryBuilder('stbr')
+      .select('count(*)', 'total')
+      .where('stbr.requestType = :requestType')
+      .andWhere('stbr.status = :status')
+      .andWhere('stbr.engineer = :user')
+      .setParameters({
+        requestType: TYPE_MOVED,
+        status: STATUS_PENDING,
+        user: user,
+      })
+      .getRawOne();
   }
 }

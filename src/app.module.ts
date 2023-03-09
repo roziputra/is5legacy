@@ -22,7 +22,7 @@ import { Services } from './services/entities/service.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { IsoDocument } from './tickets/entities/iso-document.entity';
 import { GeneralTicket } from './tickets/entities/general-ticket.entity';
-import { TicketPic } from './tickets/entities/ticket-pic.entity';
+import { GeneralTicketPic } from './tickets/entities/general-ticket-pic.entity';
 import { CronModule } from './cron/cron.module';
 import { FinanceModule } from './finance/finance.module';
 import { StockInvoice } from './finance/entities/stock-invoice.entity';
@@ -53,6 +53,7 @@ import { FiberVendorServices } from './customers/entities/fiber-vendor-services.
 import { Box } from './stock/entities/box.entity';
 import { FollowUpServiceLog } from './customers/entities/follow-up-service-log.entity';
 import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
+import { TicketPic } from './tickets/entities/ticket-pic.entity';
 
 @Module({
   imports: [
@@ -101,7 +102,7 @@ import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
         Services,
         IsoDocument,
         GeneralTicket,
-        TicketPic,
+        GeneralTicketPic,
         StockInvoice,
         GeneralJournalBatchNo,
         GeneralJournal,
@@ -129,6 +130,7 @@ import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
         Box,
         FollowUpServiceLog,
         CustomerLogCall,
+        TicketPic,
       ],
       synchronize: false,
     }),
