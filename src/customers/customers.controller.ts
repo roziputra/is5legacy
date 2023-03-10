@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   HttpCode,
-  NotFoundException,
   Param,
   Post,
   Query,
@@ -13,6 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { CustomersService } from './customers.service';
 import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
+import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 import { GetCustomerSalutationDto } from './dtos/get-customer-salutation.dto';
 
 @UseGuards(AuthGuard('api-key'))
@@ -34,19 +34,18 @@ export class CustomersController {
     };
   }
 
-  @Get(':customer_id')
+  @Get()
   @HttpCode(200)
-  async getCustomerDetail(@Param('customer_id') customerId): Promise<any> {
+  async getCustomerDetail(
+    @Query() getCustomerListDto: GetCustomerListDto,
+  ): Promise<any> {
     const resultAllCustomers = await this.customersService.getCustomerServices(
-      customerId,
+      getCustomerListDto,
     );
-    if (Object.keys(resultAllCustomers).length !== 0)
-      return {
-        data: resultAllCustomers,
-      };
-    else {
-      throw new NotFoundException('Data pelanggan tidak ditemukan');
-    }
+
+    return {
+      data: resultAllCustomers,
+    };
   }
 
   @Post()

@@ -70,6 +70,7 @@ import { CustomerVerifiedEmail } from './entities/customer-verified-email.entity
 import { InvoiceTypeMonth } from './entities/invoice-type-month.entity';
 import { CustomerSalutation } from './entities/salutation.entity';
 import { CustomerSysConf } from './entities/sysconf.entity';
+import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 
 // List of Another Package
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
@@ -95,8 +96,16 @@ export class CustomersService {
     }
   }
 
-  async getCustomerServices(customerId) {
-    return await this.customerRepository.getCustomerRepository(customerId);
+  async getCustomerServices(
+    getCustomerListDto: GetCustomerListDto,
+  ): Promise<any> {
+    const { customerIds } = getCustomerListDto;
+
+    if (customerIds.length > 0) {
+      return await this.customerRepository.getCustomerRepository(customerIds);
+    } else {
+      return [];
+    }
   }
 
   async saveNewCustomerServices(
