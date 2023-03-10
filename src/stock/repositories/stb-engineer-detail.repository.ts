@@ -69,7 +69,7 @@ export class StbEngineerDetailRepository extends Repository<StbEngineerDetail> {
   findAllDetails(stbEngineerId: number): Promise<any> {
     return this.createQueryBuilder('d')
       .select([
-        'd.id ida',
+        'd.id id',
         'm.name name',
         'd.serial serial',
         'd.code code',

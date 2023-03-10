@@ -52,6 +52,8 @@ import { StbRequestDetail } from './stock/entities/stb-request-detail.entity';
 import { FiberVendorServices } from './customers/entities/fiber-vendor-services.entity';
 import { Box } from './stock/entities/box.entity';
 import { TicketPic } from './tickets/entities/ticket-pic.entity';
+import { TtbCustomer } from './stock/entities/ttb-customer.entity';
+import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
 
 @Module({
   imports: [
@@ -127,6 +129,8 @@ import { TicketPic } from './tickets/entities/ticket-pic.entity';
         FiberVendorServices,
         Box,
         TicketPic,
+        TtbCustomer,
+        TtbCustomerDetail,
       ],
       synchronize: false,
     }),
