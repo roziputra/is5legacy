@@ -16,7 +16,6 @@ import {
   ChargeType,
 } from './utils/charge-column';
 import {
-  DIVIDER_TYPE_BAGI,
   DIVIDER_TYPE_LAYANAN,
   DividerType,
   ServiceDivider,
@@ -26,14 +25,31 @@ import { CustomerInvoicePDF } from './entities/customer-invoice-pdf.entity';
 import { DataSource, QueryRunner } from 'typeorm';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
 import { Services } from 'src/services/entities/service.entity';
+import { CustomerConfirmationDto } from './dtos/customer-confirmation.dto';
+import {
+  CONFIRMATION_TIPE_CLOSE,
+  CONFIRMATION_TIPE_PERPANJANG,
+  EMPLOYEE_ID_SYSTEM,
+} from './entities/follow-up-service-log.entity';
+import { FollowUpServiceLogRepository } from './repositories/follow-up-service-log.repository';
+import { CustomerLogCallRepository } from './repositories/customer-log-call.repository';
+import {
+  STATUS_DONE,
+  SUBJECT_CUSTOMER_PERPANJANG,
+  VIA_CALL_OUT,
+} from './entities/customer-log-call.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CustomersInvoiceService {
   constructor(
     private readonly subscriptionRepository: SubscriptionRepository,
     private readonly customerInvoiceRepository: CustomerInvoiceRepository,
+    private readonly followUpServiceLogRepository: FollowUpServiceLogRepository,
+    private readonly customerLogCallRepository: CustomerLogCallRepository,
     private readonly httpService: HttpService,
     private readonly dataSource: DataSource,
+    private readonly configService: ConfigService,
   ) {}
   async createCustomerInvoiceExtend(
     customerId: string,
@@ -224,6 +240,55 @@ export class CustomersInvoiceService {
       hash += str[Math.floor(Math.random() * str.length)];
     }
     return hash;
+  }
+
+  async createFollowUpServiceLog(
+    customerConfirmationDto: CustomerConfirmationDto,
+  ): Promise<void> {
+    const { customerServiceId, period, confirmation } = customerConfirmationDto;
+
+    const year = period.getFullYear();
+    const month = ('0' + (period.getMonth() + 1)).slice(-2);
+    const date = new Date();
+
+    const followUpServiceLog = this.followUpServiceLogRepository.create({
+      year: year.toString(),
+      month: month,
+      customerServiceId: customerServiceId,
+      confirmationTypeId: CONFIRMATION_TIPE_PERPANJANG,
+      insertBy: EMPLOYEE_ID_SYSTEM,
+      insertTime: date,
+    });
+
+    if (confirmation) {
+      await this.followUpServiceLogRepository.save(followUpServiceLog);
+    } else {
+      followUpServiceLog.confirmationTypeId = CONFIRMATION_TIPE_CLOSE;
+      await this.followUpServiceLogRepository.save(followUpServiceLog);
+    }
+  }
+
+  async createCustomerLogCall(
+    customerConfirmationDto: CustomerConfirmationDto,
+  ): Promise<void> {
+    const { customerId, confirmation, reason } = customerConfirmationDto;
+    const date = new Date();
+
+    const customerLogCall = this.customerLogCallRepository.create({
+      employeeId: EMPLOYEE_ID_SYSTEM,
+      subject: SUBJECT_CUSTOMER_PERPANJANG,
+      status: STATUS_DONE,
+      customerId: customerId,
+      posted: date,
+      via: VIA_CALL_OUT,
+    });
+
+    if (confirmation) {
+      await this.customerLogCallRepository.save(customerLogCall);
+    } else {
+      customerLogCall.subject = reason;
+      await this.customerLogCallRepository.save(customerLogCall);
+    }
   }
 }
 

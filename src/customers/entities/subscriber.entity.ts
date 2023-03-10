@@ -5,6 +5,7 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Customer } from './customer.entity';
 import { Services } from 'src/services/entities/service.entity';
@@ -140,6 +141,7 @@ export class Subscription extends BaseEntity {
 
   @Column()
   Surveyor: string;
+
   @OneToOne(() => Customer)
   @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
   customer: Customer;
@@ -151,4 +153,16 @@ export class Subscription extends BaseEntity {
   @OneToOne(() => InvoiceTypeMonth)
   @JoinColumn({ name: 'InvoiceType', referencedColumnName: 'InvoiceType' })
   typeMonth: InvoiceTypeMonth;
+
+  @ManyToOne(() => Customer, (customer) => customer.ListOfService)
+  @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
+  Cust: Customer;
+
+  static transformQueryBuildSubscription(custSubs: Subscription) {
+    return {
+      package_code: custSubs.ServiceId,
+      package_price: custSubs.Subscription,
+      package_top: custSubs.typeMonth.Month,
+    };
+  }
 }
