@@ -4,38 +4,35 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { PackageService } from './package.service';
+import { CurrentUser } from 'src/employees/current-user.decorator';
+import { Employee } from 'src/employees/employee.entity';
 import { StbEngineerService } from './stb-engineer.service';
 
 @UseGuards(JwtAuthGuard)
-@Controller()
-export class PackageController {
+@Controller('api/v1/stock/packages/:id/details')
+export class PackageDetailController {
   constructor(
     private readonly packageService: PackageService,
     private readonly stbEngineerService: StbEngineerService,
   ) {}
 
-  /**
-   * deprecated use api/v1/stock/packages instead
-   */
-  @Get('stocks/packages')
+  @Get()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
-  async findPackage(): Promise<any> {
-    const packages = await this.stbEngineerService.getPackages();
+  async findPackagesDetail(
+    @Param('id') id: number,
+    @CurrentUser() user: Employee,
+  ): Promise<any> {
+    const branch = this.stbEngineerService.getMasterBranch(user);
+    const packages = await this.packageService.findPackageDetails(id, branch);
     return {
       data: packages,
     };
-  }
-
-  @Get('api/v1/stock/packages')
-  @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
-  async findPackages(): Promise<any> {
-    return await this.packageService.findPackages();
   }
 }

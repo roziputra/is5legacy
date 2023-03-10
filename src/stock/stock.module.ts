@@ -21,10 +21,14 @@ import { StbTransferService } from './stb-transfer.service';
 import { StbTransferController } from './stb-transfer.controller';
 import { StbRequestDetailController } from './stb-request-detail.controller';
 import { StbEngineerDetailController } from './stb-engineer-detail.controller';
+import { PackageDetailController } from './package-detail.controller';
+import { PackageService } from './package.service';
+import { RequestStbPackageDetailRepository } from './repositories/request-stb-package-detail.repository';
 
 @Module({
   imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
+    PackageDetailController,
     PackageController,
     StbTransferController,
     StbRequestDetailController,
@@ -36,6 +40,7 @@ import { StbEngineerDetailController } from './stb-engineer-detail.controller';
     StockController,
   ],
   providers: [
+    PackageService,
     StockService,
     StbTransferService,
     StbRequestService,
@@ -44,6 +49,7 @@ import { StbEngineerDetailController } from './stb-engineer-detail.controller';
     StbRequestDetailRepository,
     StbEngineerRepository,
     StbEngineerDetailRepository,
+    RequestStbPackageDetailRepository,
     RequestStbPackageRepository,
     MasterRepository,
   ],

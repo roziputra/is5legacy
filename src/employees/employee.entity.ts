@@ -4,12 +4,15 @@ import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
 @Entity({ name: 'Employee', synchronize: false })
 export class Employee extends BaseEntity {
   @PrimaryColumn()
+  @Expose({ name: 'employee_id' })
   EmpId: string;
 
   @Column()
+  @Expose({ name: 'first_name' })
   EmpFName: string;
 
   @Column()
+  @Expose({ name: 'last_name' })
   EmpLName: string;
 
   @Column()
@@ -22,7 +25,7 @@ export class Employee extends BaseEntity {
   @Exclude()
   JobTitle: number;
 
-  @Expose({ name: 'EmpFullName' })
+  @Expose({ name: 'full_name' })
   getFullName() {
     return `${this.EmpFName} ${this.EmpLName}`;
   }
