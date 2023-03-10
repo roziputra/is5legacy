@@ -22,8 +22,8 @@ import { UpdateTtbCustomerDto } from './dto/update-ttb-customer.dto';
 import { TtbCustomer } from './entities/ttb-customer.entity';
 
 @UseGuards(JwtAuthGuard)
-@Controller('api/v1/stock/ttbs')
-export class TtbCustomerController {
+@Controller('api/v1/stock/ttb')
+export class TtbController {
   constructor(private readonly ttbCustomerService: TtbCustomerService) {}
 
   @Post()

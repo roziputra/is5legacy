@@ -21,7 +21,7 @@ import { StbTransferService } from './stb-transfer.service';
 import { StbTransferController } from './stb-transfer.controller';
 import { StbRequestDetailController } from './stb-request-detail.controller';
 import { StbEngineerDetailController } from './stb-engineer-detail.controller';
-import { TtbCustomerController } from './ttb-customer.controller';
+import { TtbController } from './ttb-controller';
 import { TtbCustomerDetailController } from './ttb-customer-detail.controller';
 import { TtbCustomerService } from './ttb-customer.service';
 import { TtbCustomerDetailService } from './ttb-customer-detail.service';
@@ -33,7 +33,7 @@ import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.
   controllers: [
     PackageController,
     TtbCustomerDetailController,
-    TtbCustomerController,
+    TtbController,
     StbTransferController,
     StbRequestDetailController,
     StbRequestController,
