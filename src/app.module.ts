@@ -54,6 +54,8 @@ import { Box } from './stock/entities/box.entity';
 import { FollowUpServiceLog } from './customers/entities/follow-up-service-log.entity';
 import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
 import { TicketPic } from './tickets/entities/ticket-pic.entity';
+import { TtbCustomer } from './stock/entities/ttb-customer.entity';
+import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
 
 @Module({
   imports: [
@@ -131,6 +133,8 @@ import { TicketPic } from './tickets/entities/ticket-pic.entity';
         FollowUpServiceLog,
         CustomerLogCall,
         TicketPic,
+        TtbCustomer,
+        TtbCustomerDetail,
       ],
       synchronize: false,
     }),
