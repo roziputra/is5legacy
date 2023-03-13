@@ -21,6 +21,9 @@ import { StbTransferService } from './stb-transfer.service';
 import { StbTransferController } from './stb-transfer.controller';
 import { StbRequestDetailController } from './stb-request-detail.controller';
 import { StbEngineerDetailController } from './stb-engineer-detail.controller';
+import { PackageDetailController } from './package-detail.controller';
+import { PackageService } from './package.service';
+import { RequestStbPackageDetailRepository } from './repositories/request-stb-package-detail.repository';
 import { TtbController } from './ttb-controller';
 import { TtbCustomerDetailController } from './ttb-customer-detail.controller';
 import { TtbCustomerService } from './ttb-customer.service';
@@ -31,6 +34,7 @@ import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.
 @Module({
   imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
   controllers: [
+    PackageDetailController,
     PackageController,
     TtbCustomerDetailController,
     TtbController,
@@ -44,6 +48,7 @@ import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.
     StockController,
   ],
   providers: [
+    PackageService,
     StockService,
     TtbCustomerDetailService,
     TtbCustomerService,
@@ -56,6 +61,7 @@ import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.
     StbRequestDetailRepository,
     StbEngineerRepository,
     StbEngineerDetailRepository,
+    RequestStbPackageDetailRepository,
     RequestStbPackageRepository,
     MasterRepository,
   ],
