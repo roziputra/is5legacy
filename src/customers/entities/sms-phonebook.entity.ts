@@ -14,14 +14,14 @@ export class SMSPhonebook extends BaseEntity {
   @PrimaryGeneratedColumn('increment')
   id: string;
 
+  @Column({ select: false })
+  custId: string;
+
   @Column()
   phone: string;
 
   @Column()
   name: string;
-
-  @Column()
-  custId: string;
 
   @Column()
   billing: boolean;
@@ -38,7 +38,10 @@ export class SMSPhonebook extends BaseEntity {
   @Column()
   insertBy: string;
 
-  @ManyToOne(() => Customer, (customer) => customer.ListPhonebook)
+  @ManyToOne(() => Customer, (customer) => customer.ListPhonebook, {
+    nullable: true,
+    eager: true,
+  })
   @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
-  Cust: Customer;
+  Cust!: Customer;
 }

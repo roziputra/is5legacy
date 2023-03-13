@@ -75,6 +75,8 @@ import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 // List of Another Package
 import { hashPasswordMd5 } from '../utils/md5-hashing.util';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import { Pagination, paginate } from 'nestjs-typeorm-paginate';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CustomersService {
@@ -96,16 +98,15 @@ export class CustomersService {
     }
   }
 
-  async getCustomerServices(
+  async getListCustomerServices(
+    options: IPaginationOptions,
     getCustomerListDto: GetCustomerListDto,
-  ): Promise<any> {
+  ): Promise<Pagination<Customer>> {
     const { customerIds } = getCustomerListDto;
-
-    if (customerIds.length > 0) {
-      return await this.customerRepository.getCustomerRepository(customerIds);
-    } else {
-      return [];
-    }
+    return this.customerRepository.getCustomerListRepository(
+      options,
+      customerIds,
+    );
   }
 
   async saveNewCustomerServices(

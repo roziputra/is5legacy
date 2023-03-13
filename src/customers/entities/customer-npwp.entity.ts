@@ -22,7 +22,7 @@ export class NPWPCustomer extends BaseEntity {
   @Column()
   NPWP: string;
 
-  @Column()
+  @Column({ select: false })
   CustId: string;
 
   @Column()

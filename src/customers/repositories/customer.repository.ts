@@ -7,6 +7,7 @@ import { Injectable } from '@nestjs/common';
 import { CustomerTemp } from '../entities/customer-temp.entity';
 import { CustomerSalutation } from '../entities/salutation.entity';
 import { Is5LegacyException } from 'src/exceptions/is5-legacy.exception';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class CustomerRepository extends Repository<Customer> {
@@ -31,22 +32,36 @@ export class CustomerRepository extends Repository<Customer> {
     return querySalutationList;
   }
 
-  async getCustomerRepository(customerIds: string[]): Promise<any> {
-    const resultQueryBuilder = await Customer.createQueryBuilder('c')
+  async getCustomerListRepository(
+    options: IPaginationOptions,
+    customerIds: string[],
+  ): Promise<any> {
+    const queryBuilder = this.createQueryBuilder('c')
       .innerJoinAndSelect('c.ListOfService', 'ListOfService')
-      .innerJoinAndSelect('ListOfService.typeMonth', 'InvoiceDetails')
       .innerJoinAndSelect('c.ListPhonebook', 'ListPhonebook')
       .innerJoinAndSelect('c.ListNPWP', 'ListNPWP')
-      .where('c.CustId IN (:...customerIds)', { customerIds: customerIds })
-      .orderBy('c.CustId', 'DESC')
-      .getMany();
+      .innerJoinAndSelect('ListOfService.typeMonth', 'InvoiceDetails');
 
-    const transformResult = [];
-    resultQueryBuilder.forEach((obj, key) => {
-      transformResult[key] = Customer.transformQueryBuilderCustomer(obj);
+    if (customerIds.length > 0) {
+      queryBuilder.where('c.CustId IN (:...customerIds)', {
+        customerIds: customerIds,
+      });
+    }
+
+    queryBuilder.orderBy('c.CustId', 'DESC');
+
+    const pagination = await paginate<Customer>(queryBuilder, options);
+    const newPaginationResult = {
+      data: [],
+      meta: pagination.meta,
+      links: pagination.links,
+    };
+    pagination.items.forEach((obj, key) => {
+      newPaginationResult.data[key] =
+        Customer.transformQueryBuilderCustomer(obj);
     });
 
-    return transformResult;
+    return newPaginationResult;
   }
 
   async getNewCustomerId(): Promise<any> {
