@@ -51,6 +51,8 @@ export class ServicesService {
       .orderBy('s.ServiceType', 'ASC')
       .getRawMany();
 
+    resultQuery.map((item) => this.transformObjectToNumber(item));
+
     if (resultQuery.length == 0) {
       throw new Is5LegacyException(
         'Data layanan tidak ditemukan. silahkan coba lagi',
@@ -59,5 +61,13 @@ export class ServicesService {
     }
 
     return resultQuery;
+  }
+
+  transformObjectToNumber(object: any) {
+    if (typeof JSON.parse(object.service_charge) == 'object') {
+      object.service_charge = parseInt(JSON.parse(object.service_charge)['1']);
+    } else if (typeof JSON.parse(object.service_charge) == 'number') {
+      object.service_charge = JSON.parse(object.service_charge);
+    }
   }
 }
