@@ -9,15 +9,18 @@ import { IsoDocumentRepository } from './repositories/iso-document-repository';
 import { TicketPicRepository } from './repositories/ticket-pic.repository';
 import { GeneralTicketPicRepository } from './repositories/general-ticket-pic.repository';
 import { TicketController } from './ticket.controller';
+import { Ticket } from './entities/ticket.entity';
+import { TicketRepository } from './repositories/ticket.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tts]), EmployeesModule],
+  imports: [TypeOrmModule.forFeature([Tts, Ticket]), EmployeesModule],
   providers: [
     TtsService,
     GeneralTicketRepository,
     IsoDocumentRepository,
     TicketPicRepository,
     GeneralTicketPicRepository,
+    TicketRepository,
   ],
   controllers: [TtsController, TicketController],
   exports: [TtsService],

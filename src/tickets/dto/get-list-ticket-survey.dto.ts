@@ -1,13 +1,13 @@
 import { Transform, Type, Expose } from 'class-transformer';
 import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export class GetListTtsSurveyDto {
+export class GetListTicketSurveyDto {
   @IsNotEmpty()
   @Type(() => String)
   @IsArray()
   @IsString({ each: true })
   @Transform(({ value }) => {
-    return value ? value.split(',') : [];
+    return value ? value.split(',')?.map((i) => i.trim()) : [];
   })
   @Expose({ name: 'survey_id' })
   surveyIds: string[];

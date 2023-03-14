@@ -25,4 +25,3 @@ export const DEFAULT_PROGRESS = 0;
 export const DEFAULT_COST = 0;
 export const DEFAULT_ASSIGN_NO = 1;
 export const DEFAULT_SOURCE_ID = 3;
-export const TTS_TYPE_SURVEY = 5;

@@ -56,6 +56,7 @@ import { CustomerLogCall } from './customers/entities/customer-log-call.entity';
 import { TicketPic } from './tickets/entities/ticket-pic.entity';
 import { TtbCustomer } from './stock/entities/ttb-customer.entity';
 import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
+import { Ticket } from './tickets/entities/ticket.entity';
 
 @Module({
   imports: [
@@ -135,6 +136,7 @@ import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
         TicketPic,
         TtbCustomer,
         TtbCustomerDetail,
+        Ticket,
       ],
       synchronize: false,
     }),

@@ -10,9 +10,9 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { TtsService } from './tickets.service';
 import { Request } from 'express';
-import { GetListTtsSurveyDto } from './dto/get-list-tts-survey.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { Tts } from './tickets.entity';
+import { Ticket } from './entities/ticket.entity';
+import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('tts')
@@ -60,14 +60,14 @@ export class TtsController {
   }
 
   @Get('survey')
-  async getTtsSurvey(
+  async getListTicketSurvey(
     @Req() req: Request,
-    @Query() getListTtsSurveyDto: GetListTtsSurveyDto,
+    @Query() getListTtsSurveyDto: GetListTicketSurveyDto,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  ): Promise<Pagination<Tts>> {
+  ): Promise<Pagination<Ticket>> {
     limit = limit > 10 ? 10 : limit;
-    return await this.ttsService.getListTtsSurveyServices(
+    return await this.ttsService.getListTicketSurveyServices(
       {
         page,
         limit,
