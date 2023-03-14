@@ -21,6 +21,14 @@ export class Employee extends BaseEntity {
   @Column()
   EmpJoinStatus: string;
 
+  @Column({ name: 'BranchId' })
+  @Expose({ name: 'branch_id' })
+  branchId: string;
+
+  @Column({ name: 'DisplayBranchId' })
+  @Expose({ name: 'display_branch_id' })
+  displayBranchId: string;
+
   @Column()
   @Exclude()
   JobTitle: number;

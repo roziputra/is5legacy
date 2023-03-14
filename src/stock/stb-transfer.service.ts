@@ -75,8 +75,16 @@ export class StbTransferService {
     }
   }
 
-  findOne(id: number) {
-    return this.stbRequestRepository.findOneStbTransfer(id);
+  async findOne(id: number) {
+    const stbRequest = await this.stbRequestRepository.findOneStbTransfer(id);
+    if (!stbRequest) {
+      throw new Is5LegacyException(
+        'Permintaan pindah tidak ditemukan',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return stbRequest;
   }
 
   findAll(

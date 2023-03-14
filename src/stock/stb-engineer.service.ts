@@ -213,9 +213,9 @@ export class StbEngineerService {
     return this.stbEngineerDetailRepository.findAllDetails(stbEngineerId);
   }
 
-  getMasterBranch(user): string {
-    const branchId = user['BranchId'];
-    const displayBranchId = user['DisplayBranchId'];
+  getMasterBranch(user: Employee): string {
+    const branchId = user.branchId;
+    const displayBranchId = user.displayBranchId;
     if (!displayBranchId) {
       return branchId;
     }
@@ -248,10 +248,11 @@ export class StbEngineerService {
     );
   }
 
-  async findAllEngineer(): Promise<Employee[]> {
+  async findAllEngineer(branch: string): Promise<Employee[]> {
     return this.employeeRepository.findBy({
       JobTitle: JOB_TITLE_CUSTOMER_ENGINEER,
       EmpJoinStatus: Not(EMP_JOIN_STATUS_QUIT),
+      branchId: branch,
     });
   }
 }
