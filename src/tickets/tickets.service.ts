@@ -16,6 +16,7 @@ import {
   REMINDER_EXPIRED_DOC_SUBJECT,
   STATUS_OPEN,
   SYSTEM,
+  TTS_TYPE_SURVEY,
 } from './repositories/general-ticket-repository';
 import { GeneralTicket } from './entities/general-ticket.entity';
 import {
@@ -26,6 +27,8 @@ import { DateFormat } from 'src/utils/date-format';
 import { TicketPicRepository } from './repositories/ticket-pic.repository';
 import { FilterTicketDto } from './dto/filter-ticket.dto';
 import { Employee } from 'src/employees/employee.entity';
+import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
+import { GetListTtsSurveyDto } from './dto/get-list-tts-survey.dto';
 
 @Injectable()
 export class TtsService {
@@ -430,5 +433,47 @@ export class TtsService {
       engineer = [user.EmpId];
     }
     return this.ticketPicRepository.findEnginerTickets(engineer);
+  }
+
+  async getListTtsSurveyServices(
+    options: IPaginationOptions,
+    getListTtsSurveyDto: GetListTtsSurveyDto,
+  ): Promise<any> {
+    const { surveyIds } = getListTtsSurveyDto;
+
+    const queryBuilder = Tts.createQueryBuilder('t')
+      .select([
+        't.TtsId survey_id',
+        't.CustId customer_id',
+        't.CustServId customer_service_id',
+        't.AssignedNo survey_assigned_number',
+        't.Status survey_status',
+        't.LockedBy survey_locked_by',
+        't.VisitTime survey_visit_time',
+        'tp.EmpId surveyor_employee_id',
+        "CONCAT(e.EmpFName, ' ', e.EmpLName) surveyor_employee_name",
+      ])
+      .innerJoin(
+        'TtsPIC',
+        'tp',
+        't.TtsId = tp.TtsId AND t.AssignedNo = tp.AssignedNo',
+      )
+      .innerJoin('Employee', 'e', 'tp.EmpId = e.EmpId')
+      .where('t.TtsTypeId = :ttsTypeId', { ttsTypeId: TTS_TYPE_SURVEY });
+    if (surveyIds.length > 0) {
+      queryBuilder.andWhere('t.TtsId IN (:...surveyIds)', {
+        surveyIds: surveyIds,
+      });
+    }
+    queryBuilder.orderBy('t.PostedTime', 'DESC');
+
+    const paginateResults = await paginateRaw(queryBuilder, options);
+    const newPaginationResult = {
+      data: paginateResults.items,
+      meta: paginateResults.meta,
+      links: paginateResults.links,
+    };
+
+    return newPaginationResult;
   }
 }
