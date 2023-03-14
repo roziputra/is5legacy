@@ -45,12 +45,12 @@ export class EmployeesService {
       .getRepository(Employee)
       .createQueryBuilder()
       .select([
-        'EmpId',
-        'EmpFName',
-        'EmpLName',
+        'EmpId employee_id',
+        'EmpFName first_name',
+        'EmpLName last_name',
         'EmpEmail',
-        'BranchId',
-        'DisplayBranchId',
+        'BranchId branch_id',
+        'DisplayBranchId display_branch_id',
       ])
       .where('EmpId = :username', { username: username })
       .andWhere('EmpPassword = PASSWORD(:password)', { password: password })
