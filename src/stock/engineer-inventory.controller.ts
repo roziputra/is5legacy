@@ -36,7 +36,6 @@ export class EngineerInventoryController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
   async index(@CurrentUser() user: Employee): Promise<any> {
-    console.log(user);
     const branch = this.stbEngineerService.getMasterBranch(user);
     const engineers = await this.stbEngineerService.findAllEngineer(branch);
     return {
