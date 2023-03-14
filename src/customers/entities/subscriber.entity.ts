@@ -16,7 +16,7 @@ export class Subscription extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'CustServId' })
   id: number;
 
-  @Column()
+  @Column({ select: false })
   CustId: string;
 
   @Column()
@@ -154,9 +154,12 @@ export class Subscription extends BaseEntity {
   @JoinColumn({ name: 'InvoiceType', referencedColumnName: 'InvoiceType' })
   typeMonth: InvoiceTypeMonth;
 
-  @ManyToOne(() => Customer, (customer) => customer.ListOfService)
+  @ManyToOne(() => Customer, (customer) => customer.ListOfService, {
+    nullable: true,
+    eager: true,
+  })
   @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
-  Cust: Customer;
+  Cust!: Customer;
 
   static transformQueryBuildSubscription(custSubs: Subscription) {
     return {

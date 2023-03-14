@@ -1,11 +1,14 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
   Post,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -14,6 +17,9 @@ import { CreateNewCustomerDto } from './dtos/create-customer.dto';
 import { CreateNewServiceCustomersDto } from './dtos/create-service-customer.dto';
 import { GetCustomerListDto } from './dtos/get-customer-list.dto';
 import { GetCustomerSalutationDto } from './dtos/get-customer-salutation.dto';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Customer } from './entities/customer.entity';
+import { Request } from 'express';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('customers')
@@ -36,16 +42,21 @@ export class CustomersController {
 
   @Get()
   @HttpCode(200)
-  async getCustomerDetail(
+  async getListCustomer(
+    @Req() req: Request,
     @Query() getCustomerListDto: GetCustomerListDto,
-  ): Promise<any> {
-    const resultAllCustomers = await this.customersService.getCustomerServices(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<Customer>> {
+    limit = limit > 10 ? 10 : limit;
+    return this.customersService.getListCustomerServices(
+      {
+        page,
+        limit,
+        route: `${req.protocol}://${req.get('Host')}${req.originalUrl}`,
+      },
       getCustomerListDto,
     );
-
-    return {
-      data: resultAllCustomers,
-    };
   }
 
   @Post()

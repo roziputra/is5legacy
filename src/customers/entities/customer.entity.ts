@@ -168,10 +168,10 @@ export class Customer extends BaseEntity {
   ManagerSalesId: string;
 
   @OneToMany(() => Subscription, (subscription) => subscription.Cust)
-  ListOfService: Subscription[];
+  ListOfService!: Subscription[];
 
   @OneToMany(() => SMSPhonebook, (smsphonebook) => smsphonebook.Cust)
-  ListPhonebook: SMSPhonebook[];
+  ListPhonebook!: SMSPhonebook[];
 
   @OneToMany(() => NPWPCustomer, (npwp) => npwp.Cust)
   ListNPWP: NPWPCustomer[];
