@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { StbEngineerService } from './stb-engineer.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/employees/current-user.decorator';
+import { Employee } from 'src/employees/employee.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/engineers/')
@@ -33,8 +35,10 @@ export class EngineerInventoryController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
-  async index(): Promise<any> {
-    const engineers = await this.stbEngineerService.findAllEngineer();
+  async index(@CurrentUser() user: Employee): Promise<any> {
+    console.log(user);
+    const branch = this.stbEngineerService.getMasterBranch(user);
+    const engineers = await this.stbEngineerService.findAllEngineer(branch);
     return {
       data: engineers,
     };
