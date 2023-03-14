@@ -22,6 +22,8 @@ import { StbTransferApiResourceInterceptor } from './resources/stb-transfer-api-
 import { Employee } from 'src/employees/employee.entity';
 import { TransferType } from './entities/stb-engineer.entity';
 import { Status } from './entities/stb-request.entity';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { FilterStbTransferDto } from './dto/filter-stb-transfer.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/transfer')
@@ -61,19 +63,16 @@ export class StbTransferController {
   @Get()
   @HttpCode(HttpStatus.OK)
   findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,
-    @Query('transfer_type') transferType: TransferType,
-    @Query('status') status: Status,
+    @Query() filterPaginationDto: FilterPaginationDto,
+    @Query() filterStbTransferDto: FilterStbTransferDto,
     @CurrentUser() user: Employee,
   ) {
-    const statusArray = status.split(',').map((i) => i.trim());
-    const transferTypeArray = transferType.split(',').map((i) => i.trim());
-    return this.stbTransferService.findAll(
-      user.EmpId,
-      transferTypeArray,
-      statusArray,
-      { page: page, limit: limit },
-    );
+    const { page, limit } = filterPaginationDto;
+    const { status, transferType } = filterStbTransferDto;
+
+    return this.stbTransferService.findAll(user.EmpId, transferType, status, {
+      page: page,
+      limit: limit,
+    });
   }
 }
