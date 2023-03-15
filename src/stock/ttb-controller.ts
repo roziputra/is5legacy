@@ -20,6 +20,8 @@ import { CreateTtbCustomerDto } from './dto/create-ttb-customer.dto';
 import { Employee } from 'src/employees/employee.entity';
 import { UpdateTtbCustomerDto } from './dto/update-ttb-customer.dto';
 import { TtbCustomer } from './entities/ttb-customer.entity';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
+import { TtbApiResource } from './resources/ttb-api-resource';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stock/ttb')
@@ -48,9 +50,9 @@ export class TtbController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(TtbApiResource))
   show(@Param('id') id: number): Promise<TtbCustomer> {
-    return this.ttbCustomerService.find(id);
+    return this.ttbCustomerService.findOneTtb(id);
   }
 
   @Delete(':id')
@@ -58,5 +60,12 @@ export class TtbController {
   @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil hapus TTB'))
   async remove(@Param('id') id: number): Promise<any> {
     return await this.ttbCustomerService.remove(id);
+  }
+
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(TtbApiResource))
+  findAllTtb() {
+    return this.ttbCustomerService.findAllTtb();
   }
 }

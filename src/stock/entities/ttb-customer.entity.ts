@@ -1,7 +1,9 @@
 import {
   BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
   Column,
   Entity,
   OneToMany,
@@ -9,6 +11,8 @@ import {
 } from 'typeorm';
 import { Expose } from 'class-transformer';
 import { TtbCustomerDetail } from './ttb-customer-detail.entity';
+import { Employee } from 'src/employees/employee.entity';
+import { Subscription } from 'src/customers/entities/subscriber.entity';
 
 @Entity({ name: 'ttb_customer', synchronize: false })
 export class TtbCustomer extends BaseEntity {
@@ -24,7 +28,8 @@ export class TtbCustomer extends BaseEntity {
   noSurat: string;
 
   @Column({ name: 'engineer_id' })
-  engineer: string;
+  @Expose({ name: 'engineer_id' })
+  engineerId: string;
 
   @Column({ name: 'tts_id' })
   @Expose({ name: 'ticket_id' })
@@ -59,30 +64,34 @@ export class TtbCustomer extends BaseEntity {
   @Expose({ name: 'is_draft' })
   isDraft: boolean;
 
+  @OneToOne(() => Employee)
+  @JoinColumn({ name: 'approved_by', referencedColumnName: 'EmpId' })
+  approved: Employee;
+
   @Column({ name: 'created_by' })
   @Expose({ name: 'created_by' })
   createdBy: string;
 
-  @Column({ name: 'created_at' })
+  @CreateDateColumn({ name: 'created_at' })
   @Expose({ name: 'created_at' })
   createdAt: Date;
 
-  @Column({ name: 'updated_at' })
+  @UpdateDateColumn({ name: 'updated_at' })
   @Expose({ name: 'updated_at' })
   updatedAt: Date;
 
   @OneToMany(() => TtbCustomerDetail, (ttb) => ttb.ttbCustomer)
   details: TtbCustomerDetail[];
 
-  @BeforeInsert()
-  createDates() {
-    const nowDate = new Date();
-    this.createdAt = nowDate;
-    this.updatedAt = nowDate;
-  }
+  @OneToOne(() => Subscription)
+  @JoinColumn({ name: 'cust_serv_id' })
+  customerService: Subscription;
 
-  @BeforeUpdate()
-  updateDates() {
-    this.updatedAt = new Date();
-  }
+  @OneToOne(() => Employee)
+  @JoinColumn({ name: 'sales_id', referencedColumnName: 'EmpId' })
+  sales: Employee;
+
+  @OneToOne(() => Employee)
+  @JoinColumn({ name: 'engineer_id', referencedColumnName: 'EmpId' })
+  engineer: Employee;
 }

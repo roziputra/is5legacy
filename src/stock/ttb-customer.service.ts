@@ -23,7 +23,6 @@ export class TtbCustomerService {
     await transaction.connect();
     await transaction.startTransaction();
     try {
-      console.log(createTtbCustomerDto);
       const ttbCustomer =
         this.ttbCustomerRepository.create(createTtbCustomerDto);
       ttbCustomer.createdBy = user.EmpId;
@@ -98,8 +97,8 @@ export class TtbCustomerService {
     }
   }
 
-  async find(id: number): Promise<TtbCustomer> {
-    const ttbCustomer = await this.ttbCustomerRepository.findOneBy({ id: id });
+  async findOneTtb(id: number): Promise<TtbCustomer> {
+    const ttbCustomer = await this.ttbCustomerRepository.findOneTtb(id);
     if (!ttbCustomer) {
       throw new Is5LegacyException(
         'TTB customer tidak ditemukan',
@@ -137,5 +136,9 @@ export class TtbCustomerService {
     } finally {
       await transaction.release();
     }
+  }
+
+  async findAllTtb(): Promise<any> {
+    return this.ttbCustomerRepository.findAllTtb();
   }
 }
