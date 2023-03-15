@@ -24,7 +24,6 @@ export class Is5LegacyApiResourceInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
-        console.log(data);
         const transform = plainToInstance(this.cls, data, {
           ignoreDecorators: true,
           excludeExtraneousValues: true,
