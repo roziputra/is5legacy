@@ -10,7 +10,8 @@ import { CreateTtbCustomerDetailDto } from './create-ttb-customer-detail.dto';
 
 export class CreateTtbCustomerDto {
   @IsNotEmpty()
-  engineer: string;
+  @Expose({ name: 'engineer' })
+  engineerId: string;
 
   @IsNotEmpty()
   @Expose({ name: 'ticket_id' })

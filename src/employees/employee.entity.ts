@@ -15,11 +15,12 @@ export class Employee extends BaseEntity {
   @Expose({ name: 'last_name' })
   EmpLName: string;
 
-  @Column()
-  EmpEmail: string;
+  @Column({ name: 'EmpEmail' })
+  email: string;
 
-  @Column()
-  EmpJoinStatus: string;
+  @Column({ name: 'EmpJoinStatus' })
+  @Expose({ name: 'join_status' })
+  joinStatus: string;
 
   @Column({ name: 'BranchId' })
   @Expose({ name: 'branch_id' })
@@ -31,7 +32,7 @@ export class Employee extends BaseEntity {
 
   @Column()
   @Exclude()
-  JobTitle: number;
+  jobTitle: number;
 
   @Expose({ name: 'full_name' })
   getFullName() {
