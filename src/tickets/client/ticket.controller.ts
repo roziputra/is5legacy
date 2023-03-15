@@ -15,11 +15,11 @@ import { Pagination } from 'nestjs-typeorm-paginate';
 import { Ticket } from '../entities/ticket.entity';
 
 @UseGuards(AuthGuard('api-key'))
-@Controller('client')
+@Controller('client/tts')
 export class TicketsController {
   constructor(private readonly ticketService: TtsService) {}
 
-  @Get('tts')
+  @Get()
   async index(
     @Req() req: Request,
     @Query() getListTtsSurveyDto: GetListTicketSurveyDto,
