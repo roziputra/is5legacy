@@ -58,22 +58,4 @@ export class TtsController {
   ) {
     return this.ttsService.getTtsSolve(periodStart, periodEnd);
   }
-
-  @Get('survey')
-  async getListTicketSurvey(
-    @Req() req: Request,
-    @Query() getListTtsSurveyDto: GetListTicketSurveyDto,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
-  ): Promise<Pagination<Ticket>> {
-    limit = limit > 10 ? 10 : limit;
-    return await this.ttsService.getListTicketSurveyServices(
-      {
-        page,
-        limit,
-        route: `${req.protocol}://${req.get('Host')}${req.originalUrl}`,
-      },
-      getListTtsSurveyDto,
-    );
-  }
 }

@@ -11,6 +11,7 @@ import { GeneralTicketPicRepository } from './repositories/general-ticket-pic.re
 import { TicketController } from './ticket.controller';
 import { Ticket } from './entities/ticket.entity';
 import { TicketRepository } from './repositories/ticket.repository';
+import { TicketSurveyController } from './ticket-survey.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Tts, Ticket]), EmployeesModule],
@@ -22,7 +23,7 @@ import { TicketRepository } from './repositories/ticket.repository';
     GeneralTicketPicRepository,
     TicketRepository,
   ],
-  controllers: [TtsController, TicketController],
+  controllers: [TtsController, TicketController, TicketSurveyController],
   exports: [TtsService],
 })
 export class TtsModule {}
