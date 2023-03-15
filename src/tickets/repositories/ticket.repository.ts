@@ -12,6 +12,7 @@ export class TicketRepository extends Repository<Ticket> {
   async getListTicketSurveyRepo(
     options: IPaginationOptions,
     surveyIds: string[],
+    ttsTypeIds: string[],
   ): Promise<any> {
     const queryBuilder = this.createQueryBuilder('t')
       .select([
@@ -30,8 +31,14 @@ export class TicketRepository extends Repository<Ticket> {
         'tp',
         't.TtsId = tp.TtsId AND t.AssignedNo = tp.AssignedNo',
       )
-      .innerJoin('Employee', 'e', 'tp.EmpId = e.EmpId')
-      .where('t.TtsTypeId = :ttsTypeId', { ttsTypeId: TTS_TYPE_SURVEY });
+      .innerJoin('Employee', 'e', 'tp.EmpId = e.EmpId');
+
+    if (ttsTypeIds.length > 0) {
+      queryBuilder.where('t.TtsTypeId IN (:...ttsTypeId)', {
+        ttsTypeId: ttsTypeIds,
+      });
+    }
+
     if (surveyIds.length > 0) {
       queryBuilder.andWhere('t.TtsId IN (:...surveyIds)', {
         surveyIds: surveyIds,
@@ -49,5 +56,3 @@ export class TicketRepository extends Repository<Ticket> {
     return newPaginationResult;
   }
 }
-
-export const TTS_TYPE_SURVEY = 5;

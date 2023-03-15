@@ -9,6 +9,16 @@ export class GetListTicketSurveyDto {
   @Transform(({ value }) => {
     return value ? value.split(',')?.map((i) => i.trim()) : [];
   })
-  @Expose({ name: 'survey_id' })
+  @Expose({ name: 'tts_type_id' })
+  ttsTypeIds: string[];
+
+  @IsNotEmpty()
+  @Type(() => String)
+  @IsArray()
+  @IsString({ each: true })
+  @Transform(({ value }) => {
+    return value ? value.split(',')?.map((i) => i.trim()) : [];
+  })
+  @Expose({ name: 'id' })
   surveyIds: string[];
 }

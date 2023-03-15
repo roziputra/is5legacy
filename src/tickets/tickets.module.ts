@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TtsService } from './tickets.service';
-import { TtsController } from './tickets.controller';
+// import { TtsController } from './tickets.controller';
 import { Tts } from './tickets.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmployeesModule } from 'src/employees/employees.module';
@@ -11,7 +11,7 @@ import { GeneralTicketPicRepository } from './repositories/general-ticket-pic.re
 import { TicketController } from './ticket.controller';
 import { Ticket } from './entities/ticket.entity';
 import { TicketRepository } from './repositories/ticket.repository';
-import { TicketSurveyController } from './ticket-survey.controller';
+import { TicketsController } from './client/ticket.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Tts, Ticket]), EmployeesModule],
@@ -23,7 +23,7 @@ import { TicketSurveyController } from './ticket-survey.controller';
     GeneralTicketPicRepository,
     TicketRepository,
   ],
-  controllers: [TtsController, TicketController, TicketSurveyController],
+  controllers: [TicketController, TicketsController],
   exports: [TtsService],
 })
 export class TtsModule {}

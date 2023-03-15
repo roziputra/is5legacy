@@ -8,18 +8,18 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { TtsService } from './tickets.service';
+import { TtsService } from '../tickets.service';
 import { Request } from 'express';
-import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
+import { GetListTicketSurveyDto } from '../dto/get-list-ticket-survey.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { Ticket } from './entities/ticket.entity';
+import { Ticket } from '../entities/ticket.entity';
 
 @UseGuards(AuthGuard('api-key'))
-@Controller('tickets')
-export class TicketSurveyController {
+@Controller('client')
+export class TicketsController {
   constructor(private readonly ticketService: TtsService) {}
 
-  @Get('survey')
+  @Get('tts')
   async index(
     @Req() req: Request,
     @Query() getListTtsSurveyDto: GetListTicketSurveyDto,

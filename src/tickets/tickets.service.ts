@@ -441,10 +441,11 @@ export class TtsService {
     options: IPaginationOptions,
     getListTtsSurveyDto: GetListTicketSurveyDto,
   ): Promise<Pagination<Ticket>> {
-    const { surveyIds } = getListTtsSurveyDto;
+    const { surveyIds, ttsTypeIds } = getListTtsSurveyDto;
     return await this.ticketRepository.getListTicketSurveyRepo(
       options,
       surveyIds,
+      ttsTypeIds,
     );
   }
 }
