@@ -250,8 +250,8 @@ export class StbEngineerService {
 
   async findAllEngineer(branch: string): Promise<Employee[]> {
     return this.employeeRepository.findBy({
-      JobTitle: JOB_TITLE_CUSTOMER_ENGINEER,
-      EmpJoinStatus: Not(EMP_JOIN_STATUS_QUIT),
+      jobTitle: JOB_TITLE_CUSTOMER_ENGINEER,
+      joinStatus: Not(EMP_JOIN_STATUS_QUIT),
       branchId: branch,
     });
   }
