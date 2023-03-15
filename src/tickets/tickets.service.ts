@@ -26,6 +26,10 @@ import { DateFormat } from 'src/utils/date-format';
 import { TicketPicRepository } from './repositories/ticket-pic.repository';
 import { FilterTicketDto } from './dto/filter-ticket.dto';
 import { Employee } from 'src/employees/employee.entity';
+import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
+import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
+import { TicketRepository } from './repositories/ticket.repository';
+import { Ticket } from './entities/ticket.entity';
 
 @Injectable()
 export class TtsService {
@@ -57,6 +61,7 @@ export class TtsService {
     private isoDocumentRepository: IsoDocumentRepository,
     private generalTicketRepository: GeneralTicketRepository,
     private readonly ticketPicRepository: TicketPicRepository,
+    private ticketRepository: TicketRepository,
     private dataSource: DataSource,
   ) {
     this.setEmpMap();
@@ -430,5 +435,17 @@ export class TtsService {
       engineer = [user.EmpId];
     }
     return this.ticketPicRepository.findEnginerTickets(engineer);
+  }
+
+  async getListTicketSurveyServices(
+    options: IPaginationOptions,
+    getListTtsSurveyDto: GetListTicketSurveyDto,
+  ): Promise<Pagination<Ticket>> {
+    const { surveyIds, ttsTypeIds } = getListTtsSurveyDto;
+    return await this.ticketRepository.getListTicketSurveyRepo(
+      options,
+      surveyIds,
+      ttsTypeIds,
+    );
   }
 }

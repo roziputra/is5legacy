@@ -1,6 +1,18 @@
-import { Query, Controller, Get, UseGuards } from '@nestjs/common';
+import {
+  Query,
+  Controller,
+  Get,
+  UseGuards,
+  Req,
+  DefaultValuePipe,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TtsService } from './tickets.service';
+import { Request } from 'express';
+import { Pagination } from 'nestjs-typeorm-paginate';
+import { Ticket } from './entities/ticket.entity';
+import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('tts')
