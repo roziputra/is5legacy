@@ -10,6 +10,7 @@ import {
   Param,
   Body,
   HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TtsService } from '../tickets.service';
@@ -18,6 +19,7 @@ import { GetListTicketSurveyDto } from '../dto/get-list-ticket-survey.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Ticket } from '../entities/ticket.entity';
 import { UpdateSurveyTicketDto } from '../dto/update-ticket.dto';
+import { Is5LegacyResponseInterceptor } from '../../interceptors/is5-legacy-response.interceptor';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('client/tts')
@@ -44,6 +46,9 @@ export class TicketsController {
 
   @Put(':ticket_id')
   @HttpCode(200)
+  @UseInterceptors(
+    new Is5LegacyResponseInterceptor('Berhasil mengupdate ticket survey'),
+  )
   async update(
     @Param('ticket_id') ticketId: string,
     @Body() updateSurveyTicketDto: UpdateSurveyTicketDto,

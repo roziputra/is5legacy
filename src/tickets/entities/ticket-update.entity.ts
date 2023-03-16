@@ -3,7 +3,7 @@ import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 @Entity({ name: 'TtsUpdate', synchronize: false })
 export class TicketUpdate extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'TtsUpdateId' })
-  ttsUpdateId: number;
+  id: number;
 
   @Column({ name: 'TtsId' })
   ttsId: number;
@@ -33,7 +33,7 @@ export class TicketUpdate extends BaseEntity {
   note: string;
 
   @Column({ name: 'AssignedNo' })
-  assignedNo: string;
+  assignedNo: number;
 
   @Column({ name: 'Status' })
   status: string;

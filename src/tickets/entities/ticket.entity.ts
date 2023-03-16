@@ -9,13 +9,13 @@ export class Ticket extends BaseEntity {
   employeeId: string;
 
   @Column({ name: 'CustServId' })
-  customerServiceId: string;
+  customerServiceId: number;
 
   @Column({ name: 'CustId' })
   CustomerId: string;
 
   @Column({ name: 'AssignedNo' })
-  assignedNo: string;
+  assignedNo: number;
 
   @Column({ name: 'Status' })
   status: string;

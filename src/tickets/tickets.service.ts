@@ -31,6 +31,8 @@ import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
 import { TicketRepository } from './repositories/ticket.repository';
 import { Ticket } from './entities/ticket.entity';
 import { UpdateSurveyTicketDto } from './dto/update-ticket.dto';
+import { TicketUpdateRepository } from './repositories/ticket-update.repository';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
 
 @Injectable()
 export class TtsService {
@@ -63,6 +65,7 @@ export class TtsService {
     private generalTicketRepository: GeneralTicketRepository,
     private readonly ticketPicRepository: TicketPicRepository,
     private ticketRepository: TicketRepository,
+    private ticketUpdateRepository: TicketUpdateRepository,
     private dataSource: DataSource,
   ) {
     this.setEmpMap();
@@ -454,9 +457,31 @@ export class TtsService {
     ticketId: string,
     updateTicketSurveyDto: UpdateSurveyTicketDto,
   ): Promise<any> {
-    return await this.ticketRepository.updateTicketSurveyRepo(
+    const updateSurveyTicket = await this.ticketRepository.updateTicketSurvey(
       ticketId,
-      updateTicketSurveyDto,
+      updateTicketSurveyDto.toModel(),
     );
+    if (updateSurveyTicket) {
+      updateTicketSurveyDto.assignedNo = updateSurveyTicket.assignedNo;
+      updateTicketSurveyDto.status = updateSurveyTicket.status;
+      updateTicketSurveyDto.lockedBy = updateSurveyTicket.lockedBy;
+      updateTicketSurveyDto.visitTime = updateSurveyTicket.visitTime;
+      const insertTicketUpdate =
+        await this.ticketUpdateRepository.insertTtsUpdate(
+          ticketId,
+          updateTicketSurveyDto.toModel(),
+        );
+      if (!insertTicketUpdate) {
+        throw new Is5LegacyException(
+          'Gagal menyimpan ticket update. silahkan coba lagi!',
+          500,
+        );
+      }
+    } else {
+      throw new Is5LegacyException(
+        'Gagal menyimpan ticket update. silahkan coba lagi!',
+        500,
+      );
+    }
   }
 }
