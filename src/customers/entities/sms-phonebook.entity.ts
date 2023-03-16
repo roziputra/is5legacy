@@ -11,7 +11,7 @@ import {
 
 @Entity({ name: 'sms_phonebook', synchronize: false })
 export class SMSPhonebook extends BaseEntity {
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn()
   id: string;
 
   @Column({ select: false })
@@ -38,10 +38,7 @@ export class SMSPhonebook extends BaseEntity {
   @Column()
   insertBy: string;
 
-  @ManyToOne(() => Customer, (customer) => customer.ListPhonebook, {
-    nullable: true,
-    eager: true,
-  })
-  @JoinColumn({ name: 'CustId', referencedColumnName: 'CustId' })
+  @ManyToOne(() => Customer, (customer) => customer.ListPhonebook)
+  @JoinColumn({ name: 'custId', referencedColumnName: 'CustId' })
   Cust!: Customer;
 }
