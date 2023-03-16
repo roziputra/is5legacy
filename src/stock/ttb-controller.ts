@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Put,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -22,6 +23,7 @@ import { UpdateTtbCustomerDto } from './dto/update-ttb-customer.dto';
 import { TtbCustomer } from './entities/ttb-customer.entity';
 import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
 import { TtbApiResource } from './resources/ttb-api-resource';
+import { FilesInterceptor } from '@nestjs/platform-express';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stock/ttb')
@@ -30,12 +32,14 @@ export class TtbController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @UseInterceptors(FilesInterceptor('files'))
   @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil simpan TTB'))
-  create(
+  async create(
     @Body() createTtbCustomerDto: CreateTtbCustomerDto,
     @CurrentUser() user: Employee,
+    @UploadedFiles() files: Array<Express.Multer.File>,
   ): Promise<any> {
-    return this.ttbCustomerService.create(createTtbCustomerDto, user);
+    return this.ttbCustomerService.create(createTtbCustomerDto, files, user);
   }
 
   @Put(':id')

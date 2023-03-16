@@ -8,6 +8,7 @@ import { UpdateTtbCustomerDto } from './dto/update-ttb-customer.dto';
 import { TtbCustomer } from './entities/ttb-customer.entity';
 import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
+import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 
 @Injectable()
 export class TtbCustomerService {
@@ -18,7 +19,11 @@ export class TtbCustomerService {
     private readonly stbEngineerService: StbEngineerService,
   ) {}
 
-  async create(createTtbCustomerDto: CreateTtbCustomerDto, user: Employee) {
+  async create(
+    createTtbCustomerDto: CreateTtbCustomerDto,
+    files: Array<Express.Multer.File>,
+    user: Employee,
+  ) {
     const transaction = this.dataSource.createQueryRunner();
     await transaction.connect();
     await transaction.startTransaction();
@@ -37,11 +42,18 @@ export class TtbCustomerService {
           return i;
         }),
       );
+      const ttbCustomerAttachments = files.map((i) => {
+        const files = new TtbCustomerAttachment();
+        files.ttbCustomerId = ttbCustomerSaved.id;
+        files.filename = i.filename;
+        files.filepath = i.path;
+        return files;
+      });
+      await transaction.manager.save(ttbCustomerAttachments);
       await transaction.commitTransaction();
       return ttbCustomerSaved;
     } catch (e) {
       await transaction.rollbackTransaction();
-      throw e;
       throw new Is5LegacyException('Gagal membuat TTB customer');
     } finally {
       await transaction.release();
