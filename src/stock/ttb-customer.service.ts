@@ -32,8 +32,6 @@ export class TtbCustomerService {
         this.ttbCustomerRepository.create(createTtbCustomerDto);
       ttbCustomer.createdBy = user.EmpId;
       ttbCustomer.branchId = this.stbEngineerService.getMasterBranch(user);
-      console.log(createTtbCustomerDto);
-      throw Error('tes');
       const ttbCustomerSaved = await transaction.manager.save(ttbCustomer);
       const detail = this.ttbCustomerDetailRepository.create(
         createTtbCustomerDto.details,
