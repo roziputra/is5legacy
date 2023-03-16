@@ -20,7 +20,7 @@ export class EmployeeProfileController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(ClassSerializerInterceptor)
-  findOne(@CurrentUser() user): Promise<Employee> {
+  findOne(@CurrentUser() user: Employee): Promise<Employee> {
     return this.employeesService.getProfile(user);
   }
 }
