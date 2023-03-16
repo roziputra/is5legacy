@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { TtbStatus } from '../entities/ttb-customer-detail.entity';
+import { Type } from 'class-transformer';
 
 export class CreateTtbCustomerDetailDto {
   @IsNotEmpty()
@@ -12,6 +13,7 @@ export class CreateTtbCustomerDetailDto {
 
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   qty: number;
 
   @IsOptional()

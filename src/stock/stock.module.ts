@@ -30,9 +30,22 @@ import { TtbCustomerService } from './ttb-customer.service';
 import { TtbCustomerDetailService } from './ttb-customer-detail.service';
 import { TtbCustomerRepository } from './repositories/ttb-customer.repository';
 import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.repository';
+import { MulterModule } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
 
 @Module({
-  imports: [FinanceModule, TypeOrmModule.forFeature([Employee])],
+  imports: [
+    MulterModule.register({
+      storage: diskStorage({
+        destination: './data/ttb',
+        filename(req, file, callback) {
+          callback(null, `${Date.now()}-${file.originalname}`);
+        },
+      }),
+    }),
+    FinanceModule,
+    TypeOrmModule.forFeature([Employee]),
+  ],
   controllers: [
     PackageDetailController,
     PackageController,

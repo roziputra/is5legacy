@@ -5,6 +5,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { AllExceptionsFilter } from './exceptions/all-exception.filter';
 import { Is5LegacyExceptionFilter } from './exceptions/is5-legacy-exception.filter';
 import { Is5LegacyValidationPipe } from './pipes/is5-legacy-validation.pipe';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -17,6 +18,7 @@ async function bootstrap() {
   );
   app.useGlobalPipes(new Is5LegacyValidationPipe());
   app.enableCors();
+  app.useStaticAssets(join(__dirname, '..', 'data'));
   await app.listen(port || 3000);
 }
 bootstrap();
