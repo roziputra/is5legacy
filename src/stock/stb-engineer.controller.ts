@@ -26,6 +26,7 @@ import {
 import { UpdateStbEngineerDto } from './dto/update-stb-engineer.dto';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
+import { Employee } from 'src/employees/employee.entity';
 
 @UseGuards(JwtAuthGuard)
 @Controller('stocks/stb-engineers')
@@ -37,7 +38,7 @@ export class StbEngineerController {
   @UseInterceptors(new Is5LegacyResponseInterceptor('Berhasil simpan STB'))
   create(
     @Body() createStbEngineerDto: CreateStbEngineerDto,
-    @CurrentUser() user,
+    @CurrentUser() user: Employee,
   ): Promise<any> {
     return this.stbEngineerService.create(createStbEngineerDto, user);
   }

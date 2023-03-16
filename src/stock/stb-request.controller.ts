@@ -36,7 +36,7 @@ export class StbRequestController {
   )
   create(
     @Body() createStbRequestDto: CreateStbRequestDto,
-    @CurrentUser() user,
+    @CurrentUser() user: Employee,
   ): Promise<any> {
     return this.stbRequestService.create(createStbRequestDto, user);
   }
