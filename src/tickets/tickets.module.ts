@@ -12,9 +12,13 @@ import { TicketController } from './ticket.controller';
 import { Ticket } from './entities/ticket.entity';
 import { TicketRepository } from './repositories/ticket.repository';
 import { TicketsController } from './client/ticket.controller';
+import { TicketUpdate } from './entities/ticket-update.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Tts, Ticket]), EmployeesModule],
+  imports: [
+    TypeOrmModule.forFeature([Tts, Ticket, TicketUpdate]),
+    EmployeesModule,
+  ],
   providers: [
     TtsService,
     GeneralTicketRepository,

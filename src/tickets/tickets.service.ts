@@ -30,6 +30,7 @@ import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
 import { TicketRepository } from './repositories/ticket.repository';
 import { Ticket } from './entities/ticket.entity';
+import { UpdateSurveyTicketDto } from './dto/update-ticket.dto';
 
 @Injectable()
 export class TtsService {
@@ -446,6 +447,16 @@ export class TtsService {
       options,
       surveyIds,
       ttsTypeIds,
+    );
+  }
+
+  async updateTicketSurvey(
+    ticketId: string,
+    updateTicketSurveyDto: UpdateSurveyTicketDto,
+  ): Promise<any> {
+    return await this.ticketRepository.updateTicketSurveyRepo(
+      ticketId,
+      updateTicketSurveyDto,
     );
   }
 }

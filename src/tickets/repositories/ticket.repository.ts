@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Ticket } from '../entities/ticket.entity';
 import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
+import { UpdateSurveyTicketDto } from '../dto/update-ticket.dto';
+import { TicketUpdate } from '../entities/ticket-update.entity';
+import { Is5LegacyException } from '../../exceptions/is5-legacy.exception';
 
 @Injectable()
 export class TicketRepository extends Repository<Ticket> {
@@ -55,4 +58,53 @@ export class TicketRepository extends Repository<Ticket> {
 
     return newPaginationResult;
   }
+
+  async updateTicketSurveyRepo(
+    ticketId: string,
+    updateTicketSurveyDto: UpdateSurveyTicketDto,
+  ): Promise<any> {
+    // find the ticket
+    const findSurveyTicket = await this.findOne({
+      where: { id: parseInt(ticketId) },
+    });
+    findSurveyTicket.CustomerId = updateTicketSurveyDto.customer_id;
+    findSurveyTicket.customerServiceId =
+      updateTicketSurveyDto.customer_service_id;
+    const resultSave = await Ticket.save(findSurveyTicket);
+
+    // save the ticket update
+    if (resultSave) {
+      const newTicketUpdated = new TicketUpdate();
+      newTicketUpdated.ttsId = parseInt(ticketId);
+      newTicketUpdated.updatedTime = new Date();
+      newTicketUpdated.actionStart = new Date();
+      newTicketUpdated.actionBegin = new Date();
+      newTicketUpdated.actionEnd = new Date();
+      newTicketUpdated.actionStop = new Date();
+      newTicketUpdated.employeeId = 'SYSTEM';
+      newTicketUpdated.action = 'Update customer id dan customer service id';
+      newTicketUpdated.note = '';
+      newTicketUpdated.assignedNo = findSurveyTicket.assignedNo;
+      newTicketUpdated.status = findSurveyTicket.status;
+      newTicketUpdated.lockedBy = findSurveyTicket.lockedBy;
+      newTicketUpdated.visitTime = findSurveyTicket.visitTime;
+      const resultSaveTicketUpdate = await TicketUpdate.save(newTicketUpdated);
+
+      if (resultSaveTicketUpdate) {
+        return {
+          title: 'Berhasil',
+          message: 'Berhasil merubah ticket survey',
+        };
+      } else {
+        throw new Is5LegacyException(
+          'Gagal merubah ticket survey. silahkan coba lagi',
+          500,
+        );
+      }
+    }
+
+    return findSurveyTicket;
+  }
 }
+
+export const TTS_TYPE_ID_SURVEY = 5;
