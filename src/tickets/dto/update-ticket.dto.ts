@@ -1,24 +1,15 @@
-import { Expose, plainToClass } from 'class-transformer';
-import { IsNotEmpty, IsString } from 'class-validator';
-import { Ticket } from '../entities/ticket.entity';
+import { Expose, Type } from 'class-transformer';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class UpdateSurveyTicketDto {
   @IsNotEmpty()
   @IsString()
   @Expose({ name: 'customer_id' })
-  CustomerId: string;
+  customerId: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsNumber()
   @Expose({ name: 'customer_service_id' })
-  customerServiceId: string;
-
-  assignedNo: number;
-  status: string;
-  lockedBy: string;
-  visitTime: Date;
-
-  toModel(): Ticket {
-    return plainToClass(Ticket, this);
-  }
+  @Type(() => Number)
+  customerServiceId: number;
 }

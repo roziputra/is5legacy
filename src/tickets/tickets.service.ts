@@ -33,6 +33,10 @@ import { Ticket } from './entities/ticket.entity';
 import { UpdateSurveyTicketDto } from './dto/update-ticket.dto';
 import { TicketUpdateRepository } from './repositories/ticket-update.repository';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import {
+  TTS_UPDATE_EMPLOYEE_ID,
+  TTS_UPDATE_ACTION,
+} from './entities/ticket-update.entity';
 
 @Injectable()
 export class TtsService {
@@ -454,34 +458,36 @@ export class TtsService {
   }
 
   async updateTicketSurvey(
-    ticketId: string,
+    ticketId: number,
     updateTicketSurveyDto: UpdateSurveyTicketDto,
   ): Promise<any> {
-    const updateSurveyTicket = await this.ticketRepository.updateTicketSurvey(
-      ticketId,
-      updateTicketSurveyDto.toModel(),
-    );
-    if (updateSurveyTicket) {
-      updateTicketSurveyDto.assignedNo = updateSurveyTicket.assignedNo;
-      updateTicketSurveyDto.status = updateSurveyTicket.status;
-      updateTicketSurveyDto.lockedBy = updateSurveyTicket.lockedBy;
-      updateTicketSurveyDto.visitTime = updateSurveyTicket.visitTime;
-      const insertTicketUpdate =
-        await this.ticketUpdateRepository.insertTtsUpdate(
-          ticketId,
-          updateTicketSurveyDto.toModel(),
+    const findSurveyTicket = await this.ticketRepository.findOneBy({
+      id: ticketId,
+    });
+    findSurveyTicket.CustomerId = updateTicketSurveyDto.customerId;
+    findSurveyTicket.customerServiceId =
+      updateTicketSurveyDto.customerServiceId;
+    if (findSurveyTicket) {
+      const updateSurveyTicket = await this.ticketRepository.save(
+        findSurveyTicket,
+      );
+
+      if (updateSurveyTicket) {
+        const createTicketUpdate = await this.ticketUpdateRepository.create(
+          findSurveyTicket,
         );
-      if (!insertTicketUpdate) {
-        throw new Is5LegacyException(
-          'Gagal menyimpan ticket update. silahkan coba lagi!',
-          500,
-        );
+        const newDate = new Date();
+        createTicketUpdate.updatedTime = newDate;
+        createTicketUpdate.actionStart = newDate;
+        createTicketUpdate.actionBegin = newDate;
+        createTicketUpdate.actionEnd = newDate;
+        createTicketUpdate.actionStop = newDate;
+        createTicketUpdate.employeeId = TTS_UPDATE_EMPLOYEE_ID;
+        createTicketUpdate.action = TTS_UPDATE_ACTION;
+        return await this.ticketUpdateRepository.save(createTicketUpdate);
       }
     } else {
-      throw new Is5LegacyException(
-        'Gagal menyimpan ticket update. silahkan coba lagi!',
-        500,
-      );
+      throw new Is5LegacyException('Ticket survey tidak ditemukan', 404);
     }
   }
 }

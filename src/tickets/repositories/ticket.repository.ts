@@ -55,15 +55,6 @@ export class TicketRepository extends Repository<Ticket> {
 
     return newPaginationResult;
   }
-
-  async updateTicketSurvey(ticketId: string, tickets: Ticket): Promise<any> {
-    const findSurveyTicket = await this.findOne({
-      where: { id: parseInt(ticketId) },
-    });
-    findSurveyTicket.CustomerId = tickets.CustomerId;
-    findSurveyTicket.customerServiceId = tickets.customerServiceId;
-    return await this.save(findSurveyTicket);
-  }
 }
 
 export const TTS_TYPE_ID_SURVEY = 5;

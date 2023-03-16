@@ -44,3 +44,6 @@ export class TicketUpdate extends BaseEntity {
   @Column({ name: 'VisitTime', type: 'datetime', nullable: true })
   visitTime: Date;
 }
+
+export const TTS_UPDATE_ACTION = 'Update customer id dan customer service id';
+export const TTS_UPDATE_EMPLOYEE_ID = 'SYSTEM';
