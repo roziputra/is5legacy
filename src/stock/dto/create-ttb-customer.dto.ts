@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsDate,
   IsNotEmpty,
   IsOptional,
@@ -26,6 +27,7 @@ export class CreateTtbCustomerDto {
   customerServiceId: number;
 
   @IsOptional()
+  @Type(() => Boolean)
   setup: boolean;
 
   @IsNotEmpty()
