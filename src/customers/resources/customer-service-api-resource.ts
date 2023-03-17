@@ -8,5 +8,5 @@ export class CustomerServiceApiResource {
   CustAccName: string;
 
   @Expose()
-  instalation_address: string;
+  installation_address: string;
 }

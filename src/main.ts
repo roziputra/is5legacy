@@ -19,6 +19,9 @@ async function bootstrap() {
   app.useGlobalPipes(new Is5LegacyValidationPipe());
   app.enableCors();
   app.useStaticAssets(join(__dirname, '..', 'data'));
+  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
   await app.listen(port || 3000);
 }
 bootstrap();

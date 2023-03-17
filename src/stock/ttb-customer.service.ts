@@ -9,6 +9,9 @@ import { TtbCustomer } from './entities/ttb-customer.entity';
 import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
+import { InjectPage } from 'nest-puppeteer';
+import { Page } from 'puppeteer';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class TtbCustomerService {
@@ -17,6 +20,8 @@ export class TtbCustomerService {
     private readonly ttbCustomerDetailRepository: TtbCustomerDetailRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerService: StbEngineerService,
+    private readonly configService: ConfigService,
+    @InjectPage() private readonly page: Page,
   ) {}
 
   async create(
@@ -152,5 +157,27 @@ export class TtbCustomerService {
 
   async findAllTtb(): Promise<any> {
     return this.ttbCustomerRepository.findAllTtb();
+  }
+
+  async createPdf(id: number): Promise<any> {
+    const frontEndUrl = `${this.configService.get(
+      'FRONTEND_URL',
+    )}:${this.configService.get('PORT')}`;
+
+    await this.page.goto(`${frontEndUrl}/v1/stock/ttb/${id}/pdf/view`, {
+      waitUntil: 'networkidle2',
+    });
+
+    const buffer = await this.page.pdf({
+      format: 'A4',
+      printBackground: false,
+      margin: {
+        left: '0',
+        top: '0',
+        right: '0',
+        bottom: '0',
+      },
+    });
+    return buffer;
   }
 }
