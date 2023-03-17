@@ -12,21 +12,22 @@ export class TtbPdfController {
     private readonly configService: ConfigService,
   ) {}
 
-  @Get()
-  async index(@Param('id') id: number, @Res() res): Promise<void> {
-    const buffer = await this.ttbCustomerService.createPdf(id);
+  /** dikomen sementara karena mau cari bugs */
+  // @Get()
+  // async index(@Param('id') id: number, @Res() res): Promise<void> {
+  //   const buffer = await this.ttbCustomerService.createPdf(id);
 
-    res.set({
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': 'attachment; filename=ttb.pdf',
-      'Content-Length': buffer.length,
-      'Cache-Control': 'no-cache, no-store, must-revalidate',
-      Pragma: 'no-cache',
-      Expires: 0,
-    });
+  //   res.set({
+  //     'Content-Type': 'application/pdf',
+  //     'Content-Disposition': 'attachment; filename=ttb.pdf',
+  //     'Content-Length': buffer.length,
+  //     'Cache-Control': 'no-cache, no-store, must-revalidate',
+  //     Pragma: 'no-cache',
+  //     Expires: 0,
+  //   });
 
-    res.end(buffer);
-  }
+  //   res.end(buffer);
+  // }
 
   @Get('view')
   async generatePdf(@Param('id') id: number, @Res() res): Promise<void> {
