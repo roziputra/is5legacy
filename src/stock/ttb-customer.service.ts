@@ -170,7 +170,7 @@ export class TtbCustomerService {
 
     const buffer = await this.page.pdf({
       format: 'A4',
-      printBackground: false,
+      printBackground: true,
       margin: {
         left: '0',
         top: '0',
