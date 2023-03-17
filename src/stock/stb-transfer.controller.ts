@@ -38,7 +38,7 @@ export class StbTransferController {
   confirm(
     @Param('id') id: number,
     @Body() confirmStbTransferDto: ConfirmStbTransferDto,
-    @CurrentUser() user,
+    @CurrentUser() user: Employee,
   ): Promise<any> {
     return this.stbTransferService.confirm(
       id,
