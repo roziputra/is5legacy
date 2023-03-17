@@ -5,9 +5,6 @@ export class Ticket extends BaseEntity {
   @PrimaryGeneratedColumn({ name: 'TtsId' })
   id: number;
 
-  @Column({ name: 'Status' })
-  status: string;
-
   @Column({ name: 'EmpId' })
   employeeId: string;
 
@@ -19,6 +16,15 @@ export class Ticket extends BaseEntity {
 
   @Column({ name: 'AssignedNo' })
   assignedNo: number;
+
+  @Column({ name: 'Status' })
+  status: string;
+
+  @Column({ name: 'LockedBy' })
+  lockedBy: string;
+
+  @Column({ name: 'VisitTime', type: 'datetime' })
+  visitTime: Date;
 }
 
 export const TICKET_STATUS_CLOSED = 'Closed';

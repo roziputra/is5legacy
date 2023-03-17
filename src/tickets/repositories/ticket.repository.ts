@@ -56,3 +56,5 @@ export class TicketRepository extends Repository<Ticket> {
     return newPaginationResult;
   }
 }
+
+export const TTS_TYPE_ID_SURVEY = 5;

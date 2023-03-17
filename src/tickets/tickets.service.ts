@@ -30,6 +30,13 @@ import { IPaginationOptions, Pagination } from 'nestjs-typeorm-paginate';
 import { GetListTicketSurveyDto } from './dto/get-list-ticket-survey.dto';
 import { TicketRepository } from './repositories/ticket.repository';
 import { Ticket } from './entities/ticket.entity';
+import { UpdateSurveyTicketDto } from './dto/update-ticket.dto';
+import { TicketUpdateRepository } from './repositories/ticket-update.repository';
+import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import {
+  TTS_UPDATE_EMPLOYEE_ID,
+  TTS_UPDATE_ACTION,
+} from './entities/ticket-update.entity';
 
 @Injectable()
 export class TtsService {
@@ -62,6 +69,7 @@ export class TtsService {
     private generalTicketRepository: GeneralTicketRepository,
     private readonly ticketPicRepository: TicketPicRepository,
     private ticketRepository: TicketRepository,
+    private ticketUpdateRepository: TicketUpdateRepository,
     private dataSource: DataSource,
   ) {
     this.setEmpMap();
@@ -447,5 +455,39 @@ export class TtsService {
       surveyIds,
       ttsTypeIds,
     );
+  }
+
+  async updateTicketSurvey(
+    ticketId: number,
+    updateTicketSurveyDto: UpdateSurveyTicketDto,
+  ): Promise<any> {
+    const findSurveyTicket = await this.ticketRepository.findOneBy({
+      id: ticketId,
+    });
+    findSurveyTicket.CustomerId = updateTicketSurveyDto.customerId;
+    findSurveyTicket.customerServiceId =
+      updateTicketSurveyDto.customerServiceId;
+    if (findSurveyTicket) {
+      const updateSurveyTicket = await this.ticketRepository.save(
+        findSurveyTicket,
+      );
+
+      if (updateSurveyTicket) {
+        const createTicketUpdate = await this.ticketUpdateRepository.create(
+          findSurveyTicket,
+        );
+        const newDate = new Date();
+        createTicketUpdate.updatedTime = newDate;
+        createTicketUpdate.actionStart = newDate;
+        createTicketUpdate.actionBegin = newDate;
+        createTicketUpdate.actionEnd = newDate;
+        createTicketUpdate.actionStop = newDate;
+        createTicketUpdate.employeeId = TTS_UPDATE_EMPLOYEE_ID;
+        createTicketUpdate.action = TTS_UPDATE_ACTION;
+        return await this.ticketUpdateRepository.save(createTicketUpdate);
+      }
+    } else {
+      throw new Is5LegacyException('Ticket survey tidak ditemukan', 404);
+    }
   }
 }

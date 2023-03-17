@@ -6,6 +6,11 @@ import {
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  Put,
+  Param,
+  Body,
+  HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { TtsService } from '../tickets.service';
@@ -13,6 +18,9 @@ import { Request } from 'express';
 import { GetListTicketSurveyDto } from '../dto/get-list-ticket-survey.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Ticket } from '../entities/ticket.entity';
+import { UpdateSurveyTicketDto } from '../dto/update-ticket.dto';
+import { Is5LegacyResponseInterceptor } from '../../interceptors/is5-legacy-response.interceptor';
+import { HttpStatus } from '@nestjs/common';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('client/tts')
@@ -34,6 +42,21 @@ export class TicketsController {
         route: `${req.protocol}://${req.get('Host')}${req.originalUrl}`,
       },
       getListTtsSurveyDto,
+    );
+  }
+
+  @Put(':ticket_id')
+  @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    new Is5LegacyResponseInterceptor('Berhasil mengupdate ticket survey'),
+  )
+  async update(
+    @Param('ticket_id') ticketId: number,
+    @Body() updateSurveyTicketDto: UpdateSurveyTicketDto,
+  ): Promise<any> {
+    return await this.ticketService.updateTicketSurvey(
+      ticketId,
+      updateSurveyTicketDto,
     );
   }
 }
