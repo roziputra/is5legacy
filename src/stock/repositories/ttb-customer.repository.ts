@@ -19,6 +19,8 @@ export class TtbCustomerRepository extends Repository<TtbCustomer> {
         'ttb.date',
         'ttb.branchId',
         'ttb.approvedDate',
+        'ttb.setup',
+        'ttb.description',
       ])
       .addSelect(['c.CustId', 'c.CustName', 'c.CustCompany'])
       .addSelect(['cs.id', 'cs.CustAccName', 'cs.installation_address'])
@@ -38,6 +40,8 @@ export class TtbCustomerRepository extends Repository<TtbCustomer> {
         'ttb.ticketId',
         'ttb.date',
         'ttb.branchId',
+        'ttb.setup',
+        'ttb.description',
       ])
       .addSelect(['c.CustId', 'c.CustName', 'c.CustCompany'])
       .addSelect(['cs.id', 'cs.CustAccName', 'cs.installation_address'])

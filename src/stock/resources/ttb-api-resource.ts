@@ -21,6 +21,12 @@ export class TtbApiResource {
   date: string;
 
   @Expose()
+  setup: boolean;
+
+  @Expose()
+  description: string;
+
+  @Expose()
   @Type(() => CustomerApiResource)
   customer: CustomerApiResource;
 
