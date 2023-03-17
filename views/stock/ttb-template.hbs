@@ -1,0 +1,204 @@
+<!-- <!DOCTYPE html> -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Document</title>
+    <style>
+        @font-face {
+            font-family: 'Inter';
+            src: url('/fonts/Inter.ttf');
+        }
+
+        body {
+            font-family: 'Inter', Arial, Helvetica, sans-serif;
+            margin: auto 0;
+            font-size: 12px;
+            min-height: 100vh;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            margin-bottom: 4px;
+            line-height: 14.52px;
+        }
+
+        .header {
+            position: relative;
+            height: 80px;
+            background: url('/images/header-gradient.png') no-repeat;
+            background-size: 100% 80px;
+        }
+
+        .header img {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .container {
+            margin: 24px;
+            margin-top: 8px;
+            min-height: calc(100vh - 138px);
+        }
+
+        .info-left {
+            float: left;
+        }
+
+        .info-left li div:first-child {
+            display: inline-block;
+            width: 124px;
+            color: #4d4d4d;
+            vertical-align: top;
+        }
+
+        .info-left li .list-value {
+            display: inline;
+            overflow-wrap: break-word;
+        }
+
+        .info-left li .list-value div {
+            inline-size: 240px;
+        }
+
+        .info-right {
+            float: right;
+        }
+
+        .info-right li div:first-child {
+            display: inline-block;
+            width: 52px;
+            color: #4d4d4d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table tr {
+            border: 0;
+        }
+
+        table thead tr {
+            background-color: #F3FFEB;
+        }
+
+        table tr td,
+        table tr th {
+            font-size: 12px;
+            line-height: 24px;
+            letter-spacing: 0.17px;
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #212121;
+        }
+
+        table tr th {
+            text-align: left;
+        }
+
+        .footer {
+            width: 100%;
+            background-color: #D3FFB1CC;
+            padding: 4px 0px;
+            text-align: center;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="{{frontEndUrl}}/images/nusanet-logo.webp" alt="Nusanet Logo" height="32px" />
+    </div>
+    <div class="container">
+        <h1 class="title">Tanda Terima Barang</h1>
+        <div style="margin-top: 32px;">
+            <ul class="info-left">
+                <li>
+                    <div>Nama/Perusahaan</div>
+                    <span>:</span>
+                    <div class="list-value">
+                        <div>{{ ttb.customer.CustName }}</div>
+                    </div>
+                </li>
+                <li>
+                    <div>Alamat</div>
+                    <span>:</span>
+                    <div class="list-value">
+                        <div>{{ ttb.customerService.installation_address }}</div>
+                    </div>
+                </li>
+                <li>
+                    <div>Service Name</div>
+                    <span>:</span>
+                    <div class="list-value">
+                        <div>{{ ttb.service.serviceType }} [{{ ttb.service.id }}]</div>
+                    </div>
+                </li>
+                <li>
+                    <div>Deskripsi</div>
+                    <span>:</span>
+                    <div class="list-value">
+                        <div>{{ ttb.description }}</div>
+                    </div>
+                </li>
+            </ul>
+            <ul class="info-right">
+                <li>
+                    <div>Tanggal</div>
+                    <span>: {{ ttbDate }}</span>
+                </li>
+                <li>
+                    <div>No</div>
+                    <span>:</span><span style=" color:#E10000;"> {{ ttb.noSurat }}</span>
+                </li>
+            </ul>
+        </div>
+        <div style="clear:both;"></div>
+        <hr style="margin:16px 0" />
+        <p>Telah diserahkan dengan baik barang di bawah ini, berupa:</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama Barang</th>
+                    <th>S/N</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each details}}
+                <tr>
+                    <td>{{@index}}</td>
+                    <td>{{this.name}}</td>
+                    <td>{{this.serial}}</td>
+                    <td>{{this.qty}} {{this.unit}}</td>
+                    <td>{{this.status}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </div>
+    <div class="footer">
+        <span>Page 1/1</span>
+    </div>
+</body>
+
+</html>

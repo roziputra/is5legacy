@@ -32,6 +32,9 @@ import { TtbCustomerRepository } from './repositories/ttb-customer.repository';
 import { TtbCustomerDetailRepository } from './repositories/ttb-customer-detail.repository';
 import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { PuppeteerModule } from 'nest-puppeteer';
+import { TtbPdfController } from './ttb-pdf-controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -43,12 +46,15 @@ import { diskStorage } from 'multer';
         },
       }),
     }),
+    PuppeteerModule.forRoot(),
+    ConfigModule.forRoot(),
     FinanceModule,
     TypeOrmModule.forFeature([Employee]),
   ],
   controllers: [
     PackageDetailController,
     PackageController,
+    TtbPdfController,
     TtbCustomerDetailController,
     TtbController,
     StbTransferController,
