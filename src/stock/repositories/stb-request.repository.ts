@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 import {
   STATUS_PENDING,
+  Status,
   StbRequest,
   TYPE_MOVED,
 } from '../entities/stb-request.entity';
@@ -57,11 +58,11 @@ export class StbRequestRepository extends Repository<StbRequest> {
   }
 
   async finAllStbRequest(
-    requestType,
-    status,
+    requestType: RequestType[],
+    status: Status[],
     options: IPaginationOptions,
   ): Promise<Pagination<StbRequest>> {
-    const query = await this.createQueryBuilder('stbr')
+    let query = await this.createQueryBuilder('stbr')
       .leftJoinAndMapOne(
         'stbr.stb',
         StbEngineer,
@@ -91,9 +92,15 @@ export class StbRequestRepository extends Repository<StbRequest> {
         Employee,
         'app',
         'app.EmpId = stb.approvedBy',
-      )
-      .where('stbr.requestType = :requestType', { requestType: requestType })
-      .andWhere('stbr.status in (:...status)', { status: status });
+      );
+    if (requestType.length) {
+      query = query.andWhere('stbr.requestType in (:...requestType)', {
+        requestType: requestType,
+      });
+    }
+    if (status.length) {
+      query = query.andWhere('stbr.status in (:...status)', { status: status });
+    }
     return paginate<StbRequest>(query, options);
   }
 
