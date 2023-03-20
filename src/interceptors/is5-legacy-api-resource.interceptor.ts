@@ -9,6 +9,7 @@ import {
   instanceToPlain,
   plainToInstance,
 } from 'class-transformer';
+import { Pagination } from 'nestjs-typeorm-paginate';
 import { Observable, map } from 'rxjs';
 
 /**
@@ -24,11 +25,22 @@ export class Is5LegacyApiResourceInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
-        const transform = plainToInstance(this.cls, data, {
-          ignoreDecorators: true,
-          excludeExtraneousValues: true,
-        });
-        return instanceToPlain(transform);
+        if (data instanceof Pagination) {
+          const newItems = data.items.map((i) => {
+            const transform = plainToInstance(this.cls, i, {
+              ignoreDecorators: true,
+              excludeExtraneousValues: true,
+            });
+            return instanceToPlain(transform);
+          });
+          return new Pagination(newItems, data.meta);
+        } else {
+          const transform = plainToInstance(this.cls, data, {
+            ignoreDecorators: true,
+            excludeExtraneousValues: true,
+          });
+          return instanceToPlain(transform);
+        }
       }),
     );
   }

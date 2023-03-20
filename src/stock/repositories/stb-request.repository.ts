@@ -5,10 +5,14 @@ import {
   StbRequest,
   TYPE_MOVED,
 } from '../entities/stb-request.entity';
-import { Master } from '../entities/master.entity';
-import { StbRequestDetail } from '../entities/stb-request-detail.entity';
-import { StbEngineer } from '../entities/stb-engineer.entity';
-import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
+import { RequestType, StbEngineer } from '../entities/stb-engineer.entity';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+  paginateRaw,
+} from 'nestjs-typeorm-paginate';
+import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class StbRequestRepository extends Repository<StbRequest> {
@@ -19,23 +23,81 @@ export class StbRequestRepository extends Repository<StbRequest> {
   findOneStbRequest(id: number): Promise<StbRequest> {
     return this.createQueryBuilder('stbr')
       .where('stbr.id = :id', { id: id })
-      .leftJoinAndMapMany(
-        'stbr.details',
-        StbRequestDetail,
-        'detail',
-        'stbr.id = detail.stb_request_id',
-      )
       .leftJoinAndMapOne(
         'stbr.stb',
         StbEngineer,
         'stb',
         'stb.request_id = stbr.id',
       )
-      .leftJoinAndMapOne('detail.master', Master, 'm', 'm.Code = detail.code')
+      .leftJoinAndMapOne(
+        'stbr.eng',
+        Employee,
+        'eng',
+        'eng.EmpId = stbr.engineer',
+      )
+      .leftJoinAndMapOne(
+        'stbr.rej',
+        Employee,
+        'rej',
+        'rej.EmpId = stbr.rejectedBy',
+      )
+      .leftJoinAndMapOne(
+        'stbr.cre',
+        Employee,
+        'cre',
+        'cre.EmpId = stbr.createdBy',
+      )
+      .leftJoinAndMapOne(
+        'stb.app',
+        Employee,
+        'app',
+        'app.EmpId = stb.approvedBy',
+      )
       .getOne();
   }
 
-  findOneStbTransfer(id: number): Promise<any> {
+  async finAllStbRequest(
+    requestType,
+    status,
+    options: IPaginationOptions,
+  ): Promise<Pagination<StbRequest>> {
+    const query = await this.createQueryBuilder('stbr')
+      .leftJoinAndMapOne(
+        'stbr.stb',
+        StbEngineer,
+        'stb',
+        'stb.request_id = stbr.id',
+      )
+      .leftJoinAndMapOne(
+        'stbr.eng',
+        Employee,
+        'eng',
+        'eng.EmpId = stbr.engineer',
+      )
+      .leftJoinAndMapOne(
+        'stbr.rej',
+        Employee,
+        'rej',
+        'rej.EmpId = stbr.rejectedBy',
+      )
+      .leftJoinAndMapOne(
+        'stbr.cre',
+        Employee,
+        'cre',
+        'cre.EmpId = stbr.createdBy',
+      )
+      .leftJoinAndMapOne(
+        'stb.app',
+        Employee,
+        'app',
+        'app.EmpId = stb.approvedBy',
+      )
+      .where('stbr.requestType = :requestType', { requestType: requestType })
+      .andWhere('stbr.status in (:...status)', { status: status });
+    return paginate<StbRequest>(query, options);
+  }
+
+  findOneStbTransfer(id: number): Promise<StbRequest> {
     return this.createQueryBuilder('stbr')
       .where('stbr.id = :id', { id: id })
       .leftJoinAndMapOne(
@@ -43,6 +105,30 @@ export class StbRequestRepository extends Repository<StbRequest> {
         StbEngineer,
         'stb',
         'stb.requestId = stbr.id',
+      )
+      .leftJoinAndMapOne(
+        'stbr.eng',
+        Employee,
+        'eng',
+        'eng.EmpId = stbr.engineer',
+      )
+      .leftJoinAndMapOne(
+        'stbr.rej',
+        Employee,
+        'rej',
+        'rej.EmpId = stbr.rejectedBy',
+      )
+      .leftJoinAndMapOne(
+        'stbr.cre',
+        Employee,
+        'cre',
+        'cre.EmpId = stbr.createdBy',
+      )
+      .leftJoinAndMapOne(
+        'stb.app',
+        Employee,
+        'app',
+        'app.EmpId = stb.approvedBy',
       )
       .getOne();
   }
@@ -52,40 +138,24 @@ export class StbRequestRepository extends Repository<StbRequest> {
     transferType: string[],
     status: string[],
     options: IPaginationOptions,
-  ): Promise<any> {
+  ): Promise<Pagination<any>> {
     const query = this.dataSource
       .createQueryBuilder()
-      .select([
-        's.id',
-        'stb.id',
-        's.transferType transfer_type',
-        's.engineer',
-        's.branch_id',
-        's.request_type',
-        's.request_date',
-        's.status',
-        's.rejected_by',
-        's.rejected_reason',
-        's.description',
-        's.created_by',
-        's.created_at',
-        's.updated_at',
-      ])
       .from((q) => {
         return q
           .select([
-            'r.id id',
-            'r.engineer engineer',
-            'r.branch_id branch_id',
-            'r.request_type request_type',
-            'r.request_date request_date',
-            'r.status status',
-            'r.rejected_by rejected_by',
-            'r.rejected_reason rejected_reason',
-            'r.description description',
-            'r.created_by',
-            'r.created_at',
-            'r.updated_at',
+            'id',
+            'engineer',
+            'branch_id branchId',
+            'request_type requestType',
+            'request_date requestDate',
+            'status',
+            'rejected_by rejectedBy',
+            'rejected_reason rejectedReason',
+            'description',
+            'created_by createdBy',
+            'created_at createdAt',
+            'updated_at updatedAt',
           ])
           .addSelect(
             `case when created_by = :user 
@@ -103,6 +173,50 @@ export class StbRequestRepository extends Repository<StbRequest> {
         transferType: transferType,
       })
       .leftJoin(StbEngineer, 'stb', 'stb.requestId = s.id')
+      .leftJoin(Employee, 'eng', 'eng.EmpId = s.engineer')
+      .leftJoin(Employee, 'cre', 'cre.EmpId = s.createdBy')
+      .leftJoin(Employee, 'rej', 'rej.EmpId = s.rejectedBy')
+      .leftJoin(Employee, 'app', 'app.EmpId = stb.approvedBy')
+      .select([
+        's.id',
+        's.transferType',
+        's.engineer',
+        's.branchId',
+        's.requestType',
+        's.requestDate',
+        's.status',
+        's.rejectedBy',
+        's.rejectedReason',
+        's.description',
+        's.createdBy',
+        's.createdAt',
+        's.updatedAt',
+      ])
+      .addSelect([
+        'stb.id stb_id',
+        'stb.approved_by stb_approvedBy',
+        'stb.approved_date stb_approvedDate',
+      ])
+      .addSelect([
+        'eng.EmpId eng_EmpId',
+        'eng.EmpFName eng_EmpFName',
+        'eng.EmpLName eng_EmpLName',
+      ])
+      .addSelect([
+        'cre.EmpId cre_EmpId',
+        'cre.EmpFName cre_EmpFName',
+        'cre.EmpLName cre_EmpLName',
+      ])
+      .addSelect([
+        'rej.EmpId rej_EmpId',
+        'rej.EmpFName rej_EmpFName',
+        'rej.EmpLName rej_EmpLName',
+      ])
+      .addSelect([
+        'app.EmpId stb_app_EmpId',
+        'app.EmpFName stb_app_EmpFName',
+        'app.EmpLName stb_app_EmpLName',
+      ])
       .setParameters({
         user: user,
         requestType: TYPE_MOVED,

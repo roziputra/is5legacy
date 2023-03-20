@@ -1,12 +1,10 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Get,
   HttpCode,
   HttpStatus,
   Param,
-  ParseIntPipe,
   Patch,
   Query,
   UseGuards,
@@ -16,12 +14,12 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
 import { StbTransferService } from './stb-transfer.service';
-
+import { StbRequest } from './entities/stb-request.entity';
 import { ConfirmStbTransferDto } from './dto/confirm-stb-transfer.dto';
-import { StbTransferApiResourceInterceptor } from './resources/stb-transfer-api-resource.interceptor';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
 import { Employee } from 'src/employees/employee.entity';
-import { TransferType } from './entities/stb-engineer.entity';
-import { Status } from './entities/stb-request.entity';
+import { StbTranferApiResource } from './resources/stb-transfer-api-resource';
+import { StbTranferCollectionApiResource } from './resources/stb-transfer-collection-api-resource';
 import { FilterPaginationDto } from './dto/filter-pagination.dto';
 import { FilterStbTransferDto } from './dto/filter-stb-transfer.dto';
 
@@ -55,13 +53,27 @@ export class StbTransferController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(StbTransferApiResourceInterceptor)
-  async show(@Param('id') id: number) {
-    return this.stbTransferService.findOne(id);
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbTranferApiResource))
+  async show(
+    @Param('id') id: number,
+    @CurrentUser() user: Employee,
+  ): Promise<StbRequest> {
+    const data = await this.stbTransferService.findOne(id);
+    data['transferType'] = null;
+    if (data.createdBy == user.EmpId) {
+      data['transferType'] = 'permintaan';
+    }
+    if (data.engineer == user.EmpId) {
+      data['transferType'] = 'penerimaan';
+    }
+    return data;
   }
 
   @Get()
   @HttpCode(HttpStatus.OK)
+  @UseInterceptors(
+    new Is5LegacyApiResourceInterceptor(StbTranferCollectionApiResource),
+  )
   findAll(
     @Query() filterPaginationDto: FilterPaginationDto,
     @Query() filterStbTransferDto: FilterStbTransferDto,
