@@ -10,6 +10,8 @@ import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 import { ConfigService } from '@nestjs/config';
+import { InjectBrowser } from 'nest-puppeteer';
+import { Browser } from 'puppeteer';
 
 @Injectable()
 export class TtbCustomerService {
@@ -19,6 +21,8 @@ export class TtbCustomerService {
     private readonly dataSource: DataSource,
     private readonly stbEngineerService: StbEngineerService,
     private readonly configService: ConfigService,
+    @InjectBrowser()
+    private readonly browser: Browser,
   ) {}
 
   async create(
@@ -157,25 +161,25 @@ export class TtbCustomerService {
   }
 
   /** dikomen sementara karena mau cari bugs */
-  // async createPdf(id: number): Promise<any> {
-  //   const frontEndUrl = `${this.configService.get(
-  //     'FRONTEND_URL',
-  //   )}:${this.configService.get('PORT')}`;
+  async createPdf(id: number): Promise<any> {
+    const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
 
-  //   await this.page.goto(`${frontEndUrl}/v1/stock/ttb/${id}/pdf/view`, {
-  //     waitUntil: 'networkidle2',
-  //   });
+    const page = await this.browser.newPage();
 
-  //   const buffer = await this.page.pdf({
-  //     format: 'A4',
-  //     printBackground: true,
-  //     margin: {
-  //       left: '0',
-  //       top: '0',
-  //       right: '0',
-  //       bottom: '0',
-  //     },
-  //   });
-  //   return buffer;
-  // }
+    await page.goto(`${frontEndUrl}/v1/stock/ttb/${id}/pdf/view`, {
+      waitUntil: 'networkidle2',
+    });
+
+    const buffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+      margin: {
+        left: '0',
+        top: '0',
+        right: '0',
+        bottom: '0',
+      },
+    });
+    return buffer;
+  }
 }

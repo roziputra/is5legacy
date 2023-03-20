@@ -13,27 +13,25 @@ export class TtbPdfController {
   ) {}
 
   /** dikomen sementara karena mau cari bugs */
-  // @Get()
-  // async index(@Param('id') id: number, @Res() res): Promise<void> {
-  //   const buffer = await this.ttbCustomerService.createPdf(id);
+  @Get()
+  async index(@Param('id') id: number, @Res() res): Promise<void> {
+    const buffer = await this.ttbCustomerService.createPdf(id);
 
-  //   res.set({
-  //     'Content-Type': 'application/pdf',
-  //     'Content-Disposition': 'attachment; filename=ttb.pdf',
-  //     'Content-Length': buffer.length,
-  //     'Cache-Control': 'no-cache, no-store, must-revalidate',
-  //     Pragma: 'no-cache',
-  //     Expires: 0,
-  //   });
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': 'attachment; filename=ttb.pdf',
+      'Content-Length': buffer.length,
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      Expires: 0,
+    });
 
-  //   res.end(buffer);
-  // }
+    res.end(buffer);
+  }
 
   @Get('view')
   async generatePdf(@Param('id') id: number, @Res() res): Promise<void> {
-    const frontEndUrl = `${this.configService.get(
-      'FRONTEND_URL',
-    )}:${this.configService.get('PORT')}`;
+    const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
     const ttb = await this.ttbCustomerService.findOneTtb(id);
     const details =
       await this.ttbCustomerDetailService.findAllTtbCustomerDetails(id);

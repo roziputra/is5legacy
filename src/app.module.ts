@@ -59,6 +59,7 @@ import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
 import { Ticket } from './tickets/entities/ticket.entity';
 import { TtbCustomerAttachment } from './stock/entities/ttb-customer-attachment.entity';
 import { TicketUpdate } from './tickets/entities/ticket-update.entity';
+import { PuppeteerModule } from 'nest-puppeteer';
 
 @Module({
   imports: [
@@ -154,6 +155,7 @@ import { TicketUpdate } from './tickets/entities/ticket-update.entity';
     CronModule,
     FinanceModule,
     StockModule,
+    PuppeteerModule.forRoot(),
   ],
   controllers: [],
   providers: [],
