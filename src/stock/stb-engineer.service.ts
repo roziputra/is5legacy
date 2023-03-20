@@ -231,6 +231,10 @@ export class StbEngineerService {
     });
   }
 
+  /**
+   * deprecated
+   * use StockMasterService.findAll() instead
+   */
   async findAllWarehouseInventories(
     page: number,
     limit: number,
