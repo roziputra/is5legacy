@@ -30,7 +30,7 @@ export class TtbPdfController {
   }
 
   @Get('view')
-  async generatePdf(@Param('id') id: number, @Res() res): Promise<void> {
+  async generateView(@Param('id') id: number, @Res() res): Promise<void> {
     const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
     const ttb = await this.ttbCustomerService.findOneTtb(id);
     const details =
