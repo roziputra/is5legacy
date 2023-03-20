@@ -59,6 +59,7 @@ import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
 import { Ticket } from './tickets/entities/ticket.entity';
 import { TtbCustomerAttachment } from './stock/entities/ttb-customer-attachment.entity';
 import { TicketUpdate } from './tickets/entities/ticket-update.entity';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -76,7 +77,7 @@ import { TicketUpdate } from './tickets/entities/ticket-update.entity';
         from: process.env.MAIL_USERNAME,
       },
       template: {
-        dir: __dirname + '/templates/mails',
+        dir: join(__dirname, '..', 'views'),
         options: {
           strict: true,
         },

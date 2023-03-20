@@ -23,6 +23,9 @@ import { StbRequestService } from './stb-request.service';
 import { CreateStbRequestDto } from './dto/create-stb-request.dto';
 import { UpdateStbRequestDto } from './dto/update-stb-request.dto';
 import { Employee } from 'src/employees/employee.entity';
+import { StbRequestApiResource } from './resources/stb-request-api-resource';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/requests')
@@ -56,9 +59,9 @@ export class StbRequestController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
-  show(@Param('id') id: number, @CurrentUser() user: Employee): Promise<any> {
-    return this.stbRequestService.findStbRequest(id, user);
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbRequestApiResource))
+  async show(@Param('id') id: number): Promise<any> {
+    return this.stbRequestService.findStbRequest(id);
   }
 
   @Delete(':id')
@@ -75,7 +78,7 @@ export class StbRequestController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbRequestApiResource))
   async findAllStbEnginer(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
     @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,

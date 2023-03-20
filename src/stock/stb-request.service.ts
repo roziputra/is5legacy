@@ -112,7 +112,7 @@ export class StbRequestService {
     }
   }
 
-  async findStbRequest(id: number, user: Employee): Promise<StbRequest> {
+  async findStbRequest(id: number): Promise<StbRequest> {
     const stbRequest = await this.stbRequestRepository.findOneStbRequest(id);
     if (!stbRequest) {
       throw new Is5LegacyException(
@@ -170,15 +170,10 @@ export class StbRequestService {
     requestType: RequestType,
     status: string[],
   ): Promise<Pagination<StbRequest>> {
-    return paginate<StbRequest>(this.stbRequestRepository, options, {
-      where: {
-        requestType: requestType,
-        status: status ? In(status) : undefined,
-      },
-      relations: {
-        details: true,
-        stb: true,
-      },
-    });
+    return this.stbRequestRepository.finAllStbRequest(
+      requestType,
+      status,
+      options,
+    );
   }
 }
