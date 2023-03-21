@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource, In } from 'typeorm';
-
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { Employee } from './employee.entity';
 import { GetEmployeeListDto } from './dto/get-employee-list.dto';
 import { Is5LegacyException } from '../exceptions/is5-legacy.exception';
+import { EmployeeRepository } from './repositories/employee.repository';
+import { IPaginationOptions } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class EmployeesService {
   constructor(
-    @InjectRepository(Employee)
-    private readonly employeeRepository: Repository<Employee>,
+    private readonly employeeRepository: EmployeeRepository,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
@@ -35,9 +35,13 @@ export class EmployeesService {
     return employee;
   }
 
-  async findAll() {
-    const employees = await this.employeeRepository.find();
-    return employees.map((e) => this.transformEmployee(e));
+  async findAll(
+    branchId: string[],
+    departmentId: string[],
+    status: string[],
+    options: IPaginationOptions,
+  ) {
+    return this.employeeRepository.findAll(branchId, departmentId, status, options);
   }
 
   async authenticate(username: string, password: string) {
