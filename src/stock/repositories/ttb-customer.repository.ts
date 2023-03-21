@@ -3,6 +3,11 @@ import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { TtbCustomer } from '../entities/ttb-customer.entity';
 import { Customer } from 'src/customers/entities/customer.entity';
 import { Services } from 'src/services/entities/service.entity';
+import {
+  IPaginationOptions,
+  Pagination,
+  paginate,
+} from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class TtbCustomerRepository extends Repository<TtbCustomer> {
@@ -32,8 +37,23 @@ export class TtbCustomerRepository extends Repository<TtbCustomer> {
       .getOne();
   }
 
-  findAllTtb(): Promise<TtbCustomer[]> {
-    return this.findTtbQuery()
+  async findAllTtb(
+    branchId: string[],
+    engineerId: string[],
+    options: IPaginationOptions,
+  ): Promise<Pagination<TtbCustomer>> {
+    let query = this.findTtbQuery();
+    if (branchId.length) {
+      query = query.andWhere('ttb.branchId in (:...branchId)', {
+        branchId: branchId,
+      });
+    }
+    if (engineerId.length) {
+      query = query.andWhere('ttb.engineerId in (:...engineerId)', {
+        engineerId: engineerId,
+      });
+    }
+    query
       .select([
         'ttb.id',
         'ttb.noSurat',
@@ -48,8 +68,8 @@ export class TtbCustomerRepository extends Repository<TtbCustomer> {
       .addSelect(['s.id', 's.ServiceType'])
       .addSelect(['sl.EmpId', 'sl.EmpFName', 'sl.EmpLName'])
       .addSelect(['en.EmpId', 'en.EmpFName', 'en.EmpLName'])
-      .addSelect(['ap.EmpId', 'ap.EmpFName', 'ap.EmpLName'])
-      .getMany();
+      .addSelect(['ap.EmpId', 'ap.EmpFName', 'ap.EmpLName']);
+    return paginate(query, options);
   }
 
   findTtbQuery(): SelectQueryBuilder<TtbCustomer> {

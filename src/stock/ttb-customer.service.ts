@@ -10,6 +10,8 @@ import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 import { ConfigService } from '@nestjs/config';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { FilterTtbDto } from './dto/filter-ttb.dto';
 
 @Injectable()
 export class TtbCustomerService {
@@ -152,8 +154,16 @@ export class TtbCustomerService {
     }
   }
 
-  async findAllTtb(): Promise<any> {
-    return this.ttbCustomerRepository.findAllTtb();
+  async findAllTtb(
+    branchId: string[],
+    engineerId: string[],
+    page: number,
+    limit: number,
+  ): Promise<any> {
+    return this.ttbCustomerRepository.findAllTtb(branchId, engineerId, {
+      page: page,
+      limit: limit,
+    });
   }
 
   /** dikomen sementara karena mau cari bugs */

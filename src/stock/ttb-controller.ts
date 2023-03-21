@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFiles,
   UseGuards,
   UseInterceptors,
@@ -24,6 +24,8 @@ import { TtbCustomer } from './entities/ttb-customer.entity';
 import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
 import { TtbApiResource } from './resources/ttb-api-resource';
 import { FilesInterceptor } from '@nestjs/platform-express';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { FilterTtbDto } from './dto/filter-ttb.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stock/ttb')
@@ -69,7 +71,17 @@ export class TtbController {
   @Get()
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(new Is5LegacyApiResourceInterceptor(TtbApiResource))
-  findAllTtb() {
-    return this.ttbCustomerService.findAllTtb();
+  findAllTtb(
+    @Query() filterPaginationDto: FilterPaginationDto,
+    @Query() filterTtbDto: FilterTtbDto,
+  ) {
+    const { branchId, engineerId } = filterTtbDto;
+    const { page, limit } = filterPaginationDto;
+    return this.ttbCustomerService.findAllTtb(
+      branchId,
+      engineerId,
+      page,
+      limit,
+    );
   }
 }
