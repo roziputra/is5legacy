@@ -26,6 +26,7 @@ import { Employee } from 'src/employees/employee.entity';
 import { StbRequestApiResource } from './resources/stb-request-api-resource';
 import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
 import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { FilterStbRequestDto } from './dto/filter-stb-request.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/requests')
@@ -80,18 +81,14 @@ export class StbRequestController {
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbRequestApiResource))
   async findAllStbEnginer(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,
-    @Query('request_type') requestType: RequestType,
-    @Query('status') status: string,
+    @Query() filterPaginationDto: FilterPaginationDto,
+    @Query() filterStbRequestDto: FilterStbRequestDto,
   ) {
-    return this.stbRequestService.findAllStbRequest(
-      {
-        page: page,
-        limit: limit,
-      },
-      requestType,
-      status?.split(',').map((i) => i.trim()),
-    );
+    const { page, limit } = filterPaginationDto;
+    const { requestType, status } = filterStbRequestDto;
+    return this.stbRequestService.findAllStbRequest(requestType, status, {
+      page: page,
+      limit: limit,
+    });
   }
 }
