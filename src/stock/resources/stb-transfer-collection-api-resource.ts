@@ -1,7 +1,5 @@
-import { Exclude, Expose, Type } from 'class-transformer';
-import { EmployeeApiResource } from 'src/employees/resources/employee-api-resource';
+import { Exclude, Expose } from 'class-transformer';
 import { RequestType } from '../entities/stb-request.entity';
-import { StbApiResource } from './stb-api-resource';
 
 export class StbTranferCollectionApiResource {
   @Expose()

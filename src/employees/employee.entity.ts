@@ -26,6 +26,10 @@ export class Employee extends BaseEntity {
   @Expose({ name: 'branch_id' })
   branchId: string;
 
+  @Column({ name: 'DeptId' })
+  @Expose({ name: 'department_id' })
+  departmentId: string;
+
   @Column({ name: 'DisplayBranchId' })
   @Expose({ name: 'display_branch_id' })
   displayBranchId: string;

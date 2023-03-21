@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { EmployeeApiResource } from 'src/employees/resources/employee-api-resource';
+import { LiteEmployeeApiResource } from 'src/employees/resources/lite-employee-api-resource';
 import { RequestType } from '../entities/stb-request.entity';
 
 export class StbApiResource {
@@ -10,8 +10,8 @@ export class StbApiResource {
   noSurat: number;
 
   @Expose({ name: 'engineer' })
-  @Type(() => EmployeeApiResource)
-  eng: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  eng: LiteEmployeeApiResource;
 
   @Expose({ name: 'branch_id' })
   branchId: string;
@@ -26,15 +26,15 @@ export class StbApiResource {
   approvedDate: Date;
 
   @Expose({ name: 'approved_by' })
-  @Type(() => EmployeeApiResource)
-  app: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  app: LiteEmployeeApiResource;
 
   @Expose()
   description: string;
 
   @Expose({ name: 'created_by' })
-  @Type(() => EmployeeApiResource)
-  cre: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  cre: LiteEmployeeApiResource;
 
   @Expose({ name: 'created_at' })
   createdAt: Date;
