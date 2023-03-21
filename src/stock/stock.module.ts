@@ -34,6 +34,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { TtbPdfController } from './ttb-pdf-controller';
 import { ConfigModule } from '@nestjs/config';
+import { StockMasterController } from './stock-master.controller';
+import { StockMasterService } from './stock-master.service';
 
 @Module({
   imports: [
@@ -50,6 +52,7 @@ import { ConfigModule } from '@nestjs/config';
     TypeOrmModule.forFeature([Employee]),
   ],
   controllers: [
+    StockMasterController,
     PackageDetailController,
     PackageController,
     TtbPdfController,
@@ -65,6 +68,7 @@ import { ConfigModule } from '@nestjs/config';
     StockController,
   ],
   providers: [
+    StockMasterService,
     PackageService,
     StockService,
     TtbCustomerDetailService,
