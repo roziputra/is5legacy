@@ -60,6 +60,10 @@ import { Ticket } from './tickets/entities/ticket.entity';
 import { TtbCustomerAttachment } from './stock/entities/ttb-customer-attachment.entity';
 import { TicketUpdate } from './tickets/entities/ticket-update.entity';
 import { join } from 'path';
+import { AssetController } from './asset.controller';
+import { AssetService } from './asset.service';
+import { TtbCustomerAttachmentRepository } from './stock/repositories/ttb-customer-attachment.repository';
+import { TtbCustomerRepository } from './stock/repositories/ttb-customer.repository';
 
 @Module({
   imports: [
@@ -156,7 +160,11 @@ import { join } from 'path';
     FinanceModule,
     StockModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AssetController],
+  providers: [
+    AssetService,
+    TtbCustomerAttachmentRepository,
+    TtbCustomerRepository,
+  ],
 })
 export class AppModule {}
