@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Ticket } from '../entities/ticket.entity';
-import { IPaginationOptions, paginateRaw } from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate, paginateRaw } from 'nestjs-typeorm-paginate';
+import { TicketPic } from '../entities/ticket-pic.entity';
+import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class TicketRepository extends Repository<Ticket> {
@@ -11,49 +13,26 @@ export class TicketRepository extends Repository<Ticket> {
 
   async getListTicketSurveyRepo(
     options: IPaginationOptions,
-    surveyIds: string[],
     ttsTypeIds: string[],
+    ttsStatus: string[],
+    surveyIds: string[],
   ): Promise<any> {
-    const queryBuilder = this.createQueryBuilder('t')
-      .select([
-        't.TtsId survey_id',
-        't.CustId customer_id',
-        't.CustServId customer_service_id',
-        't.AssignedNo survey_assigned_number',
-        't.Status survey_status',
-        't.LockedBy survey_locked_by',
-        't.VisitTime survey_visit_time',
-        'tp.EmpId surveyor_employee_id',
-        "CONCAT(e.EmpFName, ' ', e.EmpLName) surveyor_employee_name",
-      ])
-      .innerJoin(
-        'TtsPIC',
-        'tp',
-        't.TtsId = tp.TtsId AND t.AssignedNo = tp.AssignedNo',
-      )
-      .innerJoin('Employee', 'e', 'tp.EmpId = e.EmpId');
-
+    const queryBuilder = this
+    .createQueryBuilder('t')
+    .leftJoinAndMapMany('t.ticketPics', TicketPic, 'tp', 't.id = tp.ticketId AND t.assignedNo = tp.assignedNo')
+    .leftJoinAndMapOne('tp.employeeDetails', 'tp.employees', 'emp');
     if (ttsTypeIds.length > 0) {
-      queryBuilder.where('t.TtsTypeId IN (:...ttsTypeId)', {
-        ttsTypeId: ttsTypeIds,
-      });
+      queryBuilder.where('t.ttsTypeId IN (:...ttsTypeIds)', { ttsTypeIds });
     }
-
+    if (ttsStatus.length > 0) {
+      queryBuilder.where('t.status IN (:...ttsStatus)', { ttsStatus });
+    }
     if (surveyIds.length > 0) {
-      queryBuilder.andWhere('t.TtsId IN (:...surveyIds)', {
-        surveyIds: surveyIds,
-      });
+      queryBuilder.where('t.surveyId IN (:...surveyIds)', { surveyIds });
     }
     queryBuilder.orderBy('t.PostedTime', 'DESC');
 
-    const paginateResults = await paginateRaw(queryBuilder, options);
-    const newPaginationResult = {
-      data: paginateResults.items,
-      meta: paginateResults.meta,
-      links: paginateResults.links,
-    };
-
-    return newPaginationResult;
+    return paginate(queryBuilder, options);
   }
 }
 

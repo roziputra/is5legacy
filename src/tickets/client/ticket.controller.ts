@@ -19,8 +19,10 @@ import { GetListTicketSurveyDto } from '../dto/get-list-ticket-survey.dto';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { Ticket } from '../entities/ticket.entity';
 import { UpdateSurveyTicketDto } from '../dto/update-ticket.dto';
-import { Is5LegacyResponseInterceptor } from '../../interceptors/is5-legacy-response.interceptor';
 import { HttpStatus } from '@nestjs/common';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
+import { TicketSurveyApiResource } from '../resources/ticket-survey-api-resource';
+import { Is5LegacyResponseInterceptor } from 'src/interceptors/is5-legacy-response.interceptor';
 
 @UseGuards(AuthGuard('api-key'))
 @Controller('client/tts')
@@ -28,6 +30,7 @@ export class TicketsController {
   constructor(private readonly ticketService: TtsService) {}
 
   @Get()
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(TicketSurveyApiResource))
   async index(
     @Req() req: Request,
     @Query() getListTtsSurveyDto: GetListTicketSurveyDto,
