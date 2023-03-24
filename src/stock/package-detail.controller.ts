@@ -1,5 +1,4 @@
 import {
-  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -13,6 +12,8 @@ import { PackageService } from './package.service';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Employee } from 'src/employees/employee.entity';
 import { StbEngineerService } from './stb-engineer.service';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
+import { RequestStbPackageDetailApiResource } from './resources/request-stb-package-detail-api-resource';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stock/packages/:id/details')
@@ -24,15 +25,17 @@ export class PackageDetailController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(
+    new Is5LegacyApiResourceInterceptor(
+      RequestStbPackageDetailApiResource,
+      'data',
+    ),
+  )
   async findPackagesDetail(
     @Param('id') id: number,
     @CurrentUser() user: Employee,
   ): Promise<any> {
     const branch = this.stbEngineerService.getMasterBranch(user);
-    const packages = await this.packageService.findPackageDetails(id, branch);
-    return {
-      data: packages,
-    };
+    return await this.packageService.findPackageDetails(id, branch);
   }
 }

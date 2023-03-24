@@ -21,7 +21,10 @@ export class Is5LegacyApiResourceInterceptor implements NestInterceptor {
    * kelas Api Resouce wajib menggunakan @Expose
    * option 'name' di @Expose hanya dibutuhkan jika ingin mengubah respon property
    */
-  constructor(@Inject() private readonly cls: ClassConstructor<any>) {}
+  constructor(
+    @Inject() private readonly cls: ClassConstructor<any>,
+    @Inject() private readonly wrapper?: string,
+  ) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     return next.handle().pipe(
       map((data) => {
@@ -39,7 +42,13 @@ export class Is5LegacyApiResourceInterceptor implements NestInterceptor {
             ignoreDecorators: true,
             excludeExtraneousValues: true,
           });
-          return instanceToPlain(transform);
+          const newData = instanceToPlain(transform);
+          if (this.wrapper) {
+            return {
+              [this.wrapper]: newData,
+            };
+          }
+          return newData;
         }
       }),
     );

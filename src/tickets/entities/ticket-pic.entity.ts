@@ -1,4 +1,6 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { Employee } from 'src/employees/employee.entity';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
+import { Ticket } from './ticket.entity';
 @Entity({ name: 'TtsPIC', synchronize: false })
 export class TicketPic extends BaseEntity {
   @PrimaryColumn({ name: 'TtsId' })
@@ -9,4 +11,7 @@ export class TicketPic extends BaseEntity {
 
   @Column({ name: 'AssignedNo' })
   assignedNo: number;
+
+  @OneToOne(() => Employee, (emp) => emp.tickets)
+  employees: Employee;
 }

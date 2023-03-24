@@ -24,8 +24,8 @@ export class RequestStbPackageDetailRepository extends Repository<RequestStbPack
           branch: branch,
         },
       )
-      .leftJoinAndMapMany(
-        'detail.units',
+      .leftJoinAndMapOne(
+        'detail.unit',
         Box,
         'b',
         'b.code = detail.code and b.branch = :branch',
@@ -34,7 +34,9 @@ export class RequestStbPackageDetailRepository extends Repository<RequestStbPack
         },
       )
       .where('detail.requestStbPackageId = :id', { id: id })
-      .select(['detail.id', 'detail.code', 'detail.qty', 'm.name', 'b.name'])
+      .select(['detail.id', 'detail.code', 'detail.qty'])
+      .addSelect(['m.name'])
+      .addSelect(['b.name'])
       .getMany();
   }
 }

@@ -1,4 +1,5 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { TicketPic } from './ticket-pic.entity';
 
 @Entity({ name: 'Tts', synchronize: false })
 export class Ticket extends BaseEntity {
