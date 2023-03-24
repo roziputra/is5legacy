@@ -64,6 +64,7 @@ import { AssetController } from './asset.controller';
 import { AssetService } from './asset.service';
 import { TtbCustomerAttachmentRepository } from './stock/repositories/ttb-customer-attachment.repository';
 import { TtbCustomerRepository } from './stock/repositories/ttb-customer.repository';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -82,6 +83,11 @@ import { TtbCustomerRepository } from './stock/repositories/ttb-customer.reposit
       },
       template: {
         dir: join(__dirname, '..', 'views'),
+        adapter: new HandlebarsAdapter({
+          increment: (n) => {
+            return n + 1;
+          },
+        }),
         options: {
           strict: true,
         },

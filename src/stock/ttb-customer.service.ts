@@ -10,17 +10,21 @@ import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 import { ConfigService } from '@nestjs/config';
-import { FilterPaginationDto } from './dto/filter-pagination.dto';
-import { FilterTtbDto } from './dto/filter-ttb.dto';
+import { MailerService } from '@nestjs-modules/mailer';
+import { DateFormat } from 'src/utils/date-format';
+import { TtbCustomerAttachmentRepository } from './repositories/ttb-customer-attachment.repository';
+import { resolve } from 'path';
 
 @Injectable()
 export class TtbCustomerService {
   constructor(
     private readonly ttbCustomerRepository: TtbCustomerRepository,
     private readonly ttbCustomerDetailRepository: TtbCustomerDetailRepository,
+    private readonly ttbCustomerAttachmentRepository: TtbCustomerAttachmentRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerService: StbEngineerService,
     private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async create(
@@ -164,6 +168,45 @@ export class TtbCustomerService {
       page: page,
       limit: limit,
     });
+  }
+
+  async sendTtbEmail(id) {
+    const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
+    const ttb = await this.ttbCustomerRepository.findOneTtb(id);
+    const details = await this.ttbCustomerDetailRepository.findAllDetails(id);
+    const attachment = await this.ttbCustomerAttachmentRepository.findBy({
+      ttbCustomerId: id,
+    });
+
+    const mailAttachment = attachment.map(function (item) {
+      return {
+        filename: item.filename,
+        path: resolve(item.filepath),
+      };
+    });
+
+    mailAttachment.push({
+      filename: `${ttb.noSurat}.pdf`,
+      path: resolve(`data/ttb/pdf/${ttb.noSurat}.pdf`),
+    });
+
+    const d = new DateFormat(ttb.date);
+    await this.mailerService
+      .sendMail({
+        to: 'rozi@nusa.net.id', // list of receivers
+        subject: 'Tanda Terima Barang', // Subject line
+        template: 'stock/email/ttb-template',
+        context: {
+          frontEndUrl: frontEndUrl,
+          ttb: ttb,
+          details: details,
+          ttbDate: d.toLongDateFormat(),
+        },
+        attachments: mailAttachment,
+      })
+      .catch((error) => {
+        throw new Is5LegacyException('Gagal kirim email');
+      });
   }
 
   /** dikomen sementara karena mau cari bugs */
