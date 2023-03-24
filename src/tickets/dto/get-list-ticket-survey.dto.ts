@@ -11,7 +11,7 @@ export class GetListTicketSurveyDto {
   })
   @Expose({ name: 'tts_type_id' })
   ttsTypeIds: string[];
-  
+
   @IsNotEmpty()
   @Type(() => String)
   @IsArray()
