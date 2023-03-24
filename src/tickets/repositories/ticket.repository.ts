@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { Ticket } from '../entities/ticket.entity';
-import { IPaginationOptions, paginate, paginateRaw } from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate } from 'nestjs-typeorm-paginate';
 import { TicketPic } from '../entities/ticket-pic.entity';
-import { Employee } from 'src/employees/employee.entity';
 
 @Injectable()
 export class TicketRepository extends Repository<Ticket> {
@@ -17,10 +16,14 @@ export class TicketRepository extends Repository<Ticket> {
     ttsStatus: string[],
     surveyIds: string[],
   ): Promise<any> {
-    const queryBuilder = this
-    .createQueryBuilder('t')
-    .leftJoinAndMapMany('t.ticketPics', TicketPic, 'tp', 't.id = tp.ticketId AND t.assignedNo = tp.assignedNo')
-    .leftJoinAndMapOne('tp.employeeDetails', 'tp.employees', 'emp');
+    const queryBuilder = this.createQueryBuilder('t')
+      .leftJoinAndMapMany(
+        't.ticketPics',
+        TicketPic,
+        'tp',
+        't.id = tp.ticketId AND t.assignedNo = tp.assignedNo',
+      )
+      .leftJoinAndMapOne('tp.employeeDetails', 'tp.employees', 'emp');
     if (ttsTypeIds.length > 0) {
       queryBuilder.where('t.ttsTypeId IN (:...ttsTypeIds)', { ttsTypeIds });
     }
@@ -28,7 +31,7 @@ export class TicketRepository extends Repository<Ticket> {
       queryBuilder.where('t.status IN (:...ttsStatus)', { ttsStatus });
     }
     if (surveyIds.length > 0) {
-      queryBuilder.where('t.surveyId IN (:...surveyIds)', { surveyIds });
+      queryBuilder.where('t.id IN (:...surveyIds)', { surveyIds });
     }
     queryBuilder.orderBy('t.PostedTime', 'DESC');
 
