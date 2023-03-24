@@ -36,6 +36,8 @@ import { TtbPdfController } from './ttb-pdf-controller';
 import { ConfigModule } from '@nestjs/config';
 import { StockMasterController } from './stock-master.controller';
 import { StockMasterService } from './stock-master.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { TtbCustomerAttachmentRepository } from './repositories/ttb-customer-attachment.repository';
 
 @Module({
   imports: [
@@ -47,7 +49,8 @@ import { StockMasterService } from './stock-master.service';
         },
       }),
     }),
-    ConfigModule.forRoot(),
+    MailerModule,
+    ConfigModule,
     FinanceModule,
     TypeOrmModule.forFeature([Employee]),
   ],
@@ -76,6 +79,7 @@ import { StockMasterService } from './stock-master.service';
     StbTransferService,
     StbRequestService,
     StbEngineerService,
+    TtbCustomerAttachmentRepository,
     TtbCustomerDetailRepository,
     TtbCustomerRepository,
     StbRequestRepository,
