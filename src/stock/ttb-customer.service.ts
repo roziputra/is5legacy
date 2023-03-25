@@ -10,8 +10,7 @@ import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 import { ConfigService } from '@nestjs/config';
-import { InjectBrowser } from 'nest-puppeteer';
-import { Browser } from 'puppeteer';
+import puppeteer from 'puppeteer';
 
 @Injectable()
 export class TtbCustomerService {
@@ -21,8 +20,6 @@ export class TtbCustomerService {
     private readonly dataSource: DataSource,
     private readonly stbEngineerService: StbEngineerService,
     private readonly configService: ConfigService,
-    @InjectBrowser()
-    private readonly browser: Browser,
   ) {}
 
   async create(
@@ -164,12 +161,14 @@ export class TtbCustomerService {
   async createPdf(id: number): Promise<any> {
     const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
 
-    const page = await this.browser.newPage();
-
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
+    const page = await browser.newPage();
     await page.goto(`${frontEndUrl}/v1/stock/ttb/${id}/pdf/view`, {
       waitUntil: 'networkidle2',
     });
-
     const buffer = await page.pdf({
       format: 'A4',
       printBackground: true,
