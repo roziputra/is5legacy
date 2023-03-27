@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
-import { BaseEntity, Entity, Column, PrimaryColumn } from 'typeorm';
+import { TicketPic } from 'src/tickets/entities/ticket-pic.entity';
+import { BaseEntity, Entity, Column, PrimaryColumn, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity({ name: 'Employee', synchronize: false })
 export class Employee extends BaseEntity {
@@ -26,6 +27,10 @@ export class Employee extends BaseEntity {
   @Expose({ name: 'branch_id' })
   branchId: string;
 
+  @Column({ name: 'DeptId' })
+  @Expose({ name: 'department_id' })
+  departmentId: string;
+
   @Column({ name: 'DisplayBranchId' })
   @Expose({ name: 'display_branch_id' })
   displayBranchId: string;
@@ -33,6 +38,10 @@ export class Employee extends BaseEntity {
   @Column()
   @Exclude()
   jobTitle: number;
+
+  @OneToOne(() => TicketPic, (ticketpic) => ticketpic.employees)
+  @JoinColumn({ name: 'EmpId', referencedColumnName: 'employeeId'})
+  tickets: TicketPic;
 
   @Expose({ name: 'full_name' })
   getFullName() {

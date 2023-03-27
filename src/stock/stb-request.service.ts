@@ -11,7 +11,7 @@ import { StbRequestRepository } from './repositories/stb-request.repository';
 import { StbRequestDetailRepository } from './repositories/stb-request-detail.repository';
 import { CreateStbRequestDto } from './dto/create-stb-request.dto';
 import { UpdateStbRequestDto } from './dto/update-stb-request.dto';
-import { STATUS_PENDING, StbRequest } from './entities/stb-request.entity';
+import { STATUS_PENDING, Status, StbRequest } from './entities/stb-request.entity';
 import { StbEngineerService } from './stb-engineer.service';
 import { Employee } from 'src/employees/employee.entity';
 
@@ -112,7 +112,7 @@ export class StbRequestService {
     }
   }
 
-  async findStbRequest(id: number, user: Employee): Promise<StbRequest> {
+  async findStbRequest(id: number): Promise<StbRequest> {
     const stbRequest = await this.stbRequestRepository.findOneStbRequest(id);
     if (!stbRequest) {
       throw new Is5LegacyException(
@@ -166,19 +166,14 @@ export class StbRequestService {
   }
 
   async findAllStbRequest(
+    requestType: RequestType[],
+    status: Status[],
     options: IPaginationOptions,
-    requestType: RequestType,
-    status: string[],
   ): Promise<Pagination<StbRequest>> {
-    return paginate<StbRequest>(this.stbRequestRepository, options, {
-      where: {
-        requestType: requestType,
-        status: status ? In(status) : undefined,
-      },
-      relations: {
-        details: true,
-        stb: true,
-      },
-    });
+    return this.stbRequestRepository.finAllStbRequest(
+      requestType,
+      status,
+      options,
+    );
   }
 }

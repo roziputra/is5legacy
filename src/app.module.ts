@@ -59,6 +59,12 @@ import { TtbCustomerDetail } from './stock/entities/ttb-customer-detail.entity';
 import { Ticket } from './tickets/entities/ticket.entity';
 import { TtbCustomerAttachment } from './stock/entities/ttb-customer-attachment.entity';
 import { TicketUpdate } from './tickets/entities/ticket-update.entity';
+import { join } from 'path';
+import { AssetController } from './asset.controller';
+import { AssetService } from './asset.service';
+import { TtbCustomerAttachmentRepository } from './stock/repositories/ttb-customer-attachment.repository';
+import { TtbCustomerRepository } from './stock/repositories/ttb-customer.repository';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -76,7 +82,12 @@ import { TicketUpdate } from './tickets/entities/ticket-update.entity';
         from: process.env.MAIL_USERNAME,
       },
       template: {
-        dir: __dirname + '/templates/mails',
+        dir: join(__dirname, '..', 'views'),
+        adapter: new HandlebarsAdapter({
+          increment: (n) => {
+            return n + 1;
+          },
+        }),
         options: {
           strict: true,
         },
@@ -155,7 +166,11 @@ import { TicketUpdate } from './tickets/entities/ticket-update.entity';
     FinanceModule,
     StockModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [AssetController],
+  providers: [
+    AssetService,
+    TtbCustomerAttachmentRepository,
+    TtbCustomerRepository,
+  ],
 })
 export class AppModule {}

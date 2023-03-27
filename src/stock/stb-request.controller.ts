@@ -23,6 +23,10 @@ import { StbRequestService } from './stb-request.service';
 import { CreateStbRequestDto } from './dto/create-stb-request.dto';
 import { UpdateStbRequestDto } from './dto/update-stb-request.dto';
 import { Employee } from 'src/employees/employee.entity';
+import { StbRequestApiResource } from './resources/stb-request-api-resource';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
+import { FilterPaginationDto } from './dto/filter-pagination.dto';
+import { FilterStbRequestDto } from './dto/filter-stb-request.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/stbs/requests')
@@ -56,9 +60,9 @@ export class StbRequestController {
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
-  show(@Param('id') id: number, @CurrentUser() user: Employee): Promise<any> {
-    return this.stbRequestService.findStbRequest(id, user);
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbRequestApiResource))
+  async show(@Param('id') id: number): Promise<any> {
+    return this.stbRequestService.findStbRequest(id);
   }
 
   @Delete(':id')
@@ -75,20 +79,16 @@ export class StbRequestController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(StbRequestApiResource))
   async findAllStbEnginer(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page,
-    @Query('limit', new DefaultValuePipe(15), ParseIntPipe) limit,
-    @Query('request_type') requestType: RequestType,
-    @Query('status') status: string,
+    @Query() filterPaginationDto: FilterPaginationDto,
+    @Query() filterStbRequestDto: FilterStbRequestDto,
   ) {
-    return this.stbRequestService.findAllStbRequest(
-      {
-        page: page,
-        limit: limit,
-      },
-      requestType,
-      status?.split(',').map((i) => i.trim()),
-    );
+    const { page, limit } = filterPaginationDto;
+    const { requestType, status } = filterStbRequestDto;
+    return this.stbRequestService.findAllStbRequest(requestType, status, {
+      page: page,
+      limit: limit,
+    });
   }
 }

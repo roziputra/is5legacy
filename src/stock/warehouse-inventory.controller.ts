@@ -15,6 +15,10 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CurrentUser } from 'src/employees/current-user.decorator';
 import { Employee } from 'src/employees/employee.entity';
 
+/**
+ * deprecated
+ * use StockMasterController
+ */
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/stocks/warehouses/inventories')
 export class WarehouseInventoryController {

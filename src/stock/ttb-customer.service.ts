@@ -11,15 +11,23 @@ import { Employee } from 'src/employees/employee.entity';
 import { TtbCustomerAttachment } from './entities/ttb-customer-attachment.entity';
 import { ConfigService } from '@nestjs/config';
 import puppeteer from 'puppeteer';
+import { MailerService } from '@nestjs-modules/mailer';
+import { DateFormat } from 'src/utils/date-format';
+import { TtbCustomerAttachmentRepository } from './repositories/ttb-customer-attachment.repository';
+import { join, resolve } from 'path';
+import { compile } from 'handlebars';
+import { readFileSync } from 'fs';
 
 @Injectable()
 export class TtbCustomerService {
   constructor(
     private readonly ttbCustomerRepository: TtbCustomerRepository,
     private readonly ttbCustomerDetailRepository: TtbCustomerDetailRepository,
+    private readonly ttbCustomerAttachmentRepository: TtbCustomerAttachmentRepository,
     private readonly dataSource: DataSource,
     private readonly stbEngineerService: StbEngineerService,
     private readonly configService: ConfigService,
+    private readonly mailerService: MailerService,
   ) {}
 
   async create(
@@ -153,22 +161,87 @@ export class TtbCustomerService {
     }
   }
 
-  async findAllTtb(): Promise<any> {
-    return this.ttbCustomerRepository.findAllTtb();
+  async findAllTtb(
+    branchId: string[],
+    engineerId: string[],
+    page: number,
+    limit: number,
+  ): Promise<any> {
+    return this.ttbCustomerRepository.findAllTtb(branchId, engineerId, {
+      page: page,
+      limit: limit,
+    });
+  }
+
+  async sendTtbEmail(id) {
+    const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
+    const ttb = await this.ttbCustomerRepository.findOneTtb(id);
+    const details = await this.ttbCustomerDetailRepository.findAllDetails(id);
+    const attachment = await this.ttbCustomerAttachmentRepository.findBy({
+      ttbCustomerId: id,
+    });
+
+    const mailAttachment = attachment.map(function (item) {
+      return {
+        filename: item.filename,
+        path: resolve(item.filepath),
+      };
+    });
+
+    mailAttachment.push({
+      filename: `${ttb.noSurat}.pdf`,
+      path: resolve(`data/ttb/pdf/${ttb.noSurat}.pdf`),
+    });
+
+    const d = new DateFormat(ttb.date);
+    await this.mailerService
+      .sendMail({
+        to: 'rozi@nusa.net.id', // list of receivers
+        subject: 'Tanda Terima Barang', // Subject line
+        template: 'stock/email/ttb-template',
+        context: {
+          frontEndUrl: frontEndUrl,
+          ttb: ttb,
+          details: details,
+          ttbDate: d.toLongDateFormat(),
+        },
+        attachments: mailAttachment,
+      })
+      .catch((error) => {
+        throw new Is5LegacyException('Gagal kirim email');
+      });
   }
 
   /** dikomen sementara karena mau cari bugs */
   async createPdf(id: number): Promise<any> {
     const frontEndUrl = `${this.configService.get('FRONTEND_URL')}`;
-
+    const ttb = await this.ttbCustomerRepository.findOneTtb(id);
+    const details = await this.ttbCustomerDetailRepository.findAllDetails(id);
+    const d = new DateFormat(ttb.date);
     const browser = await puppeteer.launch({
       headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
+    const source = readFileSync(
+      join('views', 'stock/ttb-template.hbs'),
+      'utf8',
+    ).toString();
+    const compiledHtml = compile(source);
+    const content = compiledHtml(
+      {
+        frontEndUrl: frontEndUrl,
+        ttb: ttb,
+        details: details,
+        ttbDate: d.toLongDateFormat(),
+      },
+      {
+        helpers: {
+          increment: (n) => n + 1,
+        },
+      },
+    );
     const page = await browser.newPage();
-    await page.goto(`${frontEndUrl}/v1/stock/ttb/${id}/pdf/view`, {
-      waitUntil: 'networkidle2',
-    });
+    await page.setContent(content);
     const buffer = await page.pdf({
       format: 'A4',
       printBackground: true,

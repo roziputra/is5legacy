@@ -1,0 +1,212 @@
+<!-- <!DOCTYPE html> -->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <title>Document</title>
+    <style>
+        @font-face {
+            font-family: 'Inter';
+            src: url('/fonts/Inter.ttf');
+        }
+
+        body {
+            font-family: 'Inter', Arial, Helvetica, sans-serif;
+            margin: auto 0;
+            min-height: 100vh;
+            background: url('images/email-bg.png') no-repeat;
+            background-size: 100% 100vh;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul li {
+            margin-bottom: 4px;
+            line-height: 14.52px;
+        }
+
+        .header {
+            position: relative;
+            padding: 24px;
+        }
+
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .container {
+            margin: 40px;
+            margin-top: 8px;
+        }
+
+        .info-box {
+            margin-top: 32px;
+            /* font-size: 12px; */
+            background-color: white;
+            padding: 16px;
+        }
+
+        .info--left {
+            float: left;
+        }
+
+        .info--left li div:first-child {
+            display: inline-block;
+            width: 144px;
+            color: #4d4d4d;
+            vertical-align: top;
+        }
+
+        .info--left li .list-value {
+            display: inline;
+            overflow-wrap: break-word;
+        }
+
+        .info--left li .list-value div {
+            inline-size: 240px;
+        }
+
+        .info--right {
+            float: right;
+        }
+
+        .info--right li div:first-child {
+            display: inline-block;
+            width: 64px;
+            color: #4d4d4d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table tr {
+            border: 0;
+        }
+
+        table thead tr {
+            background-color: #F3FFEB;
+        }
+
+        table tr td,
+        table tr th {
+            /* font-size: 12px; */
+            line-height: 24px;
+            letter-spacing: 0.17px;
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #212121;
+        }
+
+        table tr th {
+            text-align: left;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 4px 0px;
+            margin-bottom: 32px;
+            text-align: center;
+            color: white;
+            line-height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <img src="{{frontEndUrl}}/images/nusanet-logo.webp" alt="Nusanet Logo" height="32px" />
+    </div>
+    <div class="container">
+        <h1 class="title">Bukti Tanda Terima Barang</h1>
+        <p style="line-height: 24px;">Terima kasih telah mempercayakan layanan internet Anda kepada Nusanet. Berikut
+            adalah bukti barang yang kami serahkan ke Anda saat pemasangan</p>
+        <div class="info-box">
+            <div>
+                <ul class="info--left">
+                    <li>
+                        <div>Nama/Perusahaan</div>
+                        <span>:</span>
+                        <div class="list-value">
+                            <div>{{ ttb.customer.CustName }}</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div>Alamat</div>
+                        <span>:</span>
+                        <div class="list-value">
+                            <div>{{ ttb.customerService.installation_address }}</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div>Service Name</div>
+                        <span>:</span>
+                        <div class="list-value">
+                            <div>{{ ttb.service.ServiceType }} [{{ ttb.service.id }}]</div>
+                        </div>
+                    </li>
+                    <li>
+                        <div>Deskripsi</div>
+                        <span>:</span>
+                        <div class="list-value">
+                            <div>{{ ttb.description }}</div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="info--right">
+                    <li>
+                        <div>Tanggal</div>
+                        <span>: {{ ttbDate }}</span>
+                    </li>
+                    <li>
+                        <div>No</div>
+                        <span>:</span><span style=" color:#E10000;"> {{ ttb.noSurat }}</span>
+                    </li>
+                </ul>
+            </div>
+            <div style="clear:both;"></div>
+            <hr style="margin:16px 0" />
+            <p>Telah diserahkan dengan baik barang di bawah ini, berupa:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Barang</th>
+                        <th>S/N</th>
+                        <th>Qty</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each details}}
+                    <tr>
+                        <td>{{increment @index}}</td>
+                        <td>{{this.name}}</td>
+                        <td>{{this.serial}}</td>
+                        <td>{{this.qty}} {{this.unit}}</td>
+                        <td>{{this.status}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="footer">
+        <span style="max-width: 572px;">© Copyright PT. Media Antar Nusa. All rights reserved.<br />
+            Jl. Haji Misbah Kompleks Multatuli Indah Blok D No.1, Hamdan, Kec. Medan Maimun, Kota Medan, Sumatera Utara
+            20151
+        </span>
+    </div>
+</body>
+
+</html>

@@ -6,6 +6,7 @@ import { AllExceptionsFilter } from './exceptions/all-exception.filter';
 import { Is5LegacyExceptionFilter } from './exceptions/is5-legacy-exception.filter';
 import { Is5LegacyValidationPipe } from './pipes/is5-legacy-validation.pipe';
 import { join } from 'path';
+import * as hbs from 'hbs';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -21,6 +22,9 @@ async function bootstrap() {
   app.useStaticAssets(join(__dirname, '..', 'data'));
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
+
+  hbs.registerHelper('increment', (n) => n + 1);
+  app.engine('hbs', hbs.__express);
   app.setViewEngine('hbs');
   await app.listen(port || 3000);
 }

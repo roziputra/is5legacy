@@ -1,5 +1,4 @@
 import {
-  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -11,6 +10,8 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { EmployeesService } from './employees.service';
 import { CurrentUser } from './current-user.decorator';
 import { Employee } from './employee.entity';
+import { EmployeeApiResource } from './resources/employee-api-resource';
+import { Is5LegacyApiResourceInterceptor } from 'src/interceptors/is5-legacy-api-resource.interceptor';
 
 @UseGuards(JwtAuthGuard)
 @Controller('api/v1/employees/profile')
@@ -19,7 +20,7 @@ export class EmployeeProfileController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(new Is5LegacyApiResourceInterceptor(EmployeeApiResource))
   findOne(@CurrentUser() user: Employee): Promise<Employee> {
     return this.employeesService.getProfile(user);
   }

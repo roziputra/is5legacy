@@ -34,6 +34,10 @@ import { MulterModule } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { TtbPdfController } from './ttb-pdf-controller';
 import { ConfigModule } from '@nestjs/config';
+import { StockMasterController } from './stock-master.controller';
+import { StockMasterService } from './stock-master.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { TtbCustomerAttachmentRepository } from './repositories/ttb-customer-attachment.repository';
 
 @Module({
   imports: [
@@ -45,11 +49,13 @@ import { ConfigModule } from '@nestjs/config';
         },
       }),
     }),
-    ConfigModule.forRoot(),
+    MailerModule,
+    ConfigModule,
     FinanceModule,
     TypeOrmModule.forFeature([Employee]),
   ],
   controllers: [
+    StockMasterController,
     PackageDetailController,
     PackageController,
     TtbPdfController,
@@ -65,6 +71,7 @@ import { ConfigModule } from '@nestjs/config';
     StockController,
   ],
   providers: [
+    StockMasterService,
     PackageService,
     StockService,
     TtbCustomerDetailService,
@@ -72,6 +79,7 @@ import { ConfigModule } from '@nestjs/config';
     StbTransferService,
     StbRequestService,
     StbEngineerService,
+    TtbCustomerAttachmentRepository,
     TtbCustomerDetailRepository,
     TtbCustomerRepository,
     StbRequestRepository,

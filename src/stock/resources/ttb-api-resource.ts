@@ -1,7 +1,7 @@
 import { Expose, Type } from 'class-transformer';
 import { CustomerApiResource } from 'src/customers/resources/customer-api-resource';
 import { CustomerServiceApiResource } from 'src/customers/resources/customer-service-api-resource';
-import { EmployeeApiResource } from 'src/employees/resources/employee-api-resource';
+import { LiteEmployeeApiResource } from 'src/employees/resources/lite-employee-api-resource';
 import { ServiceApiResource } from 'src/services/resources/service-api-resource';
 
 export class TtbApiResource {
@@ -42,14 +42,14 @@ export class TtbApiResource {
   approvedDate: string;
 
   @Expose()
-  @Type(() => EmployeeApiResource)
-  approved: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  approved: LiteEmployeeApiResource;
 
   @Expose()
-  @Type(() => EmployeeApiResource)
-  sales: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  sales: LiteEmployeeApiResource;
 
   @Expose()
-  @Type(() => EmployeeApiResource)
-  engineer: EmployeeApiResource;
+  @Type(() => LiteEmployeeApiResource)
+  engineer: LiteEmployeeApiResource;
 }
